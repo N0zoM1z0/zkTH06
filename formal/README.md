@@ -8,8 +8,10 @@ whole-frame, whole-game, or C++-binding theorem is claimed.
 [`ZkTH06/X87Profile.lean`](ZkTH06/X87Profile.lean) separately decodes the
 `0x027f` control word embedded in the pinned executable's CRT trigonometric
 wrappers. It checks 53-bit significand precision, round-to-nearest-even, and
-six masked x87 exceptions. This is a profile fact only: it neither implements
-x87 operations nor proves the Windows loader establishes that word at entry.
+six masked x87 exceptions. It also checks that this precision field selects
+SoftFloat's documented `extF80_roundingPrecision = 64` configuration. These are
+profile/configuration facts only: they neither implement x87 operations nor
+prove SoftFloat equivalent to x87 or establish the Windows loader's entry word.
 
 ## Checked Effect reuse result
 

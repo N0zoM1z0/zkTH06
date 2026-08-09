@@ -24,6 +24,9 @@ Last updated: 2026-08-09
 - A hash-bound static arithmetic audit that attributes x87 sites and calls to
   mapped functions, distinguishes XMM-bearing CRT/D3DX code, and emits a
   path-free JSON summary; plus a checked Lean decode of control word `0x027f`.
+- A reproducible, commit-pinned Berkeley SoftFloat Release 3e differential
+  probe for basic x87 result bits at that control word, covering both
+  binary32-derived values and canonical PC53 extended intermediates.
 
 Compatibility playback intentionally restores every per-stage replay snapshot,
 matching shipped playback. It is an oracle-development mode, not the future
@@ -88,6 +91,15 @@ profile must therefore be measured and constrained explicitly. The complete
 audit and soundness consequences are in
 [`arithmetic-audit.md`](arithmetic-audit.md).
 
+The first basic-operation oracle experiment compared `add`, `sub`, `mul`,
+`div`, and `sqrt` against pinned SoftFloat result bits. On an AMD EPYC 9654,
+5,000,798 finite binary32-derived cases and 5,001,314 canonical PC53 extended
+cases produced no mismatch. This is deterministic, host-specific
+counterexample search only: exception/status semantics, conversions, stores,
+transcendentals, address binding, and a model-to-code proof remain open. The
+reproduction and claim boundary are in
+[`../arithmetic/README.md`](../arithmetic/README.md).
+
 ## Remaining M0 gates
 
 1. Close or explicitly constrain the selected projection. Inactive Effect
@@ -97,7 +109,8 @@ audit and soundness consequences are in
    mismatch can be reduced to its first field.
 3. Export the same schema from the original executable or an exact-reference
    build and identify the first differing field.
-4. Record the entry x87/CPU profile, instrument reached arithmetic sites, and
+4. Record the entry x87/CPU profile, instrument reached arithmetic sites,
+   extend the basic-operation oracle through stores/conversions/status, and
    replace host-libm behavior with an exact, address-bound arithmetic baseline;
    prove skipped-draw arithmetic noninterference before removing it.
 5. Add canonical-proof playback that derives stage transitions and rejects a

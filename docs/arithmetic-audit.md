@@ -169,6 +169,46 @@ including `/Op`; nevertheless, the actual instruction and store boundaries,
 not a modern compiler's interpretation of the C++ expression, are binding
 evidence.
 
+## Basic-operation differential oracle
+
+A first executable experiment tests whether Berkeley SoftFloat Release 3e is a
+plausible independent oracle for the basic arithmetic subset. The source is
+not vendored. [`tools/run_softfloat_probe.py`](../tools/run_softfloat_probe.py)
+exports exact commit
+`f74b1e48110ac3a27dd49b787d164e55e42d81d1` from an ignored checkout, verifies
+selected file hashes, compiles the 20 required translation units with the
+`8086` specialization in a temporary directory, and runs
+[`arithmetic/softfloat_probe.c`](../arithmetic/softfloat_probe.c).
+
+For `add`, `sub`, `mul`, `div`, and `sqrt`, the probe compares the raw
+sign/exponent and significand produced by x87 under control word `0x027f` with
+SoftFloat configured for round-to-nearest-even and
+`extF80_roundingPrecision = 64`. SoftFloat documents this setting as precision
+equivalent to `float64_t`: a 53-bit significand while retaining the extended
+format's exponent range. The configuration correspondence is also checked,
+without an arithmetic theorem, in `X87Profile.lean`.
+
+Two deterministic input families cover finite binary32-derived operands and
+canonical finite extended operands whose low eleven significand bits are zero,
+as expected after a 53-bit-precision operation. Boundary-heavy sampling covers
+the extended exponent range. On the initial AMD EPYC 9654 host with GCC 11.4.0,
+one million pseudorandom cases per operation and family plus fixed boundary
+cases produced:
+
+| Input family | Compared results | Mismatches |
+| --- | ---: | ---: |
+| finite binary32-derived | 5,000,798 | 0 |
+| canonical PC53 extended | 5,001,314 | 0 |
+
+This is host-specific counterexample search, not a proof that either
+implementation is correct. It compares result bits only. It does not cover the
+x87 status/tag words, arbitrary NaN inputs, denormal-operand signaling,
+comparisons, remainder, `frndint`, integer conversions, store rounding, helper
+ABIs, transcendental instructions, or instruction extraction. SoftFloat is
+therefore a candidate executable specification for a subset, not the
+soundness argument. Full commands and the dependency/license boundary are in
+[`arithmetic/README.md`](../arithmetic/README.md).
+
 ## Transcendentals are a scope decision
 
 The `fsin`, `fcos`, `fsincos`, and `fptan` instructions are approximations, not
@@ -235,9 +275,10 @@ equivalence.
    replay corpus.
 3. Add field-level snapshots so the first arithmetic divergence identifies the
    owning field and original operation site.
-4. Implement and test bit-vector semantics for the actually reached basic
-   add/subtract/multiply/divide, comparison, store, and conversion sequences
-   before implementing transcendental instructions.
+4. Extend the pinned differential oracle through the actually reached
+   comparison, store, `frndint`, and integer-conversion sequences, including
+   status flags; then bind the resulting basic-operation semantics to original
+   instruction addresses and a machine-checked definition.
 5. Prove draw/D3DX noninterference one callback at a time. Only then may their
    x87 and XMM sites leave the arithmetic kernel.
 6. State and prove the chosen transcendental execution profile; corpus equality

@@ -91,6 +91,16 @@ approximate, range-reduction-dependent nature of x87 trigonometric
 instructions~\cite{intel-x87-transcendentals}; Microsoft documents the exposed
 control modes~\cite{microsoft-control87}.
 
+Berkeley SoftFloat Release 3e is used as an independent executable oracle for
+the first basic-operation experiment~\cite{hauser-softfloat3e}.  Its
+\code{extF80\_roundingPrecision = 64} setting denotes precision equivalent to
+binary64---a 53-bit significand with the extended exponent range---and affects
+extended add, subtract, multiply, divide, and square root.  Hardware/SoftFloat
+differential tests can reject a candidate semantics quickly.  They cannot
+establish that SoftFloat, the assembly harness, or a future formalization is
+correct, and they do not cover x87 status, conversion, or transcendental
+semantics.
+
 The fidelity representation is address-indexed.  Each retained arithmetic
 operation records its pinned original address, x87 stack/control inputs,
 opcode, destination width, and next use or store boundary.  Calls such as

@@ -126,3 +126,42 @@ did not find a game-body instruction that establishes this word at entry, so
 the result is deliberately a profile fact rather than an environment theorem.
 An original exporter must record and constrain the entry word and processor
 profile before exact transcendental equivalence can be claimed.
+
+\subsection{Basic-operation oracle experiment}
+
+The first arithmetic experiment compared x87 and Berkeley SoftFloat Release
+3e for add, subtract, multiply, divide, and square root under the decoded
+profile.  The runner exports exact upstream commit
+\code{f74b1e48110ac3a27dd49b787d164e55e42d81d1}, verifies selected file hashes,
+and compiles only the 20 required translation units with the SoftFloat
+\code{8086} specialization.  Both paths use round-to-nearest-even and 53-bit
+significand precision; raw extended sign/exponent and significand result bits
+are compared.
+
+On an AMD EPYC 9654 with GCC 11.4.0, one million deterministic pseudorandom
+cases per operation and input family, plus fixed boundary cases, yielded the
+following result.
+
+\begin{table}[h]
+  \centering
+  \small
+  \begin{tabular}{@{}lrr@{}}
+    \toprule
+    Input family & Results compared & Mismatches \\
+    \midrule
+    Finite binary32-derived & 5,000,798 & 0 \\
+    Canonical PC53 extended & 5,001,314 & 0 \\
+    \bottomrule
+  \end{tabular}
+  \caption{Host-specific x87/SoftFloat basic-operation counterexample search.}
+  \label{tab:softfloat-probe}
+\end{table}
+
+Canonical PC53 inputs retain the full extended exponent range, set the
+explicit integer bit consistently with the exponent, and clear the eleven
+significand bits below the selected precision.  The zero-mismatch result makes
+SoftFloat a plausible oracle for this subset on the measured host; it proves
+neither implementation correct.  Exception/status state, arbitrary NaN inputs,
+comparisons, conversions, store rounding, helper ABIs, transcendental
+instructions, dynamic reachability, and model-to-code binding remain outside
+the experiment.

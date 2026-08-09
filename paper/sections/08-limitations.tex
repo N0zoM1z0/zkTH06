@@ -10,9 +10,11 @@
   but does not prove its loader-established entry value.  Hardware
   transcendental approximations also require a processor/emulator profile.
   Host \code{libm}, spill behavior, and intermediate precision may diverge by
-  one or more bits and later alter collisions.  The address-indexed exact
-  software baseline and any fixed-point refinement have not yet been
-  implemented or proved.
+  one or more bits and later alter collisions.  A pinned SoftFloat experiment
+  agrees with hardware result bits for the tested basic-operation cases, but
+  it is neither formally verified nor complete x87 state semantics.  The
+  address-indexed exact baseline, code binding, and any fixed-point refinement
+  have not yet been implemented or proved.
   \item \textbf{Draw-chain effects.}  Headless mode skips drawing, but some draw
   callbacks write flags, ANM fields, laser positions, or other state that may be
   read later.  Each removal needs dependency analysis and corpus validation.

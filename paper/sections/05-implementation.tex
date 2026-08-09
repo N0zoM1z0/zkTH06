@@ -27,8 +27,13 @@ As of 9 August 2026, the following components are implemented:
   helper calls through the authoritative mapping, emits a path-free JSON
   summary, and has a proprietary-input-free synthetic test;
   \item a checked Lean decode of target control word \code{0x027f}; its narrow
-  theorem covers precision, rounding, and exception-mask fields but neither
-  arithmetic operations nor loader-established entry state;
+  theorem covers precision, rounding, exception-mask fields, and the
+  corresponding SoftFloat configuration value, but neither arithmetic
+  operations nor loader-established entry state;
+  \item a reproducible, commit-pinned SoftFloat Release 3e differential probe
+  for basic x87 result bits, using finite binary32-derived operands and
+  canonical 53-bit-precision extended intermediates across the extended
+  exponent range;
   \item Linux CI that builds the reference runner and cross-checks both replay
   validators on three valid and three deliberately malformed cases, while also
   requiring canonical-record corruption to fail closed.

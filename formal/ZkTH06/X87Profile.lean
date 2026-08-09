@@ -56,4 +56,22 @@ theorem target_masks_all_six_x87_exceptions :
     allExceptionsMasked targetControlWord = true := by
   decide
 
+/--
+Map an x87 precision-control field to SoftFloat's documented
+`extF80_roundingPrecision` configuration value.  The SoftFloat value names the
+corresponding interchange-format width: 32 means a 24-bit significand, 64
+means a 53-bit significand, and 80 means the full 64-bit extended significand.
+This is only a configuration correspondence, not an arithmetic-correctness
+theorem about SoftFloat or x87.
+-/
+def softFloatRoundingPrecision : PrecisionControl → Option Nat
+  | .binary24 => some 32
+  | .reserved => none
+  | .binary53 => some 64
+  | .binary64 => some 80
+
+theorem target_softfloat_rounding_precision :
+    softFloatRoundingPrecision (precisionControl targetControlWord) = some 64 := by
+  decide
+
 end ZkTH06.X87Profile

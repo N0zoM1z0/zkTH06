@@ -81,5 +81,16 @@ state, and store width.  Control word \code{0x027f} is now an explicit checked
 profile, while its loader-established entry value and the processor-dependent
 transcendental model remain open evidence obligations.
 
+\paragraph{Phase K: test a basic-operation oracle without promoting it to a proof.}
+The decoded 53-bit x87 profile suggested Berkeley SoftFloat's reduced-precision
+extended operations as a candidate exact baseline.  A pinned differential
+probe found no result-bit mismatch across more than ten million basic-operation
+cases spanning binary32 inputs and the extended exponent range.  This narrowed
+implementation risk, but also sharpened the claim boundary: SoftFloat is not a
+formal proof, does not model x87 transcendental instructions, and does not by
+itself bind arithmetic semantics to original instruction addresses.  The next
+arithmetic milestone therefore became stores, conversions, status behavior,
+and code-to-model binding rather than immediate fixed-point substitution.
+
 Future changes to the central claim or state boundary should be appended here
 with the evidence that motivated them.

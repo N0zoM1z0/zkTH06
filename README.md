@@ -16,7 +16,8 @@ A first owner-local Lean model now machine-checks why active-only Effect slots
 violate one-step noninterference and how a narrow dormant reuse shadow repairs
 that modeled allocation step. It is a proof-design result, not a whole-game or
 C++-binding theorem. A second small definition decodes the audited target x87
-control word without yet claiming complete arithmetic semantics.
+control word and its SoftFloat configuration correspondence without yet
+claiming complete arithmetic semantics.
 
 ## Repository boundary
 
@@ -25,6 +26,8 @@ kept as a supporting snapshot rather than as this repository's history:
 
 - `zkvm/` defines the future guest/public-input boundary;
 - `formal/` records the refinement theorem and machine-checking obligations;
+- `arithmetic/` contains exact-arithmetic experiments and their evidence
+  boundaries;
 - `docs/` records the differential methodology and milestone evidence;
 - `paper/` is the living English LaTeX research paper and decision history;
 - `tools/` contains format and comparison tooling owned by zkTH06;
@@ -95,7 +98,9 @@ and reuse audit is in
 [`docs/state-projection-audit.md`](docs/state-projection-audit.md).
 The pinned executable's x87/XMM census, control-word evidence, helper-call
 surface, and exact-versus-refined arithmetic plan are in
-[`docs/arithmetic-audit.md`](docs/arithmetic-audit.md). Research
+[`docs/arithmetic-audit.md`](docs/arithmetic-audit.md). The reproducible pinned
+SoftFloat differential probe and its deliberately narrower claim are in
+[`arithmetic/README.md`](arithmetic/README.md). Research
 questions, method and evaluation are maintained in
 [`paper/main.tex`](paper/main.tex).
 
