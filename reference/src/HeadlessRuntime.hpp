@@ -24,6 +24,7 @@ struct HeadlessRuntime
     const char *tracePath = NULL;
     const char *replayInfoPath = NULL;
     const char *replayPath = NULL;
+    const char *canonicalSelfTestPath = NULL;
     i32 replayStartStage = 0;
     i8 replayInitialLives = 0;
     i8 replayInitialBombs = 0;

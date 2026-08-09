@@ -1,13 +1,13 @@
 #include "HeadlessRuntime.hpp"
 
 #include "BulletManager.hpp"
+#include "CanonicalTrace.hpp"
 #include "Controller.hpp"
 #include "EnemyManager.hpp"
 #include "GameManager.hpp"
 #include "Player.hpp"
 #include "ReplayFile.hpp"
 #include "Rng.hpp"
-#include "Sha256.hpp"
 #include "Supervisor.hpp"
 
 #include <SDL2/SDL.h>
@@ -45,7 +45,7 @@ void PrintUsage(const char *program)
                  "[--continue-after-hit]\n"
                  "       %s --headless --replay PATH [--max-ticks N] [--trace PATH]\n"
                  "       %s --replay-info PATH\n"
-                 "       %s --canonical-self-test\n",
+                 "       %s --canonical-self-test [TRACE-PATH]\n",
                  program,
                  program,
                  program,
@@ -209,6 +209,10 @@ bool HeadlessRuntime::ParseArguments(int argc, char *argv[])
         else if (std::strcmp(argv[i], "--canonical-self-test") == 0)
         {
             this->canonicalSelfTest = true;
+            if (i + 1 < argc && std::strncmp(argv[i + 1], "--", 2) != 0)
+            {
+                this->canonicalSelfTestPath = argv[++i];
+            }
         }
         else if (std::strcmp(argv[i], "--help") == 0)
         {
@@ -225,7 +229,8 @@ bool HeadlessRuntime::ParseArguments(int argc, char *argv[])
 
     if (this->canonicalSelfTest)
     {
-        if (argc != 2)
+        const int expectedArguments = this->canonicalSelfTestPath == NULL ? 2 : 3;
+        if (argc != expectedArguments)
         {
             std::fprintf(stderr, "--canonical-self-test cannot be combined with other options\n");
             return false;
@@ -287,12 +292,27 @@ bool HeadlessRuntime::ParseArguments(int argc, char *argv[])
 
 bool HeadlessRuntime::RunCanonicalSelfTest() const
 {
-    if (!Sha256::SelfTest())
+    if (!CanonicalTrace::SelfTest())
     {
-        std::fprintf(stderr, "Canonical SHA-256 self-test failed\n");
+        std::fprintf(stderr, "Canonical trace self-test failed\n");
         return false;
     }
-    std::printf("canonical SHA-256 self-test passed\n");
+    if (this->canonicalSelfTestPath != NULL)
+    {
+        char error[256];
+        if (!CanonicalTrace::WriteTestFixture(this->canonicalSelfTestPath, error, sizeof(error)))
+        {
+            std::fprintf(stderr, "Canonical trace fixture failed: %s\n", error);
+            return false;
+        }
+    }
+    const Sha256Digest schemaDigest = CanonicalTrace::SchemaDigest();
+    std::printf("canonical trace self-test passed; schema_sha256=");
+    for (u8 byte : schemaDigest)
+    {
+        std::printf("%02x", byte);
+    }
+    std::printf("; record_size=%zu\n", CANONICAL_TRACE_RECORD_SIZE);
     return true;
 }
 

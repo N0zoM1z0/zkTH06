@@ -19,12 +19,19 @@
   removed, and which must remain as dependency-preserving shadow semantics due
   to timing, control flow, collision geometry, or shared RNG consumption?
 
-  \item[RQ5: Proof decomposition.]
-  After equivalence is established, which state layout, arithmetic model, frame
+  \item[RQ5: Arithmetic and slicing soundness.]
+  Can the shipped program's x87, binary32 storage, and transcendental behavior
+  be represented exactly at practical proof cost; and what machine-checked
+  refinement justifies removing state or substituting integer arithmetic?
+
+  \item[RQ6: Proof decomposition.]
+  After semantic equivalence and refinement soundness are established, which
+  state layout, arithmetic model, frame
   chunking, and recursive aggregation strategy makes a spell, stage, and full
   six-stage run practical in a zkVM?
 \end{description}
 
-RQ1--RQ4 are prerequisites for RQ5.  The project intentionally does not select
+RQ1--RQ5 are prerequisites for RQ6.  The project intentionally does not select
 a proof backend before the transition relation and its dominant costs are
-measured.
+measured.  Corpus agreement may motivate a projection or arithmetic design,
+but cannot by itself discharge RQ5's universal claim.

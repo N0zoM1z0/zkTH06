@@ -7,7 +7,8 @@
   \item \textbf{Floating point.}  The target uses x87 instructions including
   trigonometric and rounding operations.  Host \code{libm}, spill behavior, and
   intermediate precision may diverge by one or more bits and later alter
-  collisions.
+  collisions.  The planned exact software baseline and any fixed-point
+  refinement have not yet been implemented or proved.
   \item \textbf{Draw-chain effects.}  Headless mode skips drawing, but some draw
   callbacks write flags, ANM fields, laser positions, or other state that may be
   read later.  Each removal needs dependency analysis and corpus validation.
@@ -19,6 +20,13 @@
   explicitly excluded from the accepted statement.
   \item \textbf{Claim scope.}  A valid execution proof is not a proof of human
   play, authorship, or the absence of tool assistance.
+  \item \textbf{Projection soundness.}  Equal selected-field digests imply
+  equality only of that projection under the SHA-256 collision-resistance
+  assumption.  Until coverage is frozen and justified, omitted state can still
+  invalidate an observational-equivalence claim.
+  \item \textbf{Model-to-code binding.}  The planned Lean refinement is not yet
+  connected to the authoritative C++ transition or a zkVM guest.  Differential
+  agreement can expose mistakes in such a connection but cannot prove it.
 \end{itemize}
 
 The commercial game data is verified locally by digest and is not

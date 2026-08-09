@@ -39,6 +39,7 @@ project "th06"
     "src/BombData.cpp",
     "src/BulletData.cpp",
     "src/BulletManager.cpp",
+    "src/CanonicalTrace.cpp",
     "src/Chain.cpp",
     "src/Controller.cpp",
     "src/EclManager.cpp",

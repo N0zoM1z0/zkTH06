@@ -18,6 +18,7 @@ The zkTH06 work lives at the repository root. The reconstructed game engine is
 kept as a supporting snapshot rather than as this repository's history:
 
 - `zkvm/` defines the future guest/public-input boundary;
+- `formal/` records the refinement theorem and machine-checking obligations;
 - `docs/` records the differential methodology and milestone evidence;
 - `paper/` is the living English LaTeX research paper and decision history;
 - `tools/` contains format and comparison tooling owned by zkTH06;
@@ -82,7 +83,9 @@ and open gates are in [`docs/m0-progress.md`](docs/m0-progress.md). Replay
 fixture sources, redistribution status and hashes are in
 [`replays/README.md`](replays/README.md). The required retail-data identity and
 local import procedure are in [`data/README.md`](data/README.md). The evolving
-research questions, method and evaluation are maintained in
+canonical digest protocol and its evidence boundary are in
+[`docs/canonical-trace.md`](docs/canonical-trace.md). Research questions,
+method and evaluation are maintained in
 [`paper/main.tex`](paper/main.tex).
 
 ## Reference runner

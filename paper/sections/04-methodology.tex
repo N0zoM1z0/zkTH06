@@ -34,7 +34,8 @@ patterns, stable array slot indices, and offsets relative to loaded script
 bases.  It never hashes pointers, compiler padding, locale-dependent text, or
 unordered container iteration.  Subsystem separation distinguishes global/RNG,
 Player, player bullets, Enemy/ECL, enemy bullets, lasers, items, Stage,
-GUI/message, ANM shadow, and Effects.
+GUI/message, and Effects; owner-local ANM cursors will be embedded in the
+subsystem whose future transition they affect.
 
 \subsection{Differential loop}
 
@@ -43,3 +44,45 @@ bytes.  The comparison proceeds in frame order, first comparing the root digest,
 then subsystem digests, then a rerun with the field-level snapshot at the first
 failing tick.  A final score match is supporting evidence but never substitutes
 for frame equivalence.
+
+\subsection{Refinement and arithmetic soundness}
+
+A zkVM proof is sound only relative to the transition function implemented by
+its guest.  We therefore separate three obligations: proof-system soundness for
+the guest, equivalence between the guest and the frozen canonical transition,
+and fidelity between that transition and the shipped executable.  Success on
+one obligation does not silently discharge another.
+
+Let $F_{\mathrm{ref}}$ be the authoritative frame transition, $P$ the proposed
+state projection, and $K$ the sliced kernel.  For reachable states satisfying
+an invariant $\mathcal{I}$, the desired one-step refinement is
+\[
+  K(P(s),i) = P(F_{\mathrm{ref}}(s,i)).
+\]
+The complementary noninterference obligation is
+\[
+  P(s_1)=P(s_2) \Longrightarrow
+  P(F_{\mathrm{ref}}(s_1,i))=P(F_{\mathrm{ref}}(s_2,i)),
+\]
+under $\mathcal{I}$.  This is the formal condition for deleting presentation
+state.  Initial-state correspondence, invariant preservation, and terminal
+predicate preservation lift the result to an input sequence by induction.  A
+future Lean development is intended to mechanize these obligations, while a
+separate code-binding argument must connect the theorem to both C++ and the
+zkVM guest.
+
+The arithmetic study has two explicit lanes.  The fidelity lane preserves raw
+binary32 state and evaluates an integer-implemented IEEE-754 and, where
+required, x87 extended-precision baseline with pinned control state, store
+boundaries, and transcendental behavior.  This lane may be expensive, but it
+provides the semantic oracle and proof-cost baseline.  The optimization lane
+uses field-specific fixed-point formats, explicit overflow and rounding,
+integer phase angles, and deterministic trigonometric tables or polynomials.
+
+A fixed-point guest may be called compatible with the shipped executable only
+after a formal refinement argument covers every reachable transition in the
+claimed domain.  Replay and generated boundary tests remain necessary for
+finding counterexamples, but finite tests alone establish neither universal
+arithmetic equivalence nor soundness.  If a refinement proof is unavailable,
+the project must either retain the exact arithmetic path or state a distinct
+integer-kernel claim.

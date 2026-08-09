@@ -19,3 +19,24 @@ The intended boundary is:
 
 Replay stage snapshots are compatibility inputs only. They must eventually be
 ignored or constrained against state derived from the preceding stage.
+
+## Refinement boundary
+
+The guest is intended to be a proof-oriented slice, not an independently
+rewritten simulator. Its state projection and subsystem steps must support a
+machine-checked commuting diagram:
+
+```text
+       authoritative state  --reference frame--> authoritative state
+               |                                      |
+            project                                project
+               |                                      |
+               v                                      v
+          kernel state       --kernel frame-->    kernel state
+```
+
+Every removed field needs a noninterference argument showing that two valid
+reference states with the same projection produce the same next projection.
+The planned Lean obligations, code-binding problem, and no-`sorry` policy are
+tracked in [`../formal/README.md`](../formal/README.md). Replay differential
+tests are the counterexample finder for this theorem, not its proof.
