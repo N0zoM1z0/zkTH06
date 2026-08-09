@@ -1,0 +1,46 @@
+name: Linux reference CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+
+    steps:
+      - name: Check out zkTH06
+        uses: actions/checkout@v4
+
+      - name: Install compiler and SDL development packages
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes build-essential curl libsdl2-dev libsdl2-image-dev libsdl2-ttf-dev
+
+      - name: Install pinned Premake
+        run: |
+          curl --fail --location --silent --show-error \
+            https://github.com/premake/premake-core/releases/download/v5.0.0-alpha16/premake-5.0.0-alpha16-linux.tar.gz \
+            --output /tmp/premake.tar.gz
+          echo "23d0a37d4ae91a0b609f16bfaf4de01adb583d51b7953befa5d67f0eac6bd084  /tmp/premake.tar.gz" \
+            | sha256sum --check --strict
+          mkdir /tmp/premake
+          tar --extract --gzip --file /tmp/premake.tar.gz --directory /tmp/premake
+
+      - name: Build the reference runner
+        working-directory: reference
+        run: |
+          /tmp/premake/premake5 gmake --no-asoundlib
+          make -C build config=release -j2
+
+      - name: Cross-check replay validators
+        run: |
+          python3 -m py_compile tools/*.py tests/*.py
+          python3 -m json.tool data/manifest.json >/dev/null
+          python3 tests/test_replay_validation.py reference/th06

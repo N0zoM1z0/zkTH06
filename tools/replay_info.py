@@ -24,6 +24,8 @@ INPUT_RECORD_SIZE = 0x08
 CHECKSUM_SEED = 0x3F000318
 EXPECTED_MAGIC = b"T6RP"
 EXPECTED_VERSION = 0x0102
+REPLAY_END_FRAME = 9_999_999
+REPLAY_INPUT_MASK = 0x01F7
 
 
 class ReplayError(ValueError):
@@ -57,9 +59,25 @@ def inspect_replay(path: Path, include_inputs: bool = False) -> dict[str, Any]:
     calculated_checksum = (CHECKSUM_SEED + sum(data[14:])) & 0xFFFFFFFF
     stage_offsets = list(struct.unpack_from("<7I", data, 52))
 
+    if stored_checksum != calculated_checksum:
+        raise ReplayError(
+            f"checksum mismatch: expected 0x{stored_checksum:08x}, "
+            f"calculated 0x{calculated_checksum:08x}"
+        )
+    if version != EXPECTED_VERSION:
+        raise ReplayError(f"unsupported replay version: 0x{version:04x}")
+    if data[6] > 3:
+        raise ReplayError(f"invalid character/shot index: {data[6]}")
+    if data[7] > 4:
+        raise ReplayError(f"invalid difficulty: {data[7]}")
+
     nonzero_offsets = [offset for offset in stage_offsets if offset]
+    if not nonzero_offsets:
+        raise ReplayError("replay contains no stage data")
     if any(offset < HEADER_SIZE or offset >= len(data) for offset in nonzero_offsets):
         raise ReplayError(f"stage offset lies outside file: {stage_offsets}")
+    if any(offset % INPUT_RECORD_SIZE for offset in nonzero_offsets):
+        raise ReplayError(f"stage offset is not {INPUT_RECORD_SIZE}-byte aligned: {stage_offsets}")
     if nonzero_offsets != sorted(nonzero_offsets) or len(nonzero_offsets) != len(set(nonzero_offsets)):
         raise ReplayError(f"stage offsets are not strictly increasing: {stage_offsets}")
 
@@ -69,13 +87,13 @@ def inspect_replay(path: Path, include_inputs: bool = False) -> dict[str, Any]:
         "sha256": hashlib.sha256(raw).hexdigest(),
         "magic": data[:4].decode("ascii"),
         "version": f"0x{version:04x}",
-        "version_supported": version == EXPECTED_VERSION,
+        "version_supported": True,
         "checksum": {
             "stored": f"0x{stored_checksum:08x}",
             "calculated": f"0x{calculated_checksum:08x}",
-            "valid": stored_checksum == calculated_checksum,
+            "valid": True,
         },
-        "valid": version == EXPECTED_VERSION and stored_checksum == calculated_checksum,
+        "valid": True,
         "shot_type_character": data[6],
         "character": data[6] // 2,
         "shot_type": data[6] % 2,
@@ -94,7 +112,10 @@ def inspect_replay(path: Path, include_inputs: bool = False) -> dict[str, Any]:
         later = [offset for offset in nonzero_offsets if offset > start]
         end = min(later) if later else len(data)
         stage_size = end - start
-        if stage_size < STAGE_HEADER_SIZE or (stage_size - STAGE_HEADER_SIZE) % INPUT_RECORD_SIZE:
+        if (
+            stage_size < STAGE_HEADER_SIZE + 2 * INPUT_RECORD_SIZE
+            or (stage_size - STAGE_HEADER_SIZE) % INPUT_RECORD_SIZE
+        ):
             raise ReplayError(f"stage {index + 1} has invalid size {stage_size}")
 
         stage_end_score, seed, points = struct.unpack_from("<ihh", data, start)
@@ -108,6 +129,30 @@ def inspect_replay(path: Path, include_inputs: bool = False) -> dict[str, Any]:
         for cursor in range(start + STAGE_HEADER_SIZE, end, INPUT_RECORD_SIZE):
             frame, mask, padding = struct.unpack_from("<iHH", data, cursor)
             inputs.append({"frame": frame, "mask": mask, "padding": padding})
+
+        if inputs[0]["frame"] != 0:
+            raise ReplayError(f"stage {index + 1} does not start with frame 0")
+        previous_frame = inputs[0]["frame"]
+        playback_records = 0
+        terminal_frame = 0
+        for record, replay_input in enumerate(inputs):
+            frame = replay_input["frame"]
+            mask = replay_input["mask"]
+            if mask & ~REPLAY_INPUT_MASK:
+                raise ReplayError(
+                    f"stage {index + 1} record {record} has invalid input mask 0x{mask:04x}"
+                )
+            if frame == REPLAY_END_FRAME:
+                if mask != 0 or record == 0:
+                    raise ReplayError(f"stage {index + 1} has malformed end sentinel")
+                playback_records = record + 1
+                terminal_frame = inputs[record - 1]["frame"]
+                break
+            if frame < 0 or frame < previous_frame:
+                raise ReplayError(f"stage {index + 1} input frames regress at record {record}")
+            previous_frame = frame
+        if playback_records == 0:
+            raise ReplayError(f"stage {index + 1} has no playback end sentinel")
 
         stage: dict[str, Any] = {
             "stage": index + 1,
@@ -127,6 +172,8 @@ def inspect_replay(path: Path, include_inputs: bool = False) -> dict[str, Any]:
                 "power_item_count_for_score": power_items,
             },
             "input_change_records": len(inputs),
+            "playback_records": playback_records,
+            "terminal_frame": terminal_frame,
             "first_input": inputs[0] if inputs else None,
             "last_input": inputs[-1] if inputs else None,
         }
