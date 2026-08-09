@@ -75,6 +75,16 @@ The inherited harness can start Practice Stage 1–6 directly, accept fixed-seed
 movement actions, run without frame pacing/rendering and write JSONL traces.
 See [`HEADLESS.md`](HEADLESS.md) for its current protocol and limitations.
 
+Validate a v1.02h replay without loading proprietary game data:
+
+```sh
+./th06 --replay-info /path/to/th6_*.rpy
+```
+
+The C++ validator checks the byte transform, checksum, version, character and
+difficulty bounds, monotonic stage offsets, block sizes, complete input masks,
+frame ordering and a bounded playback sentinel for every populated stage.
+
 Build on Debian or Ubuntu:
 
 ```sh

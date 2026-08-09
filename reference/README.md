@@ -38,6 +38,17 @@ one action per line is the simplest lockstep protocol.
 This still needs the original Japanese TH06 data archives. Those proprietary
 files are not part of this repository and must never be committed.
 
+Replay files can be inspected without the game archives:
+
+```sh
+./th06 --replay-info /path/to/th6_ud0001.rpy
+```
+
+This standalone mode fails closed on invalid magic, byte transform/checksum,
+version, metadata, stage bounds, input masks, frame ordering or missing playback
+sentinels. It does not yet execute the replay; compatibility playback is the
+next M0 step.
+
 ## Evidence boundary
 
 The lockstep protocol is sufficient for an external RL environment wrapper,

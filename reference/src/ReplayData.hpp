@@ -2,6 +2,8 @@
 
 #include "inttypes.hpp"
 
+#include <cstddef>
+
 struct ReplayDataInput
 {
     i32 frameNum;
@@ -48,3 +50,10 @@ struct ReplayData
     ReplayHeader *header;
     StageReplayData *stageReplayData[7];
 };
+
+static_assert(sizeof(ReplayDataInput) == 0x8);
+static_assert(sizeof(ReplayHeader) == 0x50);
+static_assert(offsetof(ReplayHeader, key) == 0x0e);
+static_assert(offsetof(ReplayHeader, rngValue3) == 0x0f);
+static_assert(offsetof(ReplayHeader, stageReplayDataOffsets) == 0x34);
+static_assert(offsetof(StageReplayData, replayInputs) == 0x10);

@@ -21,6 +21,10 @@ int main(int argc, char *argv[])
     {
         return 2;
     }
+    if (g_HeadlessRuntime.replayInfoPath != NULL)
+    {
+        return g_HeadlessRuntime.PrintReplayInfo() ? 0 : 2;
+    }
     g_HeadlessRuntime.ConfigureEnvironment();
     const bool headlessAtLaunch = g_HeadlessRuntime.enabled;
     if (!g_HeadlessRuntime.InitializeIo())

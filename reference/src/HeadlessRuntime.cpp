@@ -5,6 +5,7 @@
 #include "EnemyManager.hpp"
 #include "GameManager.hpp"
 #include "Player.hpp"
+#include "ReplayFile.hpp"
 #include "Rng.hpp"
 #include "Supervisor.hpp"
 
@@ -40,7 +41,9 @@ void PrintUsage(const char *program)
                  "Usage: %s [--headless] [--max-ticks N] [--seed N] "
                  "[--practice-stage 1..6] [--difficulty 0..3] [--character 0..1] "
                  "[--shot-type 0..1] [--actions PATH] [--trace PATH] [--step] [--auto-shoot] "
-                 "[--continue-after-hit]\n",
+                 "[--continue-after-hit]\n"
+                 "       %s --replay-info PATH\n",
+                 program,
                  program);
 }
 
@@ -168,6 +171,15 @@ bool HeadlessRuntime::ParseArguments(int argc, char *argv[])
             }
             this->tracePath = argv[i];
         }
+        else if (std::strcmp(argv[i], "--replay-info") == 0)
+        {
+            if (++i >= argc)
+            {
+                PrintUsage(argv[0]);
+                return false;
+            }
+            this->replayInfoPath = argv[i];
+        }
         else if (std::strcmp(argv[i], "--auto-shoot") == 0)
         {
             this->autoShoot = true;
@@ -193,6 +205,17 @@ bool HeadlessRuntime::ParseArguments(int argc, char *argv[])
         }
     }
 
+    if (this->replayInfoPath != NULL)
+    {
+        if (this->enabled || this->maxTicks != 0 || this->seedProvided || this->practiceStage != 0 ||
+            this->actionsPath != NULL || this->tracePath != NULL || this->autoShoot || this->stepMode ||
+            this->continueAfterHit)
+        {
+            std::fprintf(stderr, "--replay-info cannot be combined with runtime options\n");
+            return false;
+        }
+        return true;
+    }
     if (!this->enabled &&
         (this->maxTicks != 0 || this->seedProvided || this->practiceStage != 0 || this->actionsPath != NULL ||
          this->tracePath != NULL || this->autoShoot || this->stepMode || this->continueAfterHit))
@@ -215,6 +238,40 @@ bool HeadlessRuntime::ParseArguments(int argc, char *argv[])
         std::fprintf(stderr, "--step cannot be combined with --actions or --trace\n");
         return false;
     }
+    return true;
+}
+
+bool HeadlessRuntime::PrintReplayInfo() const
+{
+    ReplayFile replay;
+    char error[256];
+    if (!replay.LoadExternal(this->replayInfoPath, error, sizeof(error)))
+    {
+        std::fprintf(stderr, "Invalid TH06 replay: %s\n", error);
+        return false;
+    }
+
+    const ReplayHeader *header = replay.Header();
+    std::printf("{\"valid\":true,\"size\":%zu,\"version\":%u,\"shot_type_character\":%u,"
+                "\"difficulty\":%u,\"score\":%d,\"stages\":[",
+                replay.Size(), static_cast<unsigned>(header->version),
+                static_cast<unsigned>(header->shottypeChara), static_cast<unsigned>(header->difficulty),
+                header->score);
+    bool first = true;
+    for (size_t index = 0; index < 7; index++)
+    {
+        const ReplayStageView &stage = replay.Stage(index);
+        if (stage.data == NULL)
+        {
+            continue;
+        }
+        std::printf("%s{\"stage\":%zu,\"offset\":%zu,\"size\":%zu,\"records\":%zu,"
+                    "\"playback_records\":%zu,\"terminal_frame\":%d}",
+                    first ? "" : ",", index + 1, stage.fileOffset, stage.byteSize, stage.inputRecordCount,
+                    stage.playbackRecordCount, stage.terminalFrame);
+        first = false;
+    }
+    std::printf("]}\n");
     return true;
 }
 

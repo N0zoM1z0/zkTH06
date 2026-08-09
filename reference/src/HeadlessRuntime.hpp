@@ -21,6 +21,7 @@ struct HeadlessRuntime
     bool continueAfterHit = false;
     const char *actionsPath = NULL;
     const char *tracePath = NULL;
+    const char *replayInfoPath = NULL;
     FILE *actionsFile = NULL;
     FILE *traceFile = NULL;
     bool ownsActionsFile = false;
@@ -31,6 +32,7 @@ struct HeadlessRuntime
     bool inputError = false;
 
     bool ParseArguments(int argc, char *argv[]);
+    bool PrintReplayInfo() const;
     void ConfigureEnvironment() const;
     bool InitializeIo();
     void CloseIo();

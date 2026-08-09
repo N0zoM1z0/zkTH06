@@ -59,6 +59,7 @@ project "th06"
     "src/MusicRoom.cpp",
     "src/Player.cpp",
     "src/ReplayManager.cpp",
+    "src/ReplayFile.cpp",
     "src/ResultScreen.cpp",
     "src/Rng.cpp",
     "src/ScreenEffect.cpp",
