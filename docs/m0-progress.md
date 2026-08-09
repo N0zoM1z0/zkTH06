@@ -38,6 +38,10 @@ Last updated: 2026-08-09
   dispatch audit, and a Lean bit-vector theorem for its wrapping-add/unsigned-
   compare classifier. Every correspondence and omission remains explicitly
   unproved.
+- A pinned four-profile point-item score audit covering eight helper calls and
+  77 key instruction roles, plus conditional Lean collection/score bounds and
+  a sealed 2,081-collection Linux corpus report. The non-NaN reachability
+  premise remains open.
 
 Compatibility playback intentionally restores every per-stage replay snapshot,
 matching shipped playback. It is an oracle-development mode, not the future
@@ -139,6 +143,19 @@ observes only membership in `-10025..-10001`; the other eight retained calls
 are point-item scoring conversions whose collected-item `y` bound remains to
 be proved.
 
+The score blocks load the same binary32 `Item.currentPosition.y` field twice,
+compare signed EAX with 128, and apply difficulty constants before adding the
+result to gameplay score. A Lean integer model derives `-4..452` from ordered
+collection overlap and the expected player bounds, then proves scores remain in
+`27600..300000`. A GDB debug-runner probe observed 2,081 finite collections in
+the four-replay corpus, with no sample outside the candidate interval. This is
+useful invariant discovery, not retail-binary evidence or a proof: NaN makes
+ordered separation comparisons false, so finiteness must be established by
+induction from item/player initialization and every update path.
+The remaining control invariants are difficulty in `0..4` and pre-item score in
+`0..999999999`; the latter condition is sufficient in Lean to rule out u32
+wrap for one bounded award.
+
 ## Remaining M0 gates
 
 1. Close or explicitly constrain the selected projection. Inactive Effect
@@ -150,7 +167,8 @@ be proved.
    build and identify the first differing field.
 4. Record the entry x87/CPU profile, instrument reached arithmetic sites,
    cover load/remainder and exceptional helper behavior where reachable, prove
-   ECL helper-to-classifier refinement and the point-item `y` range invariant,
+   ECL helper-to-classifier refinement and the point-item finite/non-NaN plus
+   collection-range invariant,
    and replace host-libm behavior with an exact, address-bound arithmetic
    baseline; prove skipped-draw arithmetic noninterference before removing it.
 5. Add canonical-proof playback that derives stage transitions and rejects a

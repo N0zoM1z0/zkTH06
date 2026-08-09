@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "kind": "zkth06.item-score-corpus-probe",
+  "generator": {
+    "path": "tools/run_item_score_probe.py",
+    "sha256": "d5e8d476d3ffaa75280f331ab3f576fc992df729c8250bd763a09e86966e8d5e"
+  },
+  "evidence_status": "Linux reconstruction debug-breakpoint counterexample search; not original-binary equivalence, reachability proof, or source/binary correspondence",
+  "gdb": "GNU gdb (Ubuntu 12.1-0ubuntu1~22.04.2) 12.1",
+  "runner_sha256": "f0eb2cf38341545abefe93ab4b21e0e3443479ccb54f890467bd75bf95637f28",
+  "item_manager_source_sha256": "779c4c6967b3202edb4fe39aca97b035b375e20462d37cd77ea90817c9c27d34",
+  "runtime_data": {
+    "manifest_sha256": "f59a3fa3981eed369b47aa03fe0c9e0c555f976c422bdaa37108ca2f3f892a4a",
+    "required_files_verified": true,
+    "optional_config_present": false,
+    "optional_score_present": false
+  },
+  "max_ticks": 200000,
+  "candidate_collection_bound": [
+    -4.0,
+    452.0
+  ],
+  "replays": [
+    {
+      "replay": "th6_ud000134.rpy",
+      "replay_sha256": "7a0de1f12d20b66678f382de1354ab2ee6a0f6ae719e51f06b6c3d6ec01a6ebc",
+      "collections": 403,
+      "finite": 403,
+      "exceptional": 0,
+      "outside_candidate_bound": 0,
+      "minimum": 11.879809379577637,
+      "maximum": 442.97601318359375,
+      "truncated_minimum": 11,
+      "truncated_maximum": 442,
+      "top_branch": 242,
+      "position_branch": 161
+    },
+    {
+      "replay": "th6_ud000232.rpy",
+      "replay_sha256": "22e03aca353d140e268ca962f3934b5e1b67f74d1c654b876c56c224abea8e24",
+      "collections": 304,
+      "finite": 304,
+      "exceptional": 0,
+      "outside_candidate_bound": 0,
+      "minimum": 26.522401809692383,
+      "maximum": 437.14288330078125,
+      "truncated_minimum": 26,
+      "truncated_maximum": 437,
+      "top_branch": 131,
+      "position_branch": 173
+    },
+    {
+      "replay": "th6_ud002677.rpy",
+      "replay_sha256": "01bc11b9226932bddeeeff675f1741b89b129f4c8820b3b1cf185a1cb19ad10f",
+      "collections": 599,
+      "finite": 599,
+      "exceptional": 0,
+      "outside_candidate_bound": 0,
+      "minimum": 14.489738464355469,
+      "maximum": 421.8301696777344,
+      "truncated_minimum": 14,
+      "truncated_maximum": 421,
+      "top_branch": 417,
+      "position_branch": 182
+    },
+    {
+      "replay": "th6_udLuRB.rpy",
+      "replay_sha256": "9132cbb204a8e413e4d48c4976abba00d625cdbd970a402de85c935f20ae7582",
+      "collections": 775,
+      "finite": 775,
+      "exceptional": 0,
+      "outside_candidate_bound": 0,
+      "minimum": 13.629820823669434,
+      "maximum": 430.8695068359375,
+      "truncated_minimum": 13,
+      "truncated_maximum": 430,
+      "top_branch": 623,
+      "position_branch": 152
+    }
+  ],
+  "total": {
+    "collections": 2081,
+    "finite": 2081,
+    "exceptional": 0,
+    "outside_candidate_bound": 0,
+    "minimum": 11.879809379577637,
+    "maximum": 442.97601318359375,
+    "truncated_minimum": 11,
+    "truncated_maximum": 442,
+    "top_branch": 1413,
+    "position_branch": 668
+  },
+  "artifact_sha256": "255e22f7aad315400c849a5a60ae54f360e52b127ae5ca010927a1e9bf96a176"
+}

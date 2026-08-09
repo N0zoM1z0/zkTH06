@@ -148,5 +148,20 @@ unobserved conversion result.  This reduces constraint and proof surface
 without weakening soundness; static alignment and finite differential tests
 remain evidence, not the missing universal code-binding theorem.
 
+\paragraph{Phase P: split geometric range arguments at unordered values.}
+The remaining eight retained conversions all compute point-item score from the
+same binary32 $y$ field.  Their collision precondition initially seemed to
+give the desired range immediately: a collected item should be close to the
+bounded player.  Inspecting the actual separation test exposed a soundness
+hole---NaN makes each ordered comparison false and can therefore fall through
+to collision success.  The proof target was split into a finite/non-NaN
+reachability invariant, an ordered AABB geometry lemma, exact helper
+refinement, and bounded integer score arithmetic.  The binary score blocks and
+constants are now address-bound, while Lean checks the latter two mathematical
+steps conditional on integer inputs.  A four-replay debug probe found 2,081
+finite collected values inside the proposed interval and no counterexample;
+this guides the invariant but deliberately does not promote corpus absence of
+NaN into a universal premise.
+
 Future changes to the central claim or state boundary should be appended here
 with the evidence that motivated them.

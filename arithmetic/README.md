@@ -240,7 +240,7 @@ ledger makes no reachability or refinement claim: every site is still marked
 discharge discipline, and corrected two-site AL result are detailed in
 [`docs/arithmetic-obligations.md`](../docs/arithmetic-obligations.md).
 
-Two derived version-1 artifacts begin classifying that queue without modifying
+Further version-1 artifacts begin classifying that queue without modifying
 its conservative base status:
 
 - [`ftol2-source-candidates-v1.json`](ftol2-source-candidates-v1.json) assigns
@@ -254,8 +254,17 @@ its conservative base status:
   used by `GetVar`/`GetVarFloat`. It contains no executable bytes or complete
   operand strings. Its static decode is not yet a verified decoder,
   reachability, helper-refinement, or guest-binding theorem.
+- [`item-score-v1.json`](item-score-v1.json) checks 77 instruction signatures
+  across the four difficulty profiles, the five-entry difficulty table, all
+  eight retained score conversions, their repeated binary32 field loads, and
+  the final gameplay-score addition. The associated Lean model proves only a
+  conditional ordered-coordinate range and integer score bounds.
+- [`item-score-corpus-v1.json`](item-score-corpus-v1.json) records a debug-
+  breakpoint experiment over 2,081 point-item collections in four Linux replay
+  runs. All observed values were finite and inside the candidate collection
+  interval, but this remains reconstruction-only counterexample search.
 
-Both artifacts have proprietary-input-free structural tests in lightweight
+These artifacts have proprietary-input-free structural tests in lightweight
 CI. Local owners can reproduce them with:
 
 ```sh
@@ -266,6 +275,28 @@ python3 tools/ecl_var_dispatch_audit.py \
   local/original-th06/東方紅魔郷.exe \
   --mapping repos/th06/config/mapping.csv \
   --check arithmetic/ecl-var-dispatch-v1.json
+python3 tools/item_score_audit.py \
+  local/original-th06/東方紅魔郷.exe \
+  --mapping repos/th06/config/mapping.csv \
+  --check arithmetic/item-score-v1.json
+```
+
+The corpus report additionally requires a debug build, GDB, the four pinned
+replays (including the local-only world-record input), and verified retail
+data. Its generator prints the exact replay, runner, source, tool, and data-
+manifest identities into the sealed report; public CI validates the report but
+does not execute GDB or require commercial inputs.
+
+```sh
+make -C reference/build config=debug -j2
+python3 tools/run_item_score_probe.py \
+  --runner reference/th06 \
+  --data-directory local/original-th06 \
+  --check arithmetic/item-score-corpus-v1.json \
+  replays/samples/th6_ud000134.rpy \
+  replays/samples/th6_ud000232.rpy \
+  replays/samples/th6_ud002677.rpy \
+  replays/samples/th6_udLuRB.rpy
 ```
 
 ## Soundness boundary
@@ -298,7 +329,8 @@ The address binding work queue is now explicit, but none of its entries is
 discharged. Source/sink candidates narrow it to nine retained calls and 68
 potential omissions; every omission still needs noninterference. The immediate
 arithmetic goals are an exact ECL helper-to-classifier theorem, the collected
-item-y range invariant for eight score calls, complete result-use evidence,
+item-y finite/non-NaN and collection-range invariant for eight score calls,
+complete result-use evidence,
 load/remainder semantics, and an exact transcendental profile. The exact
 implementation remains the fallback whenever a refinement theorem cannot be
 proved.

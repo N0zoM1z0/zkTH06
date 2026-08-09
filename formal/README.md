@@ -49,6 +49,17 @@ site-specific theorem. It does not prove that the executable decodes to the
 model, that `__ftol2` implements the classifier for all reachable ext80 inputs,
 that jump targets have the modeled meanings, or that the guest refines it.
 
+[`ZkTH06/ItemPointScore.lean`](ZkTH06/ItemPointScore.lean) models the four
+retained point-item score profiles after conversion to mathematical integers.
+Given player `y` in `16..432` and an ordered one-dimensional AABB overlap with
+the decoded radii 12 and 8, it derives item `y` in `-4..452`. It then proves all
+four scores lie in `27600..300000`, fit signed i32, and have lower-branch
+penalty at most 129600. Given the source frame cap `score ≤ 999999999`, it also
+proves one item addition cannot wrap u32. Entering this model requires separate
+finite/non-NaN, binary32-to-`__ftol2`, collision-code, and source/binary binding
+proofs. In particular, unordered comparisons mean collision success alone does
+not rule out NaN.
+
 The address-level bridge to these definitions is
 [`arithmetic/obligations-v1.json`](../arithmetic/obligations-v1.json). Its 244
 comparison records name one of the eleven `X87Compare` truth-table theorems;

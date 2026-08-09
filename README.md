@@ -35,6 +35,13 @@ ECL call, a pinned dispatch audit and Lean bit-vector theorem reduce the
 observable result to one of 25 variable IDs (`-10025..-10001`) or the unchanged
 literal path. This narrows a future proof obligation; it does not yet discharge
 source/binary correspondence, helper semantics, reachability, or guest binding.
+The other eight retained calls are now bound to four point-item score blocks.
+A conditional Lean model derives a `-4..452` collected-item interval and safe
+score arithmetic, while a sealed Linux probe found 2,081 finite corpus
+collections inside that interval. The proof still needs a non-NaN invariant,
+exact helper refinement, verified decoding, and guest binding; collision success
+alone is not a finiteness proof because x87 unordered comparisons can fall
+through the AABB separation test.
 
 ## Repository boundary
 

@@ -331,11 +331,45 @@ that call with the narrower helper-to-classifier refinement target.
 
 The static artifact is not verified decoding, does not yet associate each
 target body with its modeled ECL value, and does not bind either reference
-function to a guest. The eight score calls still need a reachable finite and
-signed-32-bit bound for collected item `y`. Reproduction commands, artifact
-digests, and the per-site discharge discipline are in
+function to a guest. Reproduction commands, artifact digests, and the per-site
+discharge discipline are in
 [`arithmetic/README.md`](../arithmetic/README.md) and
 [`arithmetic-obligations.md`](arithmetic-obligations.md).
+
+## Point-item score range decomposition
+
+The other eight retained calls form four inlined difficulty profiles inside
+`ItemManager::OnUpdate`. A hash-bound audit checks 77 instruction signatures
+and the five-entry difficulty table. Each profile loads the same binary32
+`Item.currentPosition.y` field twice, calls the exact helper twice, compares
+signed EAX with 128, applies its top/bottom/multiplier constants with 32-bit
+x86 arithmetic, and joins before adding `itemScore` to the gameplay score.
+
+The range proof decomposes rather than assuming that an acquired item must be
+near the player. The source AABB test is written as a disjunction of separating
+ordered comparisons. If an item coordinate is NaN, those comparisons are false
+and the code can fall through to collision success. Consequently the proof must
+first establish a reachable finite/non-NaN invariant for item positions and
+the player grab box.
+
+Once comparisons are ordered, player center `y` in `16..432`, player grab
+radius 12, and item half-size 8 imply collected item `y` in `-4..452`. A Lean
+integer model checks this implication. For any truncated integer in that
+interval, it also proves that all four difficulty formulas return
+`27600..300000`, that the score fits signed i32, and that the largest lower-
+branch penalty is 129600. These theorems do not yet connect binary32, collision
+instructions, the helper body, or the guest to the integer assumptions.
+They also require reachable difficulty in `0..4`; given the source frame cap
+`score ≤ 999999999`, a further theorem checks that one bounded item award
+cannot wrap the global u32 score.
+
+A separate GDB probe on a debug Linux reconstruction observed 2,081 point-item
+collections across the four replay corpus. All were finite and inside the
+candidate interval; raw values ranged from approximately 11.879809 to
+442.976013, with truncated values 11 through 442. The top/position branches
+were taken 1,413/668 times. The sealed report binds the probe, debug runner,
+source, replay, and data-manifest hashes. It is invariant-discovery evidence,
+not original-binary execution or a universal reachability proof.
 
 ## Transcendentals are a scope decision
 

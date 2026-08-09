@@ -158,6 +158,20 @@ integer results into the same literal path.  The eventual code-binding theorem
 must still validate the decode, helper/classifier semantics, jump-target
 meanings, reachability, and guest implementation.
 
+The eight retained point-item calls are handled as a range-proof pipeline.
+First, a static artifact verifies the four difficulty blocks, their repeated
+binary32 field loads, helper calls, signed threshold, integer constants, and
+gameplay-score sink.  Second, a finite/non-NaN invariant must be proved from
+initialization and every item/player update.  This premise is separate because
+unordered NaN comparisons make all source AABB separation tests false and can
+therefore produce an apparent collision.  Third, ordered overlap and bounded
+player position imply a narrow collected-item interval.  A Lean integer model
+checks the geometry and score bounds, while debug-runner breakpoints search the
+replay corpus for counterexamples.  Neither the integer theorem nor corpus
+measurements establish the missing binary32 reachability and code binding.
+Reachable difficulty $0..4$ and the pre-item global-score cap are recorded as
+separate control invariants rather than assumed from the selected profile.
+
 The optimization lane uses field-specific fixed-point formats, explicit
 overflow and rounding, integer phase angles, and deterministic trigonometric
 tables or polynomials.

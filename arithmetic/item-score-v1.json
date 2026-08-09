@@ -1,0 +1,565 @@
+{
+  "schema_version": 1,
+  "kind": "zkth06.item-score-audit",
+  "inputs": {
+    "executable_sha256": "9f76483c46256804792399296619c1274363c31cd8f1775fafb55106fb852245",
+    "mapping_sha256": "0f20300d5b107b36c933a7f7dc448407ee5f01c5cd7faad132d406c023163191",
+    "base_ledger_artifact_sha256": "1c4c128284bf5ab4aa36e636cd5ed15f0300e5295e7fb29f12c0cb2f897f65af",
+    "source_candidate_artifact_sha256": "2885d3ed814784f4446a8f977646b3f1fc2edbdd058285ec37eb77d089a16466"
+  },
+  "generator": {
+    "path": "tools/item_score_audit.py",
+    "sha256": "2b63600badc5ddb231bf42b529b3ded1a579f724932632325c2b1adf7e19b4ae",
+    "x87_audit_sha256": "93c6aee778f489c92788dc7dfc6c51749fa5f20d075305a4190616d9b5d46290",
+    "disassembler": "GNU objdump (GNU Binutils for Ubuntu) 2.38"
+  },
+  "mapped_function": {
+    "name": "th06::ItemManager::OnUpdate",
+    "start": "0x0041f4a0",
+    "size": 3160
+  },
+  "field_contract": {
+    "item_current_position_y_offset": 276,
+    "load_width": "binary32",
+    "first_and_second_load_are_same_field": true,
+    "converted_result_projection": "signed EAX"
+  },
+  "difficulty_dispatch": {
+    "table_address": "0x00420114",
+    "entries": [
+      {
+        "difficulty_value": 0,
+        "difficulty_name": "easy",
+        "target": "0x0041fb0b"
+      },
+      {
+        "difficulty_value": 1,
+        "difficulty_name": "normal",
+        "target": "0x0041fb0b"
+      },
+      {
+        "difficulty_value": 2,
+        "difficulty_name": "hard",
+        "target": "0x0041fb88"
+      },
+      {
+        "difficulty_value": 3,
+        "difficulty_name": "lunatic",
+        "target": "0x0041fc08"
+      },
+      {
+        "difficulty_value": 4,
+        "difficulty_name": "extra",
+        "target": "0x0041fc85"
+      }
+    ]
+  },
+  "score_contract": {
+    "profiles": [
+      {
+        "name": "easy-normal",
+        "difficulty_values": [
+          0,
+          1
+        ],
+        "difficulty_names": [
+          "easy",
+          "normal"
+        ],
+        "entry_address": "0x0041fb0b",
+        "helper_call_addresses": [
+          "0x0041fb14",
+          "0x0041fb35"
+        ],
+        "base_obligation_ids": [
+          "ftol2-0041fb14",
+          "ftol2-0041fb35"
+        ],
+        "threshold": 128,
+        "top_score": 100000,
+        "bottom_score": 60000,
+        "position_multiplier": 100
+      },
+      {
+        "name": "hard",
+        "difficulty_values": [
+          2
+        ],
+        "difficulty_names": [
+          "hard"
+        ],
+        "entry_address": "0x0041fb88",
+        "helper_call_addresses": [
+          "0x0041fb91",
+          "0x0041fbb2"
+        ],
+        "base_obligation_ids": [
+          "ftol2-0041fb91",
+          "ftol2-0041fbb2"
+        ],
+        "threshold": 128,
+        "top_score": 150000,
+        "bottom_score": 100000,
+        "position_multiplier": 180
+      },
+      {
+        "name": "lunatic",
+        "difficulty_values": [
+          3
+        ],
+        "difficulty_names": [
+          "lunatic"
+        ],
+        "entry_address": "0x0041fc08",
+        "helper_call_addresses": [
+          "0x0041fc11",
+          "0x0041fc32"
+        ],
+        "base_obligation_ids": [
+          "ftol2-0041fc11",
+          "ftol2-0041fc32"
+        ],
+        "threshold": 128,
+        "top_score": 200000,
+        "bottom_score": 150000,
+        "position_multiplier": 270
+      },
+      {
+        "name": "extra",
+        "difficulty_values": [
+          4
+        ],
+        "difficulty_names": [
+          "extra"
+        ],
+        "entry_address": "0x0041fc85",
+        "helper_call_addresses": [
+          "0x0041fc8e",
+          "0x0041fcaf"
+        ],
+        "base_obligation_ids": [
+          "ftol2-0041fc8e",
+          "ftol2-0041fcaf"
+        ],
+        "threshold": 128,
+        "top_score": 300000,
+        "bottom_score": 200000,
+        "position_multiplier": 400
+      }
+    ],
+    "machine_formula": "if signed_eax < 128 then top_score else bottom_score - ((signed_eax - 128) * position_multiplier), with each x86 integer operation wrapping to 32 bits",
+    "gameplay_sink": "the selected itemScore is added to GameManager.score"
+  },
+  "checked_instruction_roles": [
+    {
+      "address": "0x0041fae6",
+      "mnemonic": "mov",
+      "role": "load difficulty"
+    },
+    {
+      "address": "0x0041faeb",
+      "mnemonic": "mov",
+      "role": "store difficulty index"
+    },
+    {
+      "address": "0x0041faf1",
+      "mnemonic": "cmp",
+      "role": "bound difficulty by Extra"
+    },
+    {
+      "address": "0x0041faf8",
+      "mnemonic": "ja",
+      "role": "skip score block for an invalid difficulty"
+    },
+    {
+      "address": "0x0041fafe",
+      "mnemonic": "mov",
+      "role": "reload difficulty index"
+    },
+    {
+      "address": "0x0041fb04",
+      "mnemonic": "jmp",
+      "role": "dispatch through difficulty table"
+    },
+    {
+      "address": "0x0041fb0b",
+      "mnemonic": "mov",
+      "role": "load current Item pointer"
+    },
+    {
+      "address": "0x0041fb0e",
+      "mnemonic": "fld",
+      "role": "load binary32 Item currentPosition.y"
+    },
+    {
+      "address": "0x0041fb14",
+      "mnemonic": "call",
+      "role": "first __ftol2 conversion"
+    },
+    {
+      "address": "0x0041fb19",
+      "mnemonic": "cmp",
+      "role": "compare signed converted y with 128"
+    },
+    {
+      "address": "0x0041fb1e",
+      "mnemonic": "jge",
+      "role": "take position-dependent branch"
+    },
+    {
+      "address": "0x0041fb20",
+      "mnemonic": "mov",
+      "role": "select top score 100000"
+    },
+    {
+      "address": "0x0041fb2a",
+      "mnemonic": "jmp",
+      "role": "join easy-normal score"
+    },
+    {
+      "address": "0x0041fb2c",
+      "mnemonic": "mov",
+      "role": "reload current Item pointer"
+    },
+    {
+      "address": "0x0041fb2f",
+      "mnemonic": "fld",
+      "role": "reload the same binary32 y"
+    },
+    {
+      "address": "0x0041fb35",
+      "mnemonic": "call",
+      "role": "second __ftol2 conversion"
+    },
+    {
+      "address": "0x0041fb3a",
+      "mnemonic": "sub",
+      "role": "subtract y threshold"
+    },
+    {
+      "address": "0x0041fb3f",
+      "mnemonic": "imul",
+      "role": "multiply position delta by 100"
+    },
+    {
+      "address": "0x0041fb42",
+      "mnemonic": "mov",
+      "role": "load bottom score 60000"
+    },
+    {
+      "address": "0x0041fb47",
+      "mnemonic": "sub",
+      "role": "subtract position penalty"
+    },
+    {
+      "address": "0x0041fb49",
+      "mnemonic": "mov",
+      "role": "store easy-normal score"
+    },
+    {
+      "address": "0x0041fb4f",
+      "mnemonic": "mov",
+      "role": "join easy-normal result"
+    },
+    {
+      "address": "0x0041fb55",
+      "mnemonic": "mov",
+      "role": "publish easy-normal itemScore"
+    },
+    {
+      "address": "0x0041fb88",
+      "mnemonic": "mov",
+      "role": "load current Item pointer"
+    },
+    {
+      "address": "0x0041fb8b",
+      "mnemonic": "fld",
+      "role": "load binary32 Item currentPosition.y"
+    },
+    {
+      "address": "0x0041fb91",
+      "mnemonic": "call",
+      "role": "first __ftol2 conversion"
+    },
+    {
+      "address": "0x0041fb96",
+      "mnemonic": "cmp",
+      "role": "compare signed converted y with 128"
+    },
+    {
+      "address": "0x0041fb9b",
+      "mnemonic": "jge",
+      "role": "take position-dependent branch"
+    },
+    {
+      "address": "0x0041fb9d",
+      "mnemonic": "mov",
+      "role": "select top score 150000"
+    },
+    {
+      "address": "0x0041fba7",
+      "mnemonic": "jmp",
+      "role": "join hard score"
+    },
+    {
+      "address": "0x0041fba9",
+      "mnemonic": "mov",
+      "role": "reload current Item pointer"
+    },
+    {
+      "address": "0x0041fbac",
+      "mnemonic": "fld",
+      "role": "reload the same binary32 y"
+    },
+    {
+      "address": "0x0041fbb2",
+      "mnemonic": "call",
+      "role": "second __ftol2 conversion"
+    },
+    {
+      "address": "0x0041fbb7",
+      "mnemonic": "sub",
+      "role": "subtract y threshold"
+    },
+    {
+      "address": "0x0041fbbc",
+      "mnemonic": "imul",
+      "role": "multiply position delta by 180"
+    },
+    {
+      "address": "0x0041fbc2",
+      "mnemonic": "mov",
+      "role": "load bottom score 100000"
+    },
+    {
+      "address": "0x0041fbc7",
+      "mnemonic": "sub",
+      "role": "subtract position penalty"
+    },
+    {
+      "address": "0x0041fbc9",
+      "mnemonic": "mov",
+      "role": "store hard score"
+    },
+    {
+      "address": "0x0041fbcf",
+      "mnemonic": "mov",
+      "role": "join hard result"
+    },
+    {
+      "address": "0x0041fbd5",
+      "mnemonic": "mov",
+      "role": "publish hard itemScore"
+    },
+    {
+      "address": "0x0041fc08",
+      "mnemonic": "mov",
+      "role": "load current Item pointer"
+    },
+    {
+      "address": "0x0041fc0b",
+      "mnemonic": "fld",
+      "role": "load binary32 Item currentPosition.y"
+    },
+    {
+      "address": "0x0041fc11",
+      "mnemonic": "call",
+      "role": "first __ftol2 conversion"
+    },
+    {
+      "address": "0x0041fc16",
+      "mnemonic": "cmp",
+      "role": "compare signed converted y with 128"
+    },
+    {
+      "address": "0x0041fc1b",
+      "mnemonic": "jge",
+      "role": "take position-dependent branch"
+    },
+    {
+      "address": "0x0041fc1d",
+      "mnemonic": "mov",
+      "role": "select top score 200000"
+    },
+    {
+      "address": "0x0041fc27",
+      "mnemonic": "jmp",
+      "role": "join lunatic score"
+    },
+    {
+      "address": "0x0041fc29",
+      "mnemonic": "mov",
+      "role": "reload current Item pointer"
+    },
+    {
+      "address": "0x0041fc2c",
+      "mnemonic": "fld",
+      "role": "reload the same binary32 y"
+    },
+    {
+      "address": "0x0041fc32",
+      "mnemonic": "call",
+      "role": "second __ftol2 conversion"
+    },
+    {
+      "address": "0x0041fc37",
+      "mnemonic": "sub",
+      "role": "subtract y threshold"
+    },
+    {
+      "address": "0x0041fc3c",
+      "mnemonic": "imul",
+      "role": "multiply position delta by 270"
+    },
+    {
+      "address": "0x0041fc42",
+      "mnemonic": "mov",
+      "role": "load bottom score 150000"
+    },
+    {
+      "address": "0x0041fc47",
+      "mnemonic": "sub",
+      "role": "subtract position penalty"
+    },
+    {
+      "address": "0x0041fc49",
+      "mnemonic": "mov",
+      "role": "store lunatic score"
+    },
+    {
+      "address": "0x0041fc4f",
+      "mnemonic": "mov",
+      "role": "join lunatic result"
+    },
+    {
+      "address": "0x0041fc55",
+      "mnemonic": "mov",
+      "role": "publish lunatic itemScore"
+    },
+    {
+      "address": "0x0041fc85",
+      "mnemonic": "mov",
+      "role": "load current Item pointer"
+    },
+    {
+      "address": "0x0041fc88",
+      "mnemonic": "fld",
+      "role": "load binary32 Item currentPosition.y"
+    },
+    {
+      "address": "0x0041fc8e",
+      "mnemonic": "call",
+      "role": "first __ftol2 conversion"
+    },
+    {
+      "address": "0x0041fc93",
+      "mnemonic": "cmp",
+      "role": "compare signed converted y with 128"
+    },
+    {
+      "address": "0x0041fc98",
+      "mnemonic": "jge",
+      "role": "take position-dependent branch"
+    },
+    {
+      "address": "0x0041fc9a",
+      "mnemonic": "mov",
+      "role": "select top score 300000"
+    },
+    {
+      "address": "0x0041fca4",
+      "mnemonic": "jmp",
+      "role": "join extra score"
+    },
+    {
+      "address": "0x0041fca6",
+      "mnemonic": "mov",
+      "role": "reload current Item pointer"
+    },
+    {
+      "address": "0x0041fca9",
+      "mnemonic": "fld",
+      "role": "reload the same binary32 y"
+    },
+    {
+      "address": "0x0041fcaf",
+      "mnemonic": "call",
+      "role": "second __ftol2 conversion"
+    },
+    {
+      "address": "0x0041fcb4",
+      "mnemonic": "sub",
+      "role": "subtract y threshold"
+    },
+    {
+      "address": "0x0041fcb9",
+      "mnemonic": "imul",
+      "role": "multiply position delta by 400"
+    },
+    {
+      "address": "0x0041fcbf",
+      "mnemonic": "mov",
+      "role": "load bottom score 200000"
+    },
+    {
+      "address": "0x0041fcc4",
+      "mnemonic": "sub",
+      "role": "subtract position penalty"
+    },
+    {
+      "address": "0x0041fcc6",
+      "mnemonic": "mov",
+      "role": "store extra score"
+    },
+    {
+      "address": "0x0041fccc",
+      "mnemonic": "mov",
+      "role": "join extra result"
+    },
+    {
+      "address": "0x0041fcd2",
+      "mnemonic": "mov",
+      "role": "publish extra itemScore"
+    },
+    {
+      "address": "0x0041fd00",
+      "mnemonic": "mov",
+      "role": "load gameplay score"
+    },
+    {
+      "address": "0x0041fd06",
+      "mnemonic": "add",
+      "role": "add itemScore with 32-bit wrapping semantics"
+    },
+    {
+      "address": "0x0041fd09",
+      "mnemonic": "mov",
+      "role": "store gameplay score"
+    }
+  ],
+  "model_contracts": {
+    "score": "ZkTH06.ItemPointScore.score",
+    "collision_interval": "ZkTH06.ItemPointScore.ordered_collection_bounds_item_y",
+    "bounded_score": "ZkTH06.ItemPointScore.bounded_score_range",
+    "signed_i32_safety": "ZkTH06.ItemPointScore.bounded_score_fits_signed_i32",
+    "u32_score_addition": "ZkTH06.ItemPointScore.bounded_gameplay_score_addition"
+  },
+  "evidence_status": "static decode and derived difficulty/score facts; not a decoder proof, source correspondence theorem, reachable finite-position invariant, helper refinement, or guest binding",
+  "critical_nan_note": "AABB separation comparisons are unordered-false on NaN, so collision success alone cannot establish a finite item y; non-NaN reachability must be proved first.",
+  "open_obligations": [
+    "Prove or translation-validate the checked score blocks and difficulty table.",
+    "Prove every reachable scoring difficulty is in the decoded 0..4 interval.",
+    "Prove every score-reaching item y and player grab box is finite/non-NaN.",
+    "Bind ordered AABB overlap and player bounds to the -4..452 collected-item interval.",
+    "Prove the two exact __ftol2 calls return the modeled signed value on that interval.",
+    "Prove the pre-update gameplay score satisfies the modeled 0..999999999 bound.",
+    "Prove the guest score update refines the address-bound 32-bit score contract."
+  ],
+  "counts": {
+    "difficulty_entries": 5,
+    "score_profiles": 4,
+    "ftol2_calls": 8,
+    "checked_instruction_roles": 77
+  },
+  "artifact_sha256": "b1586c1d9f6f3ce7b606e0f2f344005fb8324fe8f29d64bfee756d49383734f4"
+}

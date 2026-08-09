@@ -148,9 +148,53 @@ This is a reduction in proof surface, not a completed proof. Static decoding is
 still performed by unverified `objdump`; table targets are not yet bound to the
 modeled variable values; the helper/classifier agreement has only finite
 boundary and exceptional-input testing; and no guest resolver is connected to
-the Lean model. The other eight retained calls still require a reachable
-finite/signed-32-bit bound for collected item `y` unless a similarly narrow
-observation theorem is found.
+the Lean model. The other eight retained calls require the finite/non-NaN,
+ordered-collision, helper-refinement, and score-state premises decomposed below.
+
+## Point-item score contract and the NaN trap
+
+[`arithmetic/item-score-v1.json`](../arithmetic/item-score-v1.json) binds all
+eight remaining retain candidates to the four score profiles in the pinned
+`ItemManager::OnUpdate` body. It checks 77 exact instruction signatures, the
+five-entry Easy/Normal/Hard/Lunatic/Extra table, two loads from the same
+binary32 `Item.currentPosition.y` field per profile, both helper calls, signed
+comparison with 128, profile constants, 32-bit penalty arithmetic, and the
+final addition to gameplay score. Its artifact digest is
+`b1586c1d9f6f3ce7b606e0f2f344005fb8324fe8f29d64bfee756d49383734f4`.
+
+The intended range argument has three separate premises:
+
+1. every score-reaching item position and player grab box is finite/non-NaN;
+2. the player center stays in `16..432` and the ordered AABB test uses player
+   radius 12 and item half-size 8; and
+3. the two exact helper invocations on the same binary32 field refine to the
+   same truncation-toward-zero integer.
+
+Premise 1 cannot be inferred from successful collision. The source test rejects
+separated boxes using ordered comparisons; a NaN coordinate makes those
+comparisons false and can therefore fall through to the collision-success
+path. Treating collision as a finiteness witness would be unsound.
+
+Under premises 1 and 2, the integer abstraction in
+`ZkTH06.ItemPointScore.ordered_collection_bounds_item_y` derives the candidate
+item interval `-4..452`. The score model then proves a result interval
+`27600..300000`, signed-i32 safety, and a maximum lower-branch position penalty
+of 129600. Given a pre-update score in `0..999999999`, it also proves that one
+item award cannot wrap u32. Reachable difficulty must separately stay in the
+decoded `0..4` interval; the invalid binary path skips profile assignment.
+These are checked mathematical consequences of the stated integer
+premises, not a binary32 or reachability theorem.
+
+[`arithmetic/item-score-corpus-v1.json`](../arithmetic/item-score-corpus-v1.json)
+records a separate Linux reconstruction experiment. GDB breakpoints captured
+the raw binary32 field at all four source score calls: 2,081 collections across
+the four pinned replays were finite, none left `-4..452`, the measured range was
+approximately `11.879809..442.976013`, and truncated values ranged from 11 to
+442. Of these, 1,413 took the top branch and 668 the position branch. The report
+is sealed and binds its probe, debug runner, source, replay, and data-manifest
+hashes. It is counterexample search only: it neither establishes the invariant
+for unmeasured executions nor transfers reconstruction observations to the
+retail executable.
 
 ## Discharge discipline
 

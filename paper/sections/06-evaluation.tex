@@ -285,5 +285,62 @@ float literal.  Lean's bit-vector decision procedure checks the machine
 interval identity, and an abstract theorem checks irrelevance of the exact
 non-label integer.  These results narrow, but do not discharge, four remaining
 obligations: verified decode, universal helper/classifier agreement, target-to-
-variable binding, and guest refinement.  The eight retained scoring calls
-still require a reachable finite signed-i32 bound on collected-item position.
+variable binding, and guest refinement.  The eight retained scoring calls'
+finite-position and helper-range obligations remain open and are decomposed
+next.
+
+\subsection{Point-item range decomposition}
+
+The eight scoring calls are grouped into four difficulty profiles.  A pinned
+binary artifact checks 77 key instruction signatures: the five-entry
+difficulty dispatch, two binary32 loads of the same
+\code{Item.currentPosition.y} field per profile, both helper calls, signed
+threshold 128, profile constants, 32-bit penalty arithmetic, joins, and the
+final gameplay-score addition.  This is static decode evidence, not verified
+translation.
+
+The apparent range argument contains a NaN trap.  The collision function
+returns false when any ordered comparison proves the player and item boxes
+separate.  If an item coordinate is NaN, each such comparison is false and the
+function can instead return collision success.  Therefore collection alone is
+not a finiteness witness.  The proof target first requires finite/non-NaN item
+and player-box invariants.  Conditional on ordered coordinates, player center
+$y\in[16,432]$, player grab radius 12, and item half-size 8, a Lean integer
+theorem derives collected item $y\in[-4,452]$.  For every converted integer in
+that interval, the four score formulas produce $[27600,300000]$, their largest
+position penalty is 129600, and the selected score fits signed i32.  Given a
+pre-item score at most 999,999,999, a further theorem rules out u32 wrap in one
+award.  Difficulty $0..4$ is an additional reachable-state premise because the
+decoded invalid path bypasses profile assignment.
+
+For invariant discovery, a debug Linux runner was executed under GDB with raw-
+binary32 breakpoints at all four source score calls.  The sealed report binds
+the probe, runner, source file, retail-data manifest, and replay hashes.
+Table~\ref{tab:item-score-range} summarizes the measurements.
+
+\begin{table}[h]
+  \centering
+  \small
+  \begin{tabular}{@{}lrrrr@{}}
+    \toprule
+    Replay & Collections & Minimum $y$ & Maximum $y$ & Top / position \\
+    \midrule
+    \code{th6\_ud000134} & 403 & 11.879809 & 442.976013 & 242 / 161 \\
+    \code{th6\_ud000232} & 304 & 26.522402 & 437.142883 & 131 / 173 \\
+    \code{th6\_ud002677} & 599 & 14.489738 & 421.830170 & 417 / 182 \\
+    \code{th6\_udLuRB}   & 775 & 13.629821 & 430.869507 & 623 / 152 \\
+    \midrule
+    Total                 & 2,081 & 11.879809 & 442.976013 & 1,413 / 668 \\
+    \bottomrule
+  \end{tabular}
+  \caption{Collected point-item inputs in the Linux reconstruction.  All 2,081
+  values were finite, truncated to 11 through 442, and stayed within the
+  candidate $[-4,452]$ interval.  This is corpus counterexample search, not a
+  reachable-state proof or retail-executable result.}
+  \label{tab:item-score-range}
+\end{table}
+
+No sample was exceptional or outside the candidate interval.  This supports
+the proposed invariant and gives both score branches substantial coverage, but
+does not discharge finite/non-NaN reachability, original-binary correspondence,
+exact helper refinement, or guest binding.
