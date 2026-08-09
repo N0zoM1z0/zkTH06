@@ -27,12 +27,15 @@
   bounded scan also leaves EDX live at 42 stopping points.  The ECL quotient
   still lacks verified decoding, universal helper/classifier agreement,
   jump-target binding, and guest refinement; the eight point-score calls lack
-  a reachable finite bounded player-box invariant, collision-code binding,
+  discharge of the dependent player-position artifact, collision-code binding,
   architectural masked-invalid/helper-path refinement, and caller binding,
-  together with reachable difficulty and pre-score bounds.  The total Lean
-  model covers finite, infinite, and NaN item coordinates conditionally; 2,081
-  Linux samples exercise only its finite branch and prove none of those
-  bindings.  The complete address-indexed semantics, code
+  together with reachable difficulty and pre-score bounds.  The 95-instruction
+  player audit and total clamp theorem reduce its invariant to non-NaN movement
+  candidates plus initialization, writer-completeness, scheduling, binary/x87,
+  correspondence, and guest obligations; they do not prove those premises.
+  The total score model covers finite, infinite, and NaN item coordinates
+  conditionally; 2,081 Linux samples exercise only its finite branch and prove
+  none of those bindings.  The complete address-indexed semantics, code
   binding, and any fixed-point refinement have not yet been implemented or
   proved.
   \item \textbf{Draw-chain effects.}  Headless mode skips drawing, but some draw

@@ -168,6 +168,34 @@ and guest implementation all remain open. The exact-byte probe found the same
 integer-indefinite result in nine exceptional cases, but finite testing is not
 the missing universal theorem.
 
+## Player-position clamp decomposition
+
+[`arithmetic/player-position-v1.json`](../arithmetic/player-position-v1.json)
+binds the pinned image, mapping, and base obligation ledger to the player-y
+state feeding the item collision. It checks 95 exact instruction signatures
+across eight mapped functions, 21 line anchors in five files at authoritative
+revision `cc475a0bc3fef38683b0f02224c87ddba0a021d9`, five binary32 constants,
+four character-speed records, and four comparison sites already indexed by the
+base ledger. Its artifact digest is
+`9479136fa169191d88c96ef92f06607eeaeaa751996bab0fcd820f4a2a2440bb`.
+
+The retail update initializes and respawns the center at `384`, computes a
+movement candidate, then performs ordered lower and upper comparisons against
+`16` and `432`. Negative infinity takes the lower assignment and positive
+infinity takes the upper assignment. NaN makes each comparison unordered; the
+two audited `JP` paths skip both assignments, so NaN survives. The total Lean
+theorem `ZkTH06.PlayerPosition.clamp_bounded_of_not_nan` consequently needs
+only a non-NaN candidate, not a finite candidate, to re-establish the bounded
+center. Separate theorems check the modeled initial/respawn state and derive
+the radius-12 grab-box ranges `4..420` and `28..444`.
+
+This is a decomposition, not the reachable invariant itself. Verified decode
+and source correspondence, complete direct and aliased writer coverage,
+GameManager reinitialization, finite movement operands and a non-NaN candidate,
+binary32 store/x87 comparison semantics, Player-before-Item scheduling, and
+guest refinement remain open. In particular, the effective frame multiplier
+has adaptive writers; the artifact does not assume it is always one.
+
 ## Point-item score contract and the NaN trap
 
 [`arithmetic/item-score-v1.json`](../arithmetic/item-score-v1.json) binds all
@@ -177,11 +205,14 @@ five-entry Easy/Normal/Hard/Lunatic/Extra table, two loads from the same
 binary32 `Item.currentPosition.y` field per profile, both helper calls, signed
 comparison with 128, profile constants, 32-bit penalty arithmetic, and the
 final addition to gameplay score. Its artifact digest is
-`25319fc8d8a188103111b64426844dfb0c4399dfc7f6849ac1f48bf45dc8d138`.
+`7c3a5c490b7b0de6a91eb74a79c153be8d3e36af1769c5d942e1d3d9efe3e44f`.
+The artifact seals the player-position audit digest as a direct input, making
+the dependency mechanically visible without treating that evidence as proof.
 
 The total range argument has four separate bindings:
 
-1. the player center/grab box is finite and its center stays in `16..432`;
+1. the player artifact's candidate-not-NaN, writer, scheduling, and code
+   bindings establish a finite center in `16..432` and its grab box;
 2. the AABB test uses ordered x87 comparisons, player radius 12, and item
    half-size 8;
 3. finite binary32 values enter the exact rational/truncation model, infinities

@@ -41,9 +41,11 @@ Last updated: 2026-08-09
   unproved.
 - A pinned four-profile point-item score audit covering eight helper calls and
   77 key instruction roles, plus total rational/exceptional Lean score bounds
-  and a sealed 2,081-collection Linux corpus report. Item finiteness is no
-  longer a premise; finite bounded player state and exact helper/x87 binding
-  remain open.
+  and a sealed 2,081-collection Linux corpus report. A dependent player-position
+  audit checks 95 more instruction roles and a total Lean clamp theorem. Item
+  finiteness is no longer a premise, and either infinity is clamped; the player
+  proof is now reduced to candidate-not-NaN, writer, scheduling, binary/x87,
+  and guest bindings rather than assumed closed.
 
 Compatibility playback intentionally restores every per-stage replay snapshot,
 matching shipped playback. It is an oracle-development mode, not the future
@@ -151,10 +153,18 @@ items from ordered collection overlap and the expected player bounds, then
 proves scores remain in `27600..300000`. Its total coordinate model treats
 infinities as separated and NaN as a possible collision whose masked-invalid
 helper result has low EAX zero. Thus sound score bounds need a finite bounded
-player box, but no longer a universal item-position finiteness invariant. A GDB
-debug-runner probe observed 2,081 finite collections in the four-replay corpus,
-with no sample outside the candidate interval. This remains invariant-
-discovery evidence, not retail-binary evidence or a proof.
+player box, but no longer a universal item-position finiteness invariant.
+
+A 95-instruction retail audit now traces the player center from initial and
+respawn value 384 through movement, the ordered `16..432` clamp, and construction
+of the radius-12 grab box. Its total Lean model proves that both infinities are
+clamped into range and only NaN survives. This materially narrows the remaining
+invariant to non-NaN movement candidates plus complete writers, initialization,
+update scheduling, exact binary32/x87 behavior, verified correspondence, and
+guest refinement. It does not assume the adaptive effective frame multiplier
+is fixed at one. A GDB debug-runner probe observed 2,081 finite collections in
+the four-replay corpus, with no sample outside the candidate interval. This
+remains invariant-discovery evidence, not retail-binary evidence or a proof.
 The remaining control invariants are difficulty in `0..4` and pre-item score in
 `0..999999999`; the latter condition is sufficient in Lean to rule out u32
 wrap for one bounded award.
@@ -170,8 +180,8 @@ wrap for one bounded award.
    build and identify the first differing field.
 4. Record the entry x87/CPU profile, instrument reached arithmetic sites,
    cover load/remainder and exceptional helper behavior where reachable, prove
-   ECL helper-to-classifier refinement and the point-item finite-player plus
-   total collision/helper quotient,
+   ECL helper-to-classifier refinement and discharge the point-item player
+   candidate/writer/scheduling plus total collision/helper quotient,
    and replace host-libm behavior with an exact, address-bound arithmetic
    baseline; prove skipped-draw arithmetic noninterference before removing it.
 5. Add canonical-proof playback that derives stage transitions and rejects a

@@ -294,8 +294,36 @@ interval identity, and an abstract theorem checks irrelevance of the exact
 non-label integer.  These results narrow, but do not discharge, four remaining
 obligations: verified decode, universal helper/classifier agreement, target-to-
 variable binding, and guest refinement.  The eight retained scoring calls'
-finite-player, collision, helper-observation, and code-binding obligations
-remain open and are decomposed next.
+player-candidate, writer/scheduling, collision, helper-observation, and
+code-binding obligations remain open and are decomposed next.
+
+\subsection{Player-position clamp decomposition}
+
+A dependent artifact checks 95 exact instruction signatures across eight
+mapped functions, 21 source anchors at the pinned authoritative revision, five
+binary32 constants, four character-speed records, and four comparison sites
+from the base ledger.  It covers initialization and respawn at center
+$y=384$, movement-speed construction, bomb and effective-frame multipliers,
+the ordered clamp to $[16,432]$, radius-12 grab-box construction, and the
+vertical item-collision branches.  The point-item artifact seals this player
+artifact's digest as a direct input.
+
+The exceptional cases make the invariant smaller than expected.  Negative
+infinity satisfies the lower comparison and is assigned 16; positive infinity
+satisfies the upper comparison and is assigned 432.  NaN makes each comparison
+unordered and takes the two audited parity branches that skip assignment.  A
+total Lean theorem therefore proves that the clamp yields a finite bounded
+center for every candidate except NaN.  Further theorems check initial and
+respawn boundedness and derive grab-top and grab-bottom ranges $[4,420]$ and
+$[28,444]$.
+
+This does not yet prove the reachable player invariant.  The remaining queue
+contains verified decode and source correspondence, GameManager
+reinitialization, complete direct and aliased writer coverage, finite movement
+operands and non-NaN candidate construction, binary32 store and x87 comparison
+semantics, Player-before-Item scheduling, and guest refinement.  In particular,
+the audit records adaptive effective-frame-multiplier publishers and does not
+replace them with a constant-one assumption.
 
 \subsection{Point-item range decomposition}
 
@@ -323,7 +351,8 @@ case split the Lean theorem bounds all four score formulas by
 $[27600,300000]$; their largest finite position penalty is 129600 and every
 selected score fits signed i32.  Given a pre-item score at most 999,999,999, a
 further theorem rules out u32 wrap in one award.  This theorem is conditional
-on the finite bounded player box and exact collision/helper observations.
+on discharge of the player-position artifact and exact collision/helper
+observations.
 Difficulty $0..4$ is an additional reachable-state premise because the decoded
 invalid path bypasses profile assignment.
 
@@ -357,6 +386,6 @@ Table~\ref{tab:item-score-range} summarizes the measurements.
 No sample was exceptional or outside the candidate interval.  This supports
 the finite branch and gives both score branches substantial coverage, but the
 total theorem does not use corpus absence of exceptional item values as a
-premise.  The experiment does not discharge the finite bounded player
-invariant, original-binary collision/helper correspondence, exact x87
-refinement, or guest binding.
+premise.  The experiment does not discharge the player candidate, writer,
+scheduling, or code-binding obligations, original-binary collision/helper
+correspondence, exact x87 refinement, or guest binding.

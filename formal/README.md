@@ -51,6 +51,17 @@ site-specific theorem. It does not prove that the executable decodes to the
 model, that `__ftol2` implements the classifier for all reachable ext80 inputs,
 that jump targets have the modeled meanings, or that the guest refines it.
 
+[`ZkTH06/PlayerPosition.lean`](ZkTH06/PlayerPosition.lean) totalizes the
+retail vertical clamp over exact finite rationals, both infinities, and NaN.
+`clamp_bounded_of_not_nan` proves that every non-NaN candidate---including
+either infinity---becomes finite in `16..432`; NaN alone survives the two
+ordered-comparison branches. It also checks the modeled initial and respawn
+center `384`, a finite mathematical movement step, and the radius-12 grab-box
+ranges `4..420` and `28..444`. These are consequences of the model. The
+instruction decode, binary32/x87 behavior, writer completeness, movement
+candidate not-NaN invariant, update ordering, source correspondence, and guest
+binding remain explicit obligations in the associated audit artifact.
+
 [`ZkTH06/ItemPointScore.lean`](ZkTH06/ItemPointScore.lean) models the four
 retained point-item score profiles after conversion to mathematical integers.
 Given player `y` in `16..432` and an ordered one-dimensional AABB overlap with
@@ -63,8 +74,8 @@ proves a total score bound without assuming item finiteness: infinities cannot
 overlap a finite bounded player box, while NaN's modeled invalid conversion has
 low EAX zero and selects the top-score branch. `X87Ftol2.lean` separately
 checks the integer-indefinite EDX:EAX split. Entering this total model still
-requires finite-player, binary32/x87, collision-code, helper-path, and source/
-binary binding proofs.
+requires the player artifact's candidate-not-NaN/writer/scheduling premises,
+binary32/x87, collision-code, helper-path, and source/binary binding proofs.
 
 The address-level bridge to these definitions is
 [`arithmetic/obligations-v1.json`](../arithmetic/obligations-v1.json). Its 244

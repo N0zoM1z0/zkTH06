@@ -162,8 +162,12 @@ The eight retained point-item calls are handled as a range-proof pipeline.
 First, a static artifact verifies the four difficulty blocks, their repeated
 binary32 field loads, helper calls, signed threshold, integer constants, and
 gameplay-score sink.  Second, a helper artifact checks the 37-instruction
-masked-invalid path and isolates its low-EAX observation.  Third, a total
-coordinate split handles finite dyadic values, both infinities, and NaN.
+masked-invalid path and isolates its low-EAX observation.  Third, a dependent
+player artifact follows initialization, respawn, movement, the ordered
+$[16,432]$ clamp, and radius-12 grab-box construction.  A total Lean clamp
+theorem shows that either infinity is restored to a finite boundary and that
+only a NaN movement candidate evades both assignments.  Fourth, a total
+item-coordinate split handles finite dyadic values, both infinities, and NaN.
 Unordered NaN comparisons can produce an apparent collision, so finiteness
 cannot be inferred; instead, masked-invalid conversion returns modeled low EAX
 zero and selects the top-score branch.  Infinities are separated by a finite
@@ -171,7 +175,7 @@ player box, while finite overlap implies a narrow item interval.  A Lean exact-
 rational model checks this case split, truncation, and score bounds, while
 debug-runner breakpoints search the replay corpus for counterexamples.  Neither
 the model theorem nor corpus measurements establish the missing x87,
-architectural, reachability, and code bindings.
+architectural, reachability, writer/scheduling, and code bindings.
 Reachable difficulty $0..4$ and the pre-item global-score cap are recorded as
 separate control invariants rather than assumed from the selected profile.
 

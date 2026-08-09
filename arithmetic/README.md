@@ -261,11 +261,20 @@ its conservative base status:
   architectural premise that masked-invalid `fistp m64int` stores integer-
   indefinite, the path returns EDX:EAX `0x80000000:00000000`; Lean checks the
   low-EAX projection, but not the decoder, x87 premise, or code binding.
+- [`player-position-v1.json`](player-position-v1.json) checks 95 instruction
+  signatures across eight mapped functions, 21 pinned source anchors, five
+  binary32 constants, four character-speed records, and four comparison
+  contracts. Its total Lean clamp model proves that either infinity is
+  clamped into `16..432`, whereas NaN survives the retail branch sequence.
+  This narrows the player invariant to candidate-not-NaN, complete-writer,
+  scheduling, arithmetic/code-binding, and guest-refinement obligations; it
+  does not discharge them.
 - [`item-score-v1.json`](item-score-v1.json) checks 77 instruction signatures
   across the four difficulty profiles, the five-entry difficulty table, all
   eight retained score conversions, their repeated binary32 field loads, and
-  the final gameplay-score addition. The associated Lean model proves only a
-  conditional ordered-coordinate range and integer score bounds.
+  the final gameplay-score addition. It now seals the player-position artifact
+  as an input. The associated Lean model proves conditional finite geometry
+  and total finite/infinity/NaN score bounds, not their binary bindings.
 - [`item-score-corpus-v1.json`](item-score-corpus-v1.json) records a debug-
   breakpoint experiment over 2,081 point-item collections in four Linux replay
   runs. All observed values were finite and inside the candidate collection
@@ -285,6 +294,11 @@ python3 tools/ecl_var_dispatch_audit.py \
 python3 tools/ftol2_helper_audit.py \
   local/original-th06/東方紅魔郷.exe \
   --check arithmetic/ftol2-helper-v1.json
+python3 tools/player_position_audit.py \
+  local/original-th06/東方紅魔郷.exe \
+  --mapping repos/th06/config/mapping.csv \
+  --source-root repos/th06 \
+  --check arithmetic/player-position-v1.json
 python3 tools/item_score_audit.py \
   local/original-th06/東方紅魔郷.exe \
   --mapping repos/th06/config/mapping.csv \
@@ -339,8 +353,10 @@ The address binding work queue is now explicit, but none of its entries is
 discharged. Source/sink candidates narrow it to nine retained calls and 68
 potential omissions; every omission still needs noninterference. The immediate
 arithmetic goals are an exact ECL helper-to-classifier theorem, the point-item
-finite-player/collision/helper quotient for eight score calls, complete result-
-use evidence, load/remainder semantics, and an exact transcendental profile.
-The total score model no longer assumes finite item coordinates, but its
-architectural and address bindings remain open. The exact implementation
-remains the fallback whenever a refinement theorem cannot be proved.
+player-candidate/writer/scheduling and collision/helper quotient for eight
+score calls, complete result-use evidence, load/remainder semantics, and an
+exact transcendental profile. The total score model no longer assumes finite
+item coordinates, and the clamp model no longer assumes the pre-clamp candidate
+is finite, but their architectural and address bindings remain open. The exact
+implementation remains the fallback whenever a refinement theorem cannot be
+proved.

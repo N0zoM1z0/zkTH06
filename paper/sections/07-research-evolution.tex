@@ -179,5 +179,22 @@ finite bounded player-box invariant and exact bindings for binary32 load and
 x87 comparison semantics, masked-invalid helper control flow, each scoring
 caller, and the zkVM guest.
 
+\paragraph{Phase R: totalize the player clamp before proving reachability.}
+The remaining ``finite bounded player'' premise was still too coarse to audit
+soundly.  Reading the retail branch sequence showed that the clamp itself
+repairs more states than a finite-only model admits: negative infinity takes
+the lower assignment, positive infinity takes the upper assignment, and only
+NaN follows the two unordered parity branches that preserve the candidate.
+A 95-instruction artifact now follows initial/respawn writes, movement speeds,
+bomb and effective-frame multipliers, both clamp comparisons, grab-box
+construction, and its collision consumer.  A total Lean theorem correspondingly
+reduces invariant preservation to excluding a NaN movement candidate, while
+separate lemmas check the initial and respawn bases and grab-box bounds.  The
+point-item artifact seals this new artifact as an input.  This does not assume
+the invariant solved: complete direct and aliased writers, GameManager
+reinitialization, non-NaN arithmetic, Player-before-Item scheduling, verified
+decode/source correspondence, x87/binary32 semantics, and guest refinement
+remain the explicit proof queue.
+
 Future changes to the central claim or state boundary should be appended here
 with the evidence that motivated them.

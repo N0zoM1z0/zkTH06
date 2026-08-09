@@ -1,0 +1,846 @@
+{
+  "schema_version": 1,
+  "kind": "zkth06.player-position-audit",
+  "inputs": {
+    "executable_sha256": "9f76483c46256804792399296619c1274363c31cd8f1775fafb55106fb852245",
+    "mapping_sha256": "0f20300d5b107b36c933a7f7dc448407ee5f01c5cd7faad132d406c023163191",
+    "base_ledger_artifact_sha256": "1c4c128284bf5ab4aa36e636cd5ed15f0300e5295e7fb29f12c0cb2f897f65af"
+  },
+  "generator": {
+    "path": "tools/player_position_audit.py",
+    "sha256": "4e613ba7ea7a108ad55fb0e8617bda7626c6d4683b81c9018d56ab4a02738e98",
+    "x87_audit_sha256": "93c6aee778f489c92788dc7dfc6c51749fa5f20d075305a4190616d9b5d46290",
+    "disassembler": "GNU objdump (GNU Binutils for Ubuntu) 2.38"
+  },
+  "upstream": {
+    "url": "https://github.com/GensokyoClub/th06",
+    "revision": "cc475a0bc3fef38683b0f02224c87ddba0a021d9",
+    "source_files": {
+      "src/BombData.cpp": "2a5e19df3f1ac5ebaa1ba5dcdacc5c233f56919b3822ab9d865be166415ae5fd",
+      "src/GameManager.cpp": "45736f6c282c1700d64267d02809ab36ec1ae536e4ff75de3bb84388dcccdcd9",
+      "src/GameWindow.cpp": "8a96c36d38329f3e744bf5c703181a70f570e7e59ff7ad5a4b6ceb73e69edb6a",
+      "src/Player.cpp": "5e3e81cff72796c98b9b87dc65d447333444917b63d9e4d493572f23145c26b5",
+      "src/ReplayManager.cpp": "30a4e3344660aa95c2be1375d0a14b308931cbaf9e4b9bfa911fd08c3f14211a"
+    },
+    "anchors": [
+      {
+        "file": "src/GameManager.cpp",
+        "line": 289,
+        "anchor": "arcadeRegionSize.y = 448.0",
+        "role": "arcade height"
+      },
+      {
+        "file": "src/GameManager.cpp",
+        "line": 291,
+        "anchor": "playerMovementAreaTopLeftPos.y = 16.0",
+        "role": "movement lower bound"
+      },
+      {
+        "file": "src/GameManager.cpp",
+        "line": 293,
+        "anchor": "playerMovementAreaSize.y = 416.0",
+        "role": "movement height"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 99,
+        "anchor": "positionCenter.y = g_GameManager.arcadeRegionSize.y - 64.0f",
+        "role": "initial y"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 111,
+        "anchor": "grabItemSize.y = 12.0",
+        "role": "grab radius"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 115,
+        "anchor": "diagonalMovementSpeed =",
+        "role": "diagonal speed initialization"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 116,
+        "anchor": "diagonalMovementSpeedFocus =",
+        "role": "focused diagonal speed initialization"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 136,
+        "anchor": "verticalMovementSpeedMultiplierDuringBomb = 1.0",
+        "role": "initial bomb multiplier"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 242,
+        "anchor": "positionCenter.y = g_GameManager.arcadeRegionSize.y - 64.0f",
+        "role": "respawn y"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 278,
+        "anchor": "verticalMovementSpeedMultiplierDuringBomb = 1.0",
+        "role": "spawn bomb multiplier"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 801,
+        "anchor": "verticalSpeed * this->verticalMovementSpeedMultiplierDuringBomb",
+        "role": "movement candidate"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 813,
+        "anchor": "positionCenter.y < g_GameManager.playerMovementAreaTopLeftPos.y",
+        "role": "lower clamp"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 817,
+        "anchor": "playerMovementAreaTopLeftPos.y + g_GameManager.playerMovementAreaSize.y <",
+        "role": "upper clamp"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 827,
+        "anchor": "grabItemTopLeft = this->positionCenter - this->grabItemSize",
+        "role": "grab top"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 829,
+        "anchor": "grabItemBottomRight = this->positionCenter + this->grabItemSize",
+        "role": "grab bottom"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 1365,
+        "anchor": "grabItemTopLeft.y > itemBottomRight.y",
+        "role": "vertical item collision"
+      },
+      {
+        "file": "src/BombData.cpp",
+        "line": 473,
+        "anchor": "verticalMovementSpeedMultiplierDuringBomb = 1.0f",
+        "role": "bomb-end multiplier"
+      },
+      {
+        "file": "src/BombData.cpp",
+        "line": 491,
+        "anchor": "verticalMovementSpeedMultiplierDuringBomb = 0.3f",
+        "role": "Marisa-B multiplier"
+      },
+      {
+        "file": "src/ReplayManager.cpp",
+        "line": 81,
+        "anchor": "framerateMultiplier = 1.0f",
+        "role": "replay rate"
+      },
+      {
+        "file": "src/GameWindow.cpp",
+        "line": 139,
+        "anchor": "effectiveFramerateMultiplier = delta",
+        "role": "adaptive effective rate"
+      },
+      {
+        "file": "src/GameWindow.cpp",
+        "line": 147,
+        "anchor": "effectiveFramerateMultiplier = g_Supervisor.framerateMultiplier",
+        "role": "copied effective rate"
+      }
+    ],
+    "correspondence_status": "manual-disassembly-source-alignment-unproved"
+  },
+  "mapped_functions": [
+    {
+      "name": "th06::BombData::BombMarisaBCalc",
+      "start": "0x00406e70",
+      "size": 830
+    },
+    {
+      "name": "th06::GameManager::AddedCallback",
+      "start": "0x0041bb02",
+      "size": 1781
+    },
+    {
+      "name": "th06::GameWindow::Render",
+      "start": "0x004206e0",
+      "size": 1126
+    },
+    {
+      "name": "th06::Player::CalcItemBoxCollision",
+      "start": "0x00426fd0",
+      "size": 442
+    },
+    {
+      "name": "th06::Player::HandlePlayerInputs",
+      "start": "0x00427860",
+      "size": 3482
+    },
+    {
+      "name": "th06::Player::OnUpdate",
+      "start": "0x004288c0",
+      "size": 2282
+    },
+    {
+      "name": "th06::Player::AddedCallback",
+      "start": "0x00429c50",
+      "size": 1118
+    },
+    {
+      "name": "th06::ReplayManager::RegisterChain",
+      "start": "0x0042a240",
+      "size": 552
+    }
+  ],
+  "binary32_constants": [
+    {
+      "address": "0x0046a2b4",
+      "bits": "0x41800000",
+      "exact_value": "16",
+      "role": "movement lower bound"
+    },
+    {
+      "address": "0x0046a7bc",
+      "bits": "0x43e00000",
+      "exact_value": "448",
+      "role": "arcade height"
+    },
+    {
+      "address": "0x0046a7ec",
+      "bits": "0x43d00000",
+      "exact_value": "416",
+      "role": "movement height"
+    },
+    {
+      "address": "0x0046a440",
+      "bits": "0x42800000",
+      "exact_value": "64",
+      "role": "spawn offset"
+    },
+    {
+      "address": "0x0046a44c",
+      "bits": "0x40000000",
+      "exact_value": "2",
+      "role": "horizontal center divisor and sqrt input"
+    }
+  ],
+  "character_speed_table": [
+    {
+      "name": "reimu-a",
+      "address": "0x00476728",
+      "binary32_bits": [
+        "0x40800000",
+        "0x40000000",
+        "0x40800000",
+        "0x40000000"
+      ],
+      "source_values": [
+        "4",
+        "2",
+        "4",
+        "2"
+      ]
+    },
+    {
+      "name": "reimu-b",
+      "address": "0x00476740",
+      "binary32_bits": [
+        "0x40800000",
+        "0x40000000",
+        "0x40800000",
+        "0x40000000"
+      ],
+      "source_values": [
+        "4",
+        "2",
+        "4",
+        "2"
+      ]
+    },
+    {
+      "name": "marisa-a",
+      "address": "0x00476758",
+      "binary32_bits": [
+        "0x40a00000",
+        "0x40200000",
+        "0x40a00000",
+        "0x40200000"
+      ],
+      "source_values": [
+        "5",
+        "2.5",
+        "5",
+        "2.5"
+      ]
+    },
+    {
+      "name": "marisa-b",
+      "address": "0x00476770",
+      "binary32_bits": [
+        "0x40a00000",
+        "0x40200000",
+        "0x40a00000",
+        "0x40200000"
+      ],
+      "source_values": [
+        "5",
+        "2.5",
+        "5",
+        "2.5"
+      ]
+    }
+  ],
+  "checked_instruction_roles": [
+    {
+      "address": "0x00406ea8",
+      "mnemonic": "mov",
+      "role": "load player at Marisa-B bomb end"
+    },
+    {
+      "address": "0x00406eab",
+      "mnemonic": "mov",
+      "role": "restore vertical multiplier 1"
+    },
+    {
+      "address": "0x00406fd5",
+      "mnemonic": "mov",
+      "role": "load player at Marisa-B bomb start"
+    },
+    {
+      "address": "0x00406fd8",
+      "mnemonic": "mov",
+      "role": "set vertical multiplier binary32 0.3"
+    },
+    {
+      "address": "0x0041bb6c",
+      "mnemonic": "mov",
+      "role": "load GameManager for arcade height"
+    },
+    {
+      "address": "0x0041bb6f",
+      "mnemonic": "fld",
+      "role": "load arcade height 448"
+    },
+    {
+      "address": "0x0041bb75",
+      "mnemonic": "fstp",
+      "role": "store arcade height"
+    },
+    {
+      "address": "0x0041bb8a",
+      "mnemonic": "mov",
+      "role": "load GameManager for movement lower bound"
+    },
+    {
+      "address": "0x0041bb8d",
+      "mnemonic": "fld",
+      "role": "load movement lower bound 16"
+    },
+    {
+      "address": "0x0041bb93",
+      "mnemonic": "fstp",
+      "role": "store movement lower bound"
+    },
+    {
+      "address": "0x0041bba8",
+      "mnemonic": "mov",
+      "role": "load GameManager for movement height"
+    },
+    {
+      "address": "0x0041bbab",
+      "mnemonic": "fld",
+      "role": "load movement height 416"
+    },
+    {
+      "address": "0x0041bbb1",
+      "mnemonic": "fstp",
+      "role": "store movement height"
+    },
+    {
+      "address": "0x00420af8",
+      "mnemonic": "fld",
+      "role": "load adaptive rate bucket"
+    },
+    {
+      "address": "0x00420afb",
+      "mnemonic": "fstp",
+      "role": "store adaptive effective multiplier"
+    },
+    {
+      "address": "0x00420b1e",
+      "mnemonic": "mov",
+      "role": "load configured framerate multiplier"
+    },
+    {
+      "address": "0x00420b24",
+      "mnemonic": "mov",
+      "role": "copy configured multiplier to effective multiplier"
+    },
+    {
+      "address": "0x00426fe5",
+      "mnemonic": "movsx",
+      "role": "load player state"
+    },
+    {
+      "address": "0x00426fec",
+      "mnemonic": "test",
+      "role": "test alive state zero"
+    },
+    {
+      "address": "0x00426fee",
+      "mnemonic": "je",
+      "role": "allow alive player"
+    },
+    {
+      "address": "0x00426ff6",
+      "mnemonic": "movsx",
+      "role": "reload player state"
+    },
+    {
+      "address": "0x00426ffd",
+      "mnemonic": "cmp",
+      "role": "test invulnerable state three"
+    },
+    {
+      "address": "0x00427000",
+      "mnemonic": "je",
+      "role": "allow invulnerable player"
+    },
+    {
+      "address": "0x00427153",
+      "mnemonic": "fld",
+      "role": "load grab top y"
+    },
+    {
+      "address": "0x00427159",
+      "mnemonic": "fcomp",
+      "role": "compare grab top y with item bottom y"
+    },
+    {
+      "address": "0x0042715c",
+      "mnemonic": "fnstsw",
+      "role": "publish first y comparison status"
+    },
+    {
+      "address": "0x0042715e",
+      "mnemonic": "and",
+      "role": "select C0/C3 for first y comparison"
+    },
+    {
+      "address": "0x00427163",
+      "mnemonic": "je",
+      "role": "reject when grab top is greater"
+    },
+    {
+      "address": "0x00427165",
+      "mnemonic": "mov",
+      "role": "load player for grab bottom y"
+    },
+    {
+      "address": "0x0042716b",
+      "mnemonic": "fld",
+      "role": "load grab bottom y"
+    },
+    {
+      "address": "0x00427171",
+      "mnemonic": "fcomp",
+      "role": "compare grab bottom y with item top y"
+    },
+    {
+      "address": "0x00427174",
+      "mnemonic": "fnstsw",
+      "role": "publish second y comparison status"
+    },
+    {
+      "address": "0x00427176",
+      "mnemonic": "test",
+      "role": "select C0/C2 for second y comparison"
+    },
+    {
+      "address": "0x00427179",
+      "mnemonic": "jp",
+      "role": "accept non-separated or unordered y"
+    },
+    {
+      "address": "0x00427dd8",
+      "mnemonic": "fld",
+      "role": "load selected vertical speed"
+    },
+    {
+      "address": "0x00427ddb",
+      "mnemonic": "fmul",
+      "role": "multiply bomb movement factor"
+    },
+    {
+      "address": "0x00427de1",
+      "mnemonic": "fmul",
+      "role": "multiply effective frame factor"
+    },
+    {
+      "address": "0x00427ded",
+      "mnemonic": "fadd",
+      "role": "add prior player y"
+    },
+    {
+      "address": "0x00427df5",
+      "mnemonic": "fstp",
+      "role": "store binary32 movement candidate y"
+    },
+    {
+      "address": "0x00427e60",
+      "mnemonic": "fld",
+      "role": "load candidate y for lower clamp"
+    },
+    {
+      "address": "0x00427e66",
+      "mnemonic": "fcomp",
+      "role": "compare candidate y with lower 16"
+    },
+    {
+      "address": "0x00427e6c",
+      "mnemonic": "fnstsw",
+      "role": "publish lower-clamp status"
+    },
+    {
+      "address": "0x00427e6e",
+      "mnemonic": "test",
+      "role": "select C0/C2 for lower clamp"
+    },
+    {
+      "address": "0x00427e71",
+      "mnemonic": "jp",
+      "role": "skip lower assignment unless candidate is less"
+    },
+    {
+      "address": "0x00427e79",
+      "mnemonic": "mov",
+      "role": "load lower-bound bits"
+    },
+    {
+      "address": "0x00427e7f",
+      "mnemonic": "mov",
+      "role": "assign lower-bound y"
+    },
+    {
+      "address": "0x00427e87",
+      "mnemonic": "fld",
+      "role": "load upper-bound base 16"
+    },
+    {
+      "address": "0x00427e8d",
+      "mnemonic": "fadd",
+      "role": "add movement height 416"
+    },
+    {
+      "address": "0x00427e99",
+      "mnemonic": "fcomp",
+      "role": "compare upper 432 with candidate y"
+    },
+    {
+      "address": "0x00427e9f",
+      "mnemonic": "fnstsw",
+      "role": "publish upper-clamp status"
+    },
+    {
+      "address": "0x00427ea1",
+      "mnemonic": "test",
+      "role": "select C0/C2 for upper clamp"
+    },
+    {
+      "address": "0x00427ea4",
+      "mnemonic": "jp",
+      "role": "skip upper assignment unless upper is less"
+    },
+    {
+      "address": "0x00427ea6",
+      "mnemonic": "fld",
+      "role": "reload upper-bound base"
+    },
+    {
+      "address": "0x00427eac",
+      "mnemonic": "fadd",
+      "role": "recompute upper 432"
+    },
+    {
+      "address": "0x00427eb8",
+      "mnemonic": "fstp",
+      "role": "assign upper-bound y"
+    },
+    {
+      "address": "0x00427ff4",
+      "mnemonic": "fld",
+      "role": "load clamped player y for grab top"
+    },
+    {
+      "address": "0x00427ff7",
+      "mnemonic": "fsub",
+      "role": "subtract grab radius y"
+    },
+    {
+      "address": "0x00427ffa",
+      "mnemonic": "fstp",
+      "role": "store grab top y temporary"
+    },
+    {
+      "address": "0x0042801f",
+      "mnemonic": "mov",
+      "role": "load grab top y bits"
+    },
+    {
+      "address": "0x00428025",
+      "mnemonic": "mov",
+      "role": "carry grab top y bits"
+    },
+    {
+      "address": "0x00428041",
+      "mnemonic": "mov",
+      "role": "reload grab top y bits"
+    },
+    {
+      "address": "0x00428044",
+      "mnemonic": "mov",
+      "role": "store grab top y"
+    },
+    {
+      "address": "0x00428094",
+      "mnemonic": "fld",
+      "role": "load clamped player y for grab bottom"
+    },
+    {
+      "address": "0x00428097",
+      "mnemonic": "fadd",
+      "role": "add grab radius y"
+    },
+    {
+      "address": "0x0042809a",
+      "mnemonic": "fstp",
+      "role": "store grab bottom y temporary"
+    },
+    {
+      "address": "0x004280bf",
+      "mnemonic": "mov",
+      "role": "load grab bottom y bits"
+    },
+    {
+      "address": "0x004280c5",
+      "mnemonic": "mov",
+      "role": "carry grab bottom y bits"
+    },
+    {
+      "address": "0x004280e2",
+      "mnemonic": "mov",
+      "role": "reload grab bottom y bits"
+    },
+    {
+      "address": "0x004280e5",
+      "mnemonic": "mov",
+      "role": "store grab bottom y"
+    },
+    {
+      "address": "0x00428d3f",
+      "mnemonic": "fld",
+      "role": "load arcade height for respawn"
+    },
+    {
+      "address": "0x00428d45",
+      "mnemonic": "fsub",
+      "role": "subtract respawn offset 64"
+    },
+    {
+      "address": "0x00428d4e",
+      "mnemonic": "fstp",
+      "role": "store respawn y 384"
+    },
+    {
+      "address": "0x00428ed4",
+      "mnemonic": "mov",
+      "role": "restore spawning vertical multiplier 1"
+    },
+    {
+      "address": "0x00429d55",
+      "mnemonic": "fld",
+      "role": "load arcade height for initial y"
+    },
+    {
+      "address": "0x00429d5b",
+      "mnemonic": "fsub",
+      "role": "subtract initial offset 64"
+    },
+    {
+      "address": "0x00429d64",
+      "mnemonic": "fstp",
+      "role": "store initial y 384"
+    },
+    {
+      "address": "0x00429df6",
+      "mnemonic": "mov",
+      "role": "store grab radius y 12"
+    },
+    {
+      "address": "0x00429e2f",
+      "mnemonic": "add",
+      "role": "select character speed table record"
+    },
+    {
+      "address": "0x00429e3e",
+      "mnemonic": "mov",
+      "role": "copy six CharacterData words"
+    },
+    {
+      "address": "0x00429e43",
+      "mnemonic": "rep",
+      "role": "copy CharacterData record"
+    },
+    {
+      "address": "0x00429e45",
+      "mnemonic": "fld",
+      "role": "load exact sqrt input 2"
+    },
+    {
+      "address": "0x00429e51",
+      "mnemonic": "call",
+      "role": "compute sqrt for diagonal speed"
+    },
+    {
+      "address": "0x00429e62",
+      "mnemonic": "fdivr",
+      "role": "divide orthogonal speed by sqrt 2"
+    },
+    {
+      "address": "0x00429e6b",
+      "mnemonic": "fstp",
+      "role": "store diagonal movement speed"
+    },
+    {
+      "address": "0x00429e71",
+      "mnemonic": "fld",
+      "role": "reload exact sqrt input 2"
+    },
+    {
+      "address": "0x00429e7d",
+      "mnemonic": "call",
+      "role": "compute sqrt for focused diagonal speed"
+    },
+    {
+      "address": "0x00429e8e",
+      "mnemonic": "fdivr",
+      "role": "divide focused speed by sqrt 2"
+    },
+    {
+      "address": "0x00429e97",
+      "mnemonic": "fstp",
+      "role": "store focused diagonal speed"
+    },
+    {
+      "address": "0x0042a082",
+      "mnemonic": "mov",
+      "role": "store initial vertical multiplier 1"
+    },
+    {
+      "address": "0x0042a266",
+      "mnemonic": "mov",
+      "role": "set replay framerate multiplier 1"
+    },
+    {
+      "address": "0x0045bc34",
+      "mnemonic": "lea",
+      "role": "locate sqrt argument"
+    },
+    {
+      "address": "0x0045bc38",
+      "mnemonic": "call",
+      "role": "load and classify sqrt argument"
+    },
+    {
+      "address": "0x0045bc3e",
+      "mnemonic": "fstcw",
+      "role": "capture x87 control word"
+    },
+    {
+      "address": "0x0045bc48",
+      "mnemonic": "cmp",
+      "role": "check target control profile"
+    },
+    {
+      "address": "0x0045bc5c",
+      "mnemonic": "fsqrt",
+      "role": "square root positive finite input"
+    }
+  ],
+  "comparison_contracts": [
+    {
+      "address": "0x00427e66",
+      "base_obligation_id": "cmp-00427e66",
+      "consumer_signature": "fnstsw ax; test ah,0x5; jp",
+      "truth_table_theorem": "ZkTH06.X87Compare.test_5_jp_table",
+      "role": "lower player-y clamp",
+      "base_slice_disposition": "unclassified"
+    },
+    {
+      "address": "0x00427e99",
+      "base_obligation_id": "cmp-00427e99",
+      "consumer_signature": "fnstsw ax; test ah,0x5; jp",
+      "truth_table_theorem": "ZkTH06.X87Compare.test_5_jp_table",
+      "role": "upper player-y clamp",
+      "base_slice_disposition": "unclassified"
+    },
+    {
+      "address": "0x00427159",
+      "base_obligation_id": "cmp-00427159",
+      "consumer_signature": "fnstsw ax; and eax,0x4100; je",
+      "truth_table_theorem": "ZkTH06.X87Compare.and_4100_je_table",
+      "role": "grab-top/item-bottom separation",
+      "base_slice_disposition": "unclassified"
+    },
+    {
+      "address": "0x00427171",
+      "base_obligation_id": "cmp-00427171",
+      "consumer_signature": "fnstsw ax; test ah,0x5; jp",
+      "truth_table_theorem": "ZkTH06.X87Compare.test_5_jp_table",
+      "role": "grab-bottom/item-top non-separation",
+      "base_slice_disposition": "unclassified"
+    }
+  ],
+  "derived_contract": {
+    "initial_and_respawn_y": "384",
+    "movement_lower_y": "16",
+    "movement_upper_y": "432",
+    "grab_radius_y": "12",
+    "grab_top_range_if_center_bounded": "4..420",
+    "grab_bottom_range_if_center_bounded": "28..444",
+    "ordered_clamp_exception_behavior": {
+      "negative_infinity": "assign lower 16",
+      "positive_infinity": "assign upper 432",
+      "nan": "both JP branches skip assignment; NaN survives"
+    },
+    "lean_contracts": {
+      "total_clamp": "ZkTH06.PlayerPosition.clamp_bounded_of_not_nan",
+      "finite_movement_step": "ZkTH06.PlayerPosition.movement_step_y_bounded",
+      "initial": "ZkTH06.PlayerPosition.initial_y_bounded",
+      "respawn": "ZkTH06.PlayerPosition.respawn_y_bounded",
+      "grab_box": "ZkTH06.PlayerPosition.bounded_center_grab_box"
+    }
+  },
+  "evidence_status": "exact static signatures, pinned source candidates, and proved model consequences; not verified decoding, compiler correspondence, whole-program write completeness, x87/binary32 semantics, invariant preservation, scheduling, or guest refinement",
+  "open_obligations": [
+    "Prove or translation-validate every checked instruction and source alignment.",
+    "Prove the movement-area constants remain initialized across GameManager reinitialization.",
+    "Prove all reachable speed, bomb-multiplier, and effective-rate writers are covered.",
+    "Prove finite movement operands and the positive sqrt(2) path cannot produce a NaN candidate.",
+    "Bind binary32 stores and the four ordered comparisons to the total Lean clamp/collision models.",
+    "Prove Player update precedes item collision whenever collision can accept the player state.",
+    "Prove no unmodeled direct or aliased writer corrupts player center/grab-box fields.",
+    "Prove the zkVM guest refines the address-bound player-position and collision contract."
+  ],
+  "counts": {
+    "mapped_functions": 8,
+    "source_anchors": 21,
+    "binary32_constants": 5,
+    "character_speed_records": 4,
+    "checked_instruction_roles": 95,
+    "comparison_contracts": 4
+  },
+  "artifact_sha256": "9479136fa169191d88c96ef92f06607eeaeaa751996bab0fcd820f4a2a2440bb"
+}

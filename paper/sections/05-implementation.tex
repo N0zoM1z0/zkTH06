@@ -57,6 +57,10 @@ As of 9 August 2026, the following components are implemented:
   \item a byte-free audit of all 37 instructions in the 117-byte helper,
   recording the masked-invalid integer-indefinite path and its zero low-EAX
   observation, plus the corresponding Lean bit-vector projection theorem;
+  \item a byte-free player-position audit of 95 instruction signatures across
+  eight mapped functions, 21 pinned source anchors, five binary32 constants,
+  four character-speed records, and four comparison contracts, plus total Lean
+  proofs of non-NaN clamping, initial/respawn bounds, and grab-box bounds;
   \item a byte-free audit of 77 point-item score instructions, four score
   profiles, five difficulty-table entries, and eight helper calls, together
   with Lean proofs over exact rational and exceptional coordinate classes of

@@ -20,7 +20,8 @@ ARTIFACT = ROOT / "arithmetic" / "item-score-v1.json"
 BASE_LEDGER = ROOT / "arithmetic" / "obligations-v1.json"
 SOURCE_LEDGER = ROOT / "arithmetic" / "ftol2-source-candidates-v1.json"
 HELPER_AUDIT = ROOT / "arithmetic" / "ftol2-helper-v1.json"
-EXPECTED_ARTIFACT_SHA256 = "25319fc8d8a188103111b64426844dfb0c4399dfc7f6849ac1f48bf45dc8d138"
+PLAYER_AUDIT = ROOT / "arithmetic" / "player-position-v1.json"
+EXPECTED_ARTIFACT_SHA256 = "7c3a5c490b7b0de6a91eb74a79c153be8d3e36af1769c5d942e1d3d9efe3e44f"
 
 
 def reject_disassembly_operands(value: Any) -> None:
@@ -41,6 +42,7 @@ def main() -> int:
     base_ledger = json.loads(BASE_LEDGER.read_text())
     source_ledger = json.loads(SOURCE_LEDGER.read_text())
     helper_audit = json.loads(HELPER_AUDIT.read_text())
+    player_audit = json.loads(PLAYER_AUDIT.read_text())
 
     assert document["schema_version"] == audit.SCHEMA_VERSION
     assert document["kind"] == audit.KIND
@@ -52,6 +54,7 @@ def main() -> int:
         "base_ledger_artifact_sha256": base_ledger["artifact_sha256"],
         "source_candidate_artifact_sha256": source_ledger["artifact_sha256"],
         "ftol2_helper_artifact_sha256": helper_audit["artifact_sha256"],
+        "player_position_artifact_sha256": player_audit["artifact_sha256"],
     }
     assert document["generator"]["sha256"] == arithmetic_obligations.sha256_file(
         ROOT / "tools" / "item_score_audit.py"

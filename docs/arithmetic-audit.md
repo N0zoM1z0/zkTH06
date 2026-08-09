@@ -346,6 +346,34 @@ discharge discipline are in
 [`arithmetic/README.md`](../arithmetic/README.md) and
 [`arithmetic-obligations.md`](arithmetic-obligations.md).
 
+## Player-position invariant decomposition
+
+The point-item geometry depends on the player's vertical center and radius. A
+new hash-bound audit follows every identified retail path that initializes,
+respawns, moves, clamps, and publishes the player grab box. It checks 95 exact
+instruction signatures in eight mapped functions, 21 pinned authoritative
+source anchors, five binary32 constants, four character-speed records, and the
+four relevant comparison contracts from the base ledger. The sealed artifact
+is [`arithmetic/player-position-v1.json`](../arithmetic/player-position-v1.json),
+with digest
+`9479136fa169191d88c96ef92f06607eeaeaa751996bab0fcd820f4a2a2440bb`.
+
+The exception behavior matters. The ordered lower-then-upper clamp sends
+negative infinity to 16 and positive infinity to 432. NaN is unordered at both
+comparisons and follows the audited parity branches that skip assignment, so
+it survives. The total Lean model therefore proves boundedness from the
+strictly weaker premise that the movement candidate is not NaN. It also checks
+initial/respawn center 384 and derives radius-12 grab-box ranges `4..420` and
+`28..444` once the center is bounded.
+
+This result converts one vague invariant into a smaller proof queue; it does
+not prove reachability. Whole-program writer completeness (including aliased
+writes), GameManager reinitialization, non-NaN candidate construction,
+binary32/x87 comparison and store semantics, Player-before-Item scheduling,
+verified decoding/source correspondence, and guest refinement remain open.
+The effective frame multiplier is explicitly treated as having adaptive
+publishers rather than being assumed constant.
+
 ## Point-item score range decomposition
 
 The other eight retained calls form four inlined difficulty profiles inside
@@ -360,10 +388,11 @@ near the player. The source AABB test is written as a disjunction of separating
 ordered comparisons. If an item coordinate is NaN, those comparisons are false
 and the code can fall through to collision success. The first model therefore
 exposed a missing premise. A smaller observation quotient removes the need to
-prove item finiteness: with a finite player box, either a finite item overlaps
-and is geometrically bounded, an infinity is separated, or NaN reaches the
-helper's masked-invalid result. Integer-indefinite has low EAX zero, so NaN
-selects the top-score branch instead of entering the position arithmetic.
+prove item finiteness: once the player-position obligations above establish a
+finite player box, either a finite item overlaps and is geometrically bounded,
+an infinity is separated, or NaN reaches the helper's masked-invalid result.
+Integer-indefinite has low EAX zero, so NaN selects the top-score branch instead
+of entering the position arithmetic.
 
 The revised Lean model represents finite binary32 coordinates as exact
 rationals plus explicit positive-infinity, negative-infinity, and NaN classes.
@@ -372,8 +401,9 @@ item half-size 8 imply item `y` in `-4..452`; truncation toward zero preserves
 that interval. Across all four coordinate classes, it proves scores remain in
 `27600..300000`. It also retains signed-i32, penalty, and conditional u32-score
 addition bounds. These theorems do not yet bind the binary collision
-instructions, masked-invalid `fistp`, helper control flow, player invariant, or
-guest. Reachable difficulty in `0..4` and pre-update score in
+instructions, masked-invalid `fistp`, helper control flow, the remaining
+player-position obligations, or guest. Reachable difficulty in `0..4` and
+pre-update score in
 `0..999999999` remain separate control obligations.
 
 A separate GDB probe on a debug Linux reconstruction observed 2,081 point-item

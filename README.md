@@ -41,9 +41,12 @@ score arithmetic, while a sealed Linux probe found 2,081 finite corpus
 collections inside that interval. A total rational/exceptional model now avoids
 assuming that item positions are finite: infinities cannot overlap a finite
 player box, while NaN reaches the helper's modeled invalid low-EAX result zero
-and selects the bounded top-score branch. The proof still needs a finite,
-bounded player-box invariant, exact x87/helper semantics, verified decoding,
-and guest binding.
+and selects the bounded top-score branch. A new 95-instruction player-position
+audit and total Lean clamp model show that the retail lower/upper clamp restores
+the `16..432` center invariant even from either infinity; only NaN bypasses both
+assignments. This replaces the blanket finite-player premise with explicit
+candidate-not-NaN, writer-completeness, scheduling, binary/x87-binding, and
+guest-refinement obligations. None of those bindings is claimed closed yet.
 
 ## Repository boundary
 

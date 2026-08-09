@@ -205,6 +205,7 @@ def build_document(
     base_ledger: dict[str, Any],
     source_ledger: dict[str, Any],
     helper_audit: dict[str, Any],
+    player_audit: dict[str, Any],
     objdump: str,
     tool_path: Path,
 ) -> dict[str, Any]:
@@ -229,6 +230,22 @@ def build_document(
         raise ValueError("helper audit is bound to a different __ftol2 body")
     if helper_audit.get("masked_invalid_path", {}).get("eax") != "0x00000000":
         raise ValueError("helper audit does not expose the required invalid low-EAX quotient")
+    if player_audit.get("kind") != "zkth06.player-position-audit":
+        raise ValueError("selected player-position artifact has the wrong kind")
+    player_inputs = player_audit.get("inputs", {})
+    if (
+        player_inputs.get("executable_sha256"),
+        player_inputs.get("mapping_sha256"),
+        player_inputs.get("base_ledger_artifact_sha256"),
+    ) != (executable_hash, mapping_hash, base_ledger["artifact_sha256"]):
+        raise ValueError("player-position audit is not derived from the selected target")
+    player_contract = player_audit.get("derived_contract", {})
+    if (
+        player_contract.get("movement_lower_y"),
+        player_contract.get("movement_upper_y"),
+        player_contract.get("grab_radius_y"),
+    ) != ("16", "432", "12"):
+        raise ValueError("player-position audit does not expose the required score geometry")
 
     function = verify_function_mapping(x87_audit.load_mapping(mapping_path))
     disassembler, disassembly = x87_audit.run_objdump(executable, objdump)
@@ -292,6 +309,7 @@ def build_document(
             "base_ledger_artifact_sha256": base_ledger["artifact_sha256"],
             "source_candidate_artifact_sha256": source_ledger["artifact_sha256"],
             "ftol2_helper_artifact_sha256": helper_audit["artifact_sha256"],
+            "player_position_artifact_sha256": player_audit["artifact_sha256"],
         },
         "generator": {
             "path": "tools/item_score_audit.py",
@@ -347,8 +365,8 @@ def build_document(
         },
         "evidence_status": (
             "static decode and derived difficulty/score facts; not a decoder proof, "
-            "source correspondence theorem, reachable finite-player invariant, "
-            "helper refinement, or guest binding"
+            "source correspondence theorem, proof of the player-position artifact's "
+            "open obligations, helper refinement, or guest binding"
         ),
         "critical_nan_note": (
             "AABB separation comparisons are unordered-false on NaN, so collision success "
@@ -358,7 +376,7 @@ def build_document(
         "open_obligations": [
             "Prove or translation-validate the checked score blocks and difficulty table.",
             "Prove every reachable scoring difficulty is in the decoded 0..4 interval.",
-            "Prove the player center/grab box is finite with player y in 16..432.",
+            "Discharge the player-position artifact's candidate-NaN, writer, scheduling, and code bindings.",
             "Bind x87 AABB comparisons to the finite/infinity/NaN coordinate model.",
             "Prove both exact __ftol2 calls implement bounded truncation or invalid low-EAX zero.",
             "Prove the pre-update gameplay score satisfies the modeled 0..999999999 bound.",
@@ -389,6 +407,11 @@ def main() -> int:
         type=Path,
         default=Path("arithmetic/ftol2-helper-v1.json"),
     )
+    parser.add_argument(
+        "--player-audit",
+        type=Path,
+        default=Path("arithmetic/player-position-v1.json"),
+    )
     parser.add_argument("--objdump", default="objdump")
     destination = parser.add_mutually_exclusive_group()
     destination.add_argument("--output", type=Path)
@@ -401,6 +424,7 @@ def main() -> int:
         load_sealed(args.ledger, "base arithmetic ledger"),
         load_sealed(args.source_ledger, "source-candidate ledger"),
         load_sealed(args.helper_audit, "__ftol2 helper audit"),
+        load_sealed(args.player_audit, "player-position audit"),
         args.objdump,
         Path(__file__).resolve(),
     )

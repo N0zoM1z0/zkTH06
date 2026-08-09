@@ -41,9 +41,13 @@ instead support a total finite/infinity/NaN score model: exceptional invalid
 conversion selects the bounded top branch, while finite collection gives the
 geometric interval.  The model conditionally proves the resulting score
 bounds; 2,081 Linux collections supply counterexample-search evidence for its
-finite branch.  This remains conservative bookkeeping: startup state,
-load/remainder behavior, noninterference, the finite bounded player invariant,
-architectural helper semantics, verified code correspondence, and
+finite branch.  A dependent 95-instruction player audit and total Lean clamp
+theorem further show that either infinity is repaired by the retail bounds and
+reduce the former blanket player premise to candidate-not-NaN, writer,
+scheduling, binary/x87, and code-binding obligations.  This remains
+conservative bookkeeping: startup state, load/remainder behavior,
+noninterference, those player obligations, architectural helper semantics,
+verified code correspondence, and
 transcendental microarchitecture are not yet proved.  The
 fidelity design therefore binds operations to original addresses and actual
 observations instead of assuming source-level host arithmetic is exact.
