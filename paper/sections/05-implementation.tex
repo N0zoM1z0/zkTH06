@@ -26,14 +26,18 @@ As of 9 August 2026, the following components are implemented:
   \item a hash-bound x87/XMM audit that attributes instruction sites and direct
   helper calls through the authoritative mapping, emits a path-free JSON
   summary, and has a proprietary-input-free synthetic test;
-  \item a checked Lean decode of target control word \code{0x027f}; its narrow
-  theorem covers precision, rounding, exception-mask fields, and the
-  corresponding SoftFloat configuration value, but neither arithmetic
-  operations nor loader-established entry state;
+  \item checked Lean decodes of target control word \code{0x027f} and the D3DX
+  toward-zero profile \code{0x0e7f}; their narrow theorems cover precision,
+  rounding, exception-mask fields, and corresponding SoftFloat configuration
+  values, but neither arithmetic operations nor loader-established entry state;
   \item a reproducible, commit-pinned SoftFloat Release 3e differential probe
-  for basic x87 result bits, using finite binary32-derived operands and
-  canonical 53-bit-precision extended intermediates across the extended
-  exponent range;
+  for results and six x87 exception bits across five basic operations, two
+  store widths, \code{frndint}, and two signed \code{fistp} widths, using
+  finite binary32-derived operands and canonical 53-bit-precision extended
+  intermediates;
+  \item a finite-input Lean exception-priority model checking the rejected
+  denormal rule's divide-by-zero and negative-square-root counterexamples and
+  the tested \code{frndint}/\code{fstp}/\code{fistp} boundary distinction;
   \item Linux CI that builds the reference runner and cross-checks both replay
   validators on three valid and three deliberately malformed cases, while also
   requiring canonical-record corruption to fail closed.

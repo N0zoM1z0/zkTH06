@@ -15,9 +15,11 @@ that state machine agree frame-for-frame with the shipped 32-bit Windows game.
 A first owner-local Lean model now machine-checks why active-only Effect slots
 violate one-step noninterference and how a narrow dormant reuse shadow repairs
 that modeled allocation step. It is a proof-design result, not a whole-game or
-C++-binding theorem. A second small definition decodes the audited target x87
-control word and its SoftFloat configuration correspondence without yet
-claiming complete arithmetic semantics.
+C++-binding theorem. A second small definition decodes the audited target and
+D3DX toward-zero x87 profiles and their SoftFloat configuration correspondence
+without yet claiming complete arithmetic semantics.
+A finite-input exception model separately checks why denormal signaling must
+follow opcode priority rather than a single operand-class rule.
 
 ## Repository boundary
 

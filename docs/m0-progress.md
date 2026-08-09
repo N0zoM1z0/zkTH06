@@ -25,8 +25,11 @@ Last updated: 2026-08-09
   mapped functions, distinguishes XMM-bearing CRT/D3DX code, and emits a
   path-free JSON summary; plus a checked Lean decode of control word `0x027f`.
 - A reproducible, commit-pinned Berkeley SoftFloat Release 3e differential
-  probe for basic x87 result bits at that control word, covering both
-  binary32-derived values and canonical PC53 extended intermediates.
+  probe for x87 results and six exception bits, covering basic arithmetic,
+  binary32/binary64 stores, `frndint`, and signed 32/64-bit `fistp` across
+  nearest-even and toward-zero profiles.
+- A checked finite-input Lean model of the rejected naive denormal rule and the
+  instruction-specific predicate exercised by that probe.
 
 Compatibility playback intentionally restores every per-stage replay snapshot,
 matching shipped playback. It is an oracle-development mode, not the future
@@ -91,13 +94,15 @@ profile must therefore be measured and constrained explicitly. The complete
 audit and soundness consequences are in
 [`arithmetic-audit.md`](arithmetic-audit.md).
 
-The first basic-operation oracle experiment compared `add`, `sub`, `mul`,
-`div`, and `sqrt` against pinned SoftFloat result bits. On an AMD EPYC 9654,
-5,000,798 finite binary32-derived cases and 5,001,314 canonical PC53 extended
-cases produced no mismatch. This is deterministic, host-specific
-counterexample search only: exception/status semantics, conversions, stores,
-transcendentals, address binding, and a model-to-code proof remain open. The
-reproduction and claim boundary are in
+The arithmetic oracle now compares `add`, `sub`, `mul`, `div`, `sqrt`,
+binary32/binary64 `fstp`, `frndint`, and signed 32/64-bit `fistp` results plus
+all six x87 exception bits. On an AMD EPYC 9654, 30,002,582 deterministic
+result/exception tuples across binary32-derived and PC53 extended inputs,
+nearest-even, and toward-zero produced no mismatch. The experiment itself
+found and rejected a naive denormal-operand rule before the instruction-specific
+model passed. This remains host-specific counterexample search: condition
+codes, load exceptions, full helper ABIs, transcendentals, address binding, and
+a model-to-code proof remain open. The reproduction and claim boundary are in
 [`../arithmetic/README.md`](../arithmetic/README.md).
 
 ## Remaining M0 gates
@@ -110,8 +115,8 @@ reproduction and claim boundary are in
 3. Export the same schema from the original executable or an exact-reference
    build and identify the first differing field.
 4. Record the entry x87/CPU profile, instrument reached arithmetic sites,
-   extend the basic-operation oracle through stores/conversions/status, and
-   replace host-libm behavior with an exact, address-bound arithmetic baseline;
-   prove skipped-draw arithmetic noninterference before removing it.
+   extend the oracle through comparisons, load exceptions, and full helper
+   ABIs, and replace host-libm behavior with an exact, address-bound arithmetic
+   baseline; prove skipped-draw arithmetic noninterference before removing it.
 5. Add canonical-proof playback that derives stage transitions and rejects a
    replay whose stage snapshots do not match live state.

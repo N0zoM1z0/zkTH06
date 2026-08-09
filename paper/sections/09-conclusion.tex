@@ -21,9 +21,14 @@ A first static arithmetic census now makes the floating-point gate concrete:
 the mapped game surface contains thousands of x87 operations, 26 inline
 \code{fsincos} sites, 1,793 stores, and numerous calls into conversion and
 transcendental helpers.  The embedded \code{0x027f} control profile is decoded
-in Lean, but startup state and transcendental microarchitecture are not yet
-proved.  The fidelity design therefore binds operations to original addresses
-and store widths instead of assuming source-level host arithmetic is exact.
+in Lean together with the D3DX toward-zero profile.  A pinned SoftFloat probe
+matches 30,002,582 hardware result/exception tuples across basic arithmetic,
+stores, rounding, and integer conversion, after an initial denormal-priority
+rule was falsified and corrected.  This remains counterexample search: startup
+state, condition codes, helper ABIs, address binding, and transcendental
+microarchitecture are not yet proved.  The fidelity design therefore binds
+operations to original addresses and store widths instead of assuming
+source-level host arithmetic is exact.
 
 That evidence will guide the projection, but it cannot prove a slice sound.
 The intended end state additionally requires a machine-checked commuting

@@ -92,5 +92,17 @@ itself bind arithmetic semantics to original instruction addresses.  The next
 arithmetic milestone therefore became stores, conversions, status behavior,
 and code-to-model binding rather than immediate fixed-point substitution.
 
+\paragraph{Phase L: make exception priority part of the operation semantics.}
+Extending the oracle to all six x87 exception bits immediately falsified the
+first denormal rule: a subnormal dividend divided by zero set zero-divide but
+not denormal-operand for the isolated arithmetic instruction.  Instruction
+references also distinguish \code{frndint}, which can set denormal-operand,
+from \code{fistp} and \code{fstp}, which do not.  The probe now treats this bit
+as opcode- and priority-specific, tests five store/round/conversion boundaries
+under nearest-even and toward-zero, and records exception-coverage counts.  The
+result strengthened the executable oracle while reinforcing that floating
+point must be modeled as an instruction/state machine rather than as pure real
+arithmetic plus a single rounding function.
+
 Future changes to the central claim or state boundary should be appended here
 with the evidence that motivated them.

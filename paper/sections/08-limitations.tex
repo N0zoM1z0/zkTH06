@@ -11,10 +11,12 @@
   transcendental approximations also require a processor/emulator profile.
   Host \code{libm}, spill behavior, and intermediate precision may diverge by
   one or more bits and later alter collisions.  A pinned SoftFloat experiment
-  agrees with hardware result bits for the tested basic-operation cases, but
-  it is neither formally verified nor complete x87 state semantics.  The
-  address-indexed exact baseline, code binding, and any fixed-point refinement
-  have not yet been implemented or proved.
+  agrees with hardware results and six exception bits for tested arithmetic,
+  store, rounding, and integer-conversion cases, but it is neither formally
+  verified nor complete x87 state semantics.  Condition codes, load exceptions,
+  complete helper ABIs, address binding, and transcendental behavior remain
+  open.  The address-indexed exact baseline, code binding, and any fixed-point
+  refinement have not yet been implemented or proved.
   \item \textbf{Draw-chain effects.}  Headless mode skips drawing, but some draw
   callbacks write flags, ANM fields, laser positions, or other state that may be
   read later.  Each removal needs dependency analysis and corpus validation.

@@ -169,44 +169,68 @@ including `/Op`; nevertheless, the actual instruction and store boundaries,
 not a modern compiler's interpretation of the C++ expression, are binding
 evidence.
 
-## Basic-operation differential oracle
+## Arithmetic-boundary differential oracle
 
-A first executable experiment tests whether Berkeley SoftFloat Release 3e is a
-plausible independent oracle for the basic arithmetic subset. The source is
+An executable experiment tests whether Berkeley SoftFloat Release 3e is a
+plausible independent oracle for the reached arithmetic subset. The source is
 not vendored. [`tools/run_softfloat_probe.py`](../tools/run_softfloat_probe.py)
 exports exact commit
 `f74b1e48110ac3a27dd49b787d164e55e42d81d1` from an ignored checkout, verifies
-selected file hashes, compiles the 20 required translation units with the
+selected file hashes, compiles the 32 required translation units with the
 `8086` specialization in a temporary directory, and runs
 [`arithmetic/softfloat_probe.c`](../arithmetic/softfloat_probe.c).
 
-For `add`, `sub`, `mul`, `div`, and `sqrt`, the probe compares the raw
-sign/exponent and significand produced by x87 under control word `0x027f` with
-SoftFloat configured for round-to-nearest-even and
-`extF80_roundingPrecision = 64`. SoftFloat documents this setting as precision
-equivalent to `float64_t`: a 53-bit significand while retaining the extended
-format's exponent range. The configuration correspondence is also checked,
-without an arithmetic theorem, in `X87Profile.lean`.
+For `add`, `sub`, `mul`, `div`, and `sqrt`, the probe compares raw extended
+result bits under control word `0x027f` with SoftFloat configured for
+round-to-nearest-even and `extF80_roundingPrecision = 64`. SoftFloat documents
+this setting as precision equivalent to `float64_t`: a 53-bit significand while
+retaining the extended exponent range. The probe additionally compares `fstp`
+to binary32/binary64, `frndint`, and signed 32/64-bit `fistp` under both
+`0x027f` and the D3DX helper's toward-zero profile `0x0e7f`. Both profile
+decodings and their SoftFloat configuration mappings are checked, without an
+arithmetic theorem, in `X87Profile.lean`.
+
+The comparison now covers x87 exception bits 0--5 as well as results.
+SoftFloat's invalid, divide-by-zero, overflow, underflow, and inexact flags map
+directly. Its API has no x87 denormal-operand flag, so that bit is supplied by
+an opcode-specific predicate from the instruction reference. This distinction
+was experimentally necessary: a naive rule that marked every operation with a
+subnormal input disagreed on subnormal-dividend divided by zero, where the
+higher-priority zero-divide condition suppresses the arithmetic instruction's
+denormal flag. `fistp` and `fstp` also do not define that exception, while
+`frndint` does. These rules follow Intel's
+[Volume 2A instruction pages](https://www.intel.com/content/www/us/en/content-details/850971/intel-64-and-ia-32-architectures-software-developer-s-manual-volume-2a-instruction-set-reference-a-l.html)
+and are cross-referenced against AMD's
+[x87 instruction manual](https://docs.amd.com/v/u/en-US/26569_3.16); they are
+not inferred from SoftFloat.
+[`formal/ZkTH06/X87Exceptions.lean`](../formal/ZkTH06/X87Exceptions.lean)
+machine-checks the finite-class counterexamples and boundary predicate, while
+explicitly making no hardware-correctness claim.
 
 Two deterministic input families cover finite binary32-derived operands and
 canonical finite extended operands whose low eleven significand bits are zero,
-as expected after a 53-bit-precision operation. Boundary-heavy sampling covers
-the extended exponent range. On the initial AMD EPYC 9654 host with GCC 11.4.0,
-one million pseudorandom cases per operation and family plus fixed boundary
-cases produced:
+as expected after a 53-bit-precision operation. Boundary-heavy sampling spans
+the extended exponent range and signed integer limits. On the initial AMD EPYC
+9654 host with GCC 11.4.0, one million pseudorandom cases per operation,
+profile, and family plus fixed boundary cases produced:
 
-| Input family | Compared results | Mismatches |
-| --- | ---: | ---: |
-| finite binary32-derived | 5,000,798 | 0 |
-| canonical PC53 extended | 5,001,314 | 0 |
+| Family | binary32-derived tuples | PC53 extended tuples | Mismatches |
+| --- | ---: | ---: | ---: |
+| five basic operations | 5,000,798 | 5,001,314 | 0 |
+| five boundaries, two RC profiles | 10,000,140 | 10,000,330 | 0 |
+
+All six exception bits occurred in the basic campaign: 1,001,228 invalid,
+88,466 denormal-operand, 56 divide-by-zero, 255,746 overflow, 265,276
+underflow, and 7,547,221 inexact observations. Counts overlap when multiple
+bits are set. Across both campaigns, 30,002,582 result/exception tuples matched.
 
 This is host-specific counterexample search, not a proof that either
-implementation is correct. It compares result bits only. It does not cover the
-x87 status/tag words, arbitrary NaN inputs, denormal-operand signaling,
-comparisons, remainder, `frndint`, integer conversions, store rounding, helper
-ABIs, transcendental instructions, or instruction extraction. SoftFloat is
-therefore a candidate executable specification for a subset, not the
-soundness argument. Full commands and the dependency/license boundary are in
+implementation is correct. It does not cover x87 condition codes, TOP/tag
+state, stack faults, arbitrary NaN inputs, `fld m32fp` denormal signaling,
+comparisons, remainder, `fisttp`, complete `__ftol2` semantics, transcendental
+instructions, or address extraction. SoftFloat is therefore a candidate
+executable specification for a subset, not the soundness argument. Full
+commands and the dependency/license boundary are in
 [`arithmetic/README.md`](../arithmetic/README.md).
 
 ## Transcendentals are a scope decision
@@ -275,10 +299,10 @@ equivalence.
    replay corpus.
 3. Add field-level snapshots so the first arithmetic divergence identifies the
    owning field and original operation site.
-4. Extend the pinned differential oracle through the actually reached
-   comparison, store, `frndint`, and integer-conversion sequences, including
-   status flags; then bind the resulting basic-operation semantics to original
-   instruction addresses and a machine-checked definition.
+4. Extend the pinned differential oracle through reached comparison/condition
+   sequences, `fisttp`, `fld` denormal signaling, and the complete `__ftol2`
+   ABI; then bind the resulting semantics to original instruction addresses
+   and a machine-checked definition.
 5. Prove draw/D3DX noninterference one callback at a time. Only then may their
    x87 and XMM sites leave the arithmetic kernel.
 6. State and prove the chosen transcendental execution profile; corpus equality

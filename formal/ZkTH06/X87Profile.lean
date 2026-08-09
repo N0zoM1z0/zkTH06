@@ -1,9 +1,9 @@
 /-
 Copyright (C) 2026 N0zoM1z0
 
-This file decodes the x87 control-word profile found in the pinned TH06
-v1.02h executable. It does not yet define x87 arithmetic or prove that the
-Windows loader establishes this control word before the game entry point.
+This file decodes the base and D3DX toward-zero x87 control-word profiles found
+in the pinned TH06 v1.02h executable. It does not yet define x87 arithmetic or
+prove that the Windows loader establishes the base word before game entry.
 -/
 
 namespace ZkTH06.X87Profile
@@ -44,6 +44,9 @@ def allExceptionsMasked (word : ControlWord) : Bool :=
 /-- The control word embedded in the target CRT's trigonometric wrappers. -/
 def targetControlWord : ControlWord := 0x027f
 
+/-- The target profile with the D3DX helper's toward-zero RC bits applied. -/
+def towardZeroControlWord : ControlWord := 0x0e7f
+
 theorem target_precision_is_binary53 :
     precisionControl targetControlWord = .binary53 := by
   decide
@@ -54,6 +57,40 @@ theorem target_rounding_is_nearest_even :
 
 theorem target_masks_all_six_x87_exceptions :
     allExceptionsMasked targetControlWord = true := by
+  decide
+
+theorem toward_zero_profile_preserves_binary53 :
+    precisionControl towardZeroControlWord = .binary53 := by
+  decide
+
+theorem toward_zero_profile_rounds_toward_zero :
+    roundingControl towardZeroControlWord = .towardZero := by
+  decide
+
+theorem toward_zero_profile_masks_all_six_x87_exceptions :
+    allExceptionsMasked towardZeroControlWord = true := by
+  decide
+
+/-- Names for SoftFloat's four directly corresponding rounding modes. -/
+inductive SoftFloatRoundingMode where
+  | nearEven
+  | min
+  | max
+  | minMag
+deriving DecidableEq, Repr
+
+def softFloatRoundingMode : RoundingControl → SoftFloatRoundingMode
+  | .nearestEven => .nearEven
+  | .towardNegative => .min
+  | .towardPositive => .max
+  | .towardZero => .minMag
+
+theorem target_softfloat_rounding_mode :
+    softFloatRoundingMode (roundingControl targetControlWord) = .nearEven := by
+  decide
+
+theorem toward_zero_softfloat_rounding_mode :
+    softFloatRoundingMode (roundingControl towardZeroControlWord) = .minMag := by
   decide
 
 /--
@@ -72,6 +109,10 @@ def softFloatRoundingPrecision : PrecisionControl → Option Nat
 
 theorem target_softfloat_rounding_precision :
     softFloatRoundingPrecision (precisionControl targetControlWord) = some 64 := by
+  decide
+
+theorem toward_zero_softfloat_rounding_precision :
+    softFloatRoundingPrecision (precisionControl towardZeroControlWord) = some 64 := by
   decide
 
 end ZkTH06.X87Profile

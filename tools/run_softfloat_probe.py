@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build and run the pinned x87/SoftFloat result-bit differential probe."""
+"""Build and run the pinned x87/SoftFloat result/status differential probe."""
 
 from __future__ import annotations
 
@@ -40,17 +40,29 @@ SOFTFLOAT_SOURCES = (
     "source/extF80_mul.c",
     "source/extF80_sqrt.c",
     "source/extF80_sub.c",
+    "source/extF80_roundToInt.c",
+    "source/extF80_to_f32.c",
+    "source/extF80_to_f64.c",
+    "source/extF80_to_i32.c",
+    "source/extF80_to_i64.c",
     "source/f32_to_extF80.c",
     "source/s_addMagsExtF80.c",
     "source/s_approxRecipSqrt32_1.c",
     "source/s_approxRecipSqrt_1Ks.c",
+    "source/8086/s_commonNaNToF32UI.c",
+    "source/8086/s_commonNaNToF64UI.c",
     "source/8086/s_commonNaNToExtF80UI.c",
+    "source/8086/s_extF80UIToCommonNaN.c",
     "source/8086/s_f32UIToCommonNaN.c",
     "source/s_normRoundPackToExtF80.c",
     "source/s_normSubnormalExtF80Sig.c",
     "source/s_normSubnormalF32Sig.c",
     "source/8086/s_propagateNaNExtF80UI.c",
     "source/s_roundPackToExtF80.c",
+    "source/s_roundPackToF32.c",
+    "source/s_roundPackToF64.c",
+    "source/s_roundToI32.c",
+    "source/s_roundToI64.c",
     "source/s_shiftRightJam128.c",
     "source/s_subMagsExtF80.c",
     "source/8086/softfloat_raiseFlags.c",
@@ -165,8 +177,8 @@ def parse_args() -> argparse.Namespace:
     root = Path(__file__).resolve().parents[1]
     parser = argparse.ArgumentParser(
         description=(
-            "compare x87 CW 0x027f basic-operation result bits with pinned "
-            "Berkeley SoftFloat Release 3e"
+            "compare selected x87 arithmetic/boundary results and exception "
+            "bits with pinned Berkeley SoftFloat Release 3e"
         )
     )
     parser.add_argument(
@@ -218,6 +230,7 @@ def main() -> int:
             "-Wall",
             "-Wextra",
             "-Werror",
+            "-Wno-implicit-fallthrough",
             "-DSOFTFLOAT_FAST_INT64",
             "-DSOFTFLOAT_ROUND_ODD",
             "-DINLINE_LEVEL=5",
@@ -234,6 +247,7 @@ def main() -> int:
         subprocess.run(command, check=True)
 
         print(f"SoftFloat revision: {PINNED_REVISION}")
+        print(f"SoftFloat translation units: {len(SOFTFLOAT_SOURCES)}")
         print(f"probe SHA-256: {sha256(probe)}")
         print(f"host architecture: {machine}")
         print(f"host CPU: {cpu_model()}")

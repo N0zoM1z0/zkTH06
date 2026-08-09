@@ -9,9 +9,19 @@ whole-frame, whole-game, or C++-binding theorem is claimed.
 `0x027f` control word embedded in the pinned executable's CRT trigonometric
 wrappers. It checks 53-bit significand precision, round-to-nearest-even, and
 six masked x87 exceptions. It also checks that this precision field selects
-SoftFloat's documented `extF80_roundingPrecision = 64` configuration. These are
-profile/configuration facts only: they neither implement x87 operations nor
-prove SoftFloat equivalent to x87 or establish the Windows loader's entry word.
+SoftFloat's documented `extF80_roundingPrecision = 64` configuration. The same
+file decodes `0x0e7f`, produced when the audited D3DX helpers set toward-zero,
+and checks its mapping to SoftFloat's minimum-magnitude rounding mode. These
+are profile/configuration facts only: they neither implement x87 operations
+nor prove SoftFloat equivalent to x87 or establish the Windows loader's entry
+word.
+
+[`ZkTH06/X87Exceptions.lean`](ZkTH06/X87Exceptions.lean) records the
+finite-input denormal-operand predicate exercised by the differential probe. It
+checks counterexamples to the rejected "any subnormal input" rule for divide
+by zero and negative square root, and distinguishes `frndint` from the tested
+`fstp`/`fistp` boundaries. This is a machine-checked classification model, not
+a proof of the Intel/AMD manuals, hardware, SoftFloat, or the assembly harness.
 
 ## Checked Effect reuse result
 

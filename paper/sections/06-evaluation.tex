@@ -127,41 +127,62 @@ the result is deliberately a profile fact rather than an environment theorem.
 An original exporter must record and constrain the entry word and processor
 profile before exact transcendental equivalence can be claimed.
 
-\subsection{Basic-operation oracle experiment}
+\subsection{Arithmetic-boundary oracle experiment}
 
-The first arithmetic experiment compared x87 and Berkeley SoftFloat Release
-3e for add, subtract, multiply, divide, and square root under the decoded
-profile.  The runner exports exact upstream commit
+The arithmetic experiment compares x87 and Berkeley SoftFloat Release 3e for
+add, subtract, multiply, divide, and square root under the decoded PC53
+nearest-even profile.  It also compares binary32/binary64 \code{fstp},
+\code{frndint}, and signed 32/64-bit \code{fistp} under nearest-even and the
+audited D3DX toward-zero profile.  The runner exports exact upstream commit
 \code{f74b1e48110ac3a27dd49b787d164e55e42d81d1}, verifies selected file hashes,
-and compiles only the 20 required translation units with the SoftFloat
-\code{8086} specialization.  Both paths use round-to-nearest-even and 53-bit
-significand precision; raw extended sign/exponent and significand result bits
-are compared.
+and compiles only the 32 required translation units with the SoftFloat
+\code{8086} specialization.  The probe source for this run had SHA-256
+\begin{center}
+\small\ttfamily
+cf55d2ed7bde6c1020877b427eca43bc0f4e49f8ab7ffa29bfc4d8fdb487b392.
+\end{center}
+
+Raw result representations and x87 exception bits 0--5 are compared.  The
+SoftFloat flags map invalid, divide-by-zero, overflow, underflow, and inexact;
+the x87-only denormal-operand bit is supplied by an instruction-specific rule.
+The first such rule---set the bit whenever either arithmetic input is
+subnormal---failed on a fixed subnormal-dividend/zero-divisor case.  Following
+the documented exception priority and instruction-specific \code{frndint},
+\code{fistp}, and \code{fstp} behavior repaired the model before the reported
+campaign.  A finite-class Lean definition checks both counterexamples and the
+boundary distinction, but does not prove that the manuals, hardware, or
+SoftFloat implement that definition.
 
 On an AMD EPYC 9654 with GCC 11.4.0, one million deterministic pseudorandom
-cases per operation and input family, plus fixed boundary cases, yielded the
-following result.
+cases per operation, profile, and input family, plus fixed boundary cases,
+yielded Table~\ref{tab:softfloat-probe}.
 
 \begin{table}[h]
   \centering
   \small
-  \begin{tabular}{@{}lrr@{}}
+  \begin{tabular}{@{}lrrr@{}}
     \toprule
-    Input family & Results compared & Mismatches \\
+    Family & binary32-derived & PC53 extended & Mismatches \\
     \midrule
-    Finite binary32-derived & 5,000,798 & 0 \\
-    Canonical PC53 extended & 5,001,314 & 0 \\
+    Five basic operations & 5,000,798 & 5,001,314 & 0 \\
+    Five boundaries, two RC profiles & 10,000,140 & 10,000,330 & 0 \\
     \bottomrule
   \end{tabular}
-  \caption{Host-specific x87/SoftFloat basic-operation counterexample search.}
+  \caption{Host-specific x87/SoftFloat result/exception counterexample search.}
   \label{tab:softfloat-probe}
 \end{table}
+
+All six exception bits occurred in the basic campaign: 1,001,228 invalid,
+88,466 denormal-operand, 56 divide-by-zero, 255,746 overflow, 265,276
+underflow, and 7,547,221 inexact observations.  Counts overlap when an
+instruction sets multiple bits.  Across both campaigns, 30,002,582 tuples
+matched and the measured run took 4.3 seconds.
 
 Canonical PC53 inputs retain the full extended exponent range, set the
 explicit integer bit consistently with the exponent, and clear the eleven
 significand bits below the selected precision.  The zero-mismatch result makes
 SoftFloat a plausible oracle for this subset on the measured host; it proves
-neither implementation correct.  Exception/status state, arbitrary NaN inputs,
-comparisons, conversions, store rounding, helper ABIs, transcendental
-instructions, dynamic reachability, and model-to-code binding remain outside
-the experiment.
+neither implementation correct.  Condition codes, TOP/tag state, arbitrary
+NaN inputs, \code{fld m32fp} denormal signaling, comparisons, remainder,
+complete helper ABIs, transcendental instructions, dynamic reachability, and
+model-to-code binding remain outside the experiment.

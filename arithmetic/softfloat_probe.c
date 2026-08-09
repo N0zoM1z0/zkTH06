@@ -1,9 +1,11 @@
 /*
  * Copyright (C) 2026 N0zoM1z0
  *
- * Differential counterexample search for the basic x87 profile used by TH06.
- * This compares result bits only.  It is evidence, not a correctness proof for
- * Berkeley SoftFloat, the inline assembly, or the future zkVM arithmetic.
+ * Differential counterexample search for the x87 profile used by TH06.  For
+ * finite inputs it compares result bits and the six x87 exception-status bits
+ * across basic arithmetic, stores, rounding, and integer conversion.  It is
+ * evidence, not a correctness proof for Berkeley SoftFloat, this inline
+ * assembly harness, or the future zkVM arithmetic.
  */
 
 #include <errno.h>
@@ -30,6 +32,51 @@ _Static_assert(offsetof(extFloat80_t, signExp) == 8,
                "extFloat80 sign/exponent must match the x87 memory layout");
 
 enum operation { OP_ADD, OP_SUB, OP_MUL, OP_DIV, OP_SQRT };
+enum boundary_operation {
+    BOUNDARY_STORE_F32,
+    BOUNDARY_STORE_F64,
+    BOUNDARY_FRNDINT,
+    BOUNDARY_FIST_I32,
+    BOUNDARY_FIST_I64
+};
+
+struct hardware_result {
+    extFloat80_t value;
+    uint16_t status;
+};
+
+struct boundary_result {
+    extFloat80_t value;
+    uint64_t scalar;
+    uint16_t status;
+};
+
+struct rounding_profile {
+    const char *name;
+    uint16_t control_word;
+    uint_fast8_t softfloat_mode;
+};
+
+static uint16_t softfloat_x87_exception_bits(uint_fast8_t flags);
+static uint64_t basic_exception_counts[6];
+static uint64_t boundary_exception_counts[6];
+
+static void record_exception_bits(uint64_t counts[6], uint16_t status)
+{
+    for (unsigned bit = 0; bit < 6; ++bit) {
+        if (status & (UINT16_C(1) << bit)) ++counts[bit];
+    }
+}
+
+static void print_exception_counts(const char *label, const uint64_t counts[6])
+{
+    printf("%s exception observations: invalid=%" PRIu64
+           " denormal=%" PRIu64 " divide-by-zero=%" PRIu64
+           " overflow=%" PRIu64 " underflow=%" PRIu64
+           " inexact=%" PRIu64 "\n",
+           label, counts[0], counts[1], counts[2], counts[3], counts[4],
+           counts[5]);
+}
 
 static const char *operation_name(enum operation op)
 {
@@ -37,11 +84,20 @@ static const char *operation_name(enum operation op)
     return names[op];
 }
 
-static extFloat80_t hardware(enum operation op, extFloat80_t a, extFloat80_t b)
+static const char *boundary_name(enum boundary_operation op)
+{
+    static const char *const names[] = {
+        "store-f32", "store-f64", "frndint", "fist-i32", "fist-i64"
+    };
+    return names[op];
+}
+
+static struct hardware_result
+hardware(enum operation op, extFloat80_t a, extFloat80_t b)
 {
     const uint16_t target = UINT16_C(0x027f);
     uint16_t old;
-    extFloat80_t z;
+    struct hardware_result result;
 
     __asm__ volatile("fnstcw %0" : "=m"(old));
     __asm__ volatile("fnclex\n\tfldcw %0" : : "m"(target));
@@ -49,35 +105,37 @@ static extFloat80_t hardware(enum operation op, extFloat80_t a, extFloat80_t b)
     case OP_ADD:
         __asm__ volatile(
             "fldt %1\n\tfldt %2\n\tfaddp %%st, %%st(1)\n\tfstpt %0"
-            : "=m"(z) : "m"(a), "m"(b) : "st");
+            : "=m"(result.value) : "m"(a), "m"(b) : "st");
         break;
     case OP_SUB:
         __asm__ volatile(
             "fldt %1\n\tfldt %2\n\tfsubrp %%st, %%st(1)\n\tfstpt %0"
-            : "=m"(z) : "m"(a), "m"(b) : "st");
+            : "=m"(result.value) : "m"(a), "m"(b) : "st");
         break;
     case OP_MUL:
         __asm__ volatile(
             "fldt %1\n\tfldt %2\n\tfmulp %%st, %%st(1)\n\tfstpt %0"
-            : "=m"(z) : "m"(a), "m"(b) : "st");
+            : "=m"(result.value) : "m"(a), "m"(b) : "st");
         break;
     case OP_DIV:
         __asm__ volatile(
             "fldt %1\n\tfldt %2\n\tfdivrp %%st, %%st(1)\n\tfstpt %0"
-            : "=m"(z) : "m"(a), "m"(b) : "st");
+            : "=m"(result.value) : "m"(a), "m"(b) : "st");
         break;
     default:
         __asm__ volatile("fldt %1\n\tfsqrt\n\tfstpt %0"
-                         : "=m"(z) : "m"(a) : "st");
+                         : "=m"(result.value) : "m"(a) : "st");
         break;
     }
+    __asm__ volatile("fnstsw %0" : "=m"(result.status));
     __asm__ volatile("fnclex\n\tfldcw %0" : : "m"(old));
-    return z;
+    return result;
 }
 
 static extFloat80_t software(enum operation op, extFloat80_t a, extFloat80_t b)
 {
     softfloat_roundingMode = softfloat_round_near_even;
+    softfloat_detectTininess = softfloat_tininess_afterRounding;
     /* SoftFloat's value 64 means binary64-equivalent, 53-bit precision. */
     extF80_roundingPrecision = 64;
     softfloat_exceptionFlags = 0;
@@ -90,9 +148,148 @@ static extFloat80_t software(enum operation op, extFloat80_t a, extFloat80_t b)
     }
 }
 
+static struct boundary_result
+hardware_boundary(enum boundary_operation op, extFloat80_t a,
+                  uint16_t control_word)
+{
+    uint16_t old;
+    struct boundary_result result = { 0 };
+
+    __asm__ volatile("fnstcw %0" : "=m"(old));
+    __asm__ volatile("fnclex\n\tfldcw %0" : : "m"(control_word));
+    switch (op) {
+    case BOUNDARY_STORE_F32: {
+        uint32_t value;
+        __asm__ volatile("fldt %1\n\tfstps %0"
+                         : "=m"(value) : "m"(a) : "st");
+        result.scalar = value;
+        break;
+    }
+    case BOUNDARY_STORE_F64: {
+        uint64_t value;
+        __asm__ volatile("fldt %1\n\tfstpl %0"
+                         : "=m"(value) : "m"(a) : "st");
+        result.scalar = value;
+        break;
+    }
+    case BOUNDARY_FRNDINT:
+        __asm__ volatile("fldt %1\n\tfrndint\n\tfstpt %0"
+                         : "=m"(result.value) : "m"(a) : "st");
+        break;
+    case BOUNDARY_FIST_I32: {
+        int32_t value;
+        __asm__ volatile("fldt %1\n\tfistpl %0"
+                         : "=m"(value) : "m"(a) : "st");
+        result.scalar = (uint32_t) value;
+        break;
+    }
+    default: {
+        int64_t value;
+        __asm__ volatile("fldt %1\n\tfistpll %0"
+                         : "=m"(value) : "m"(a) : "st");
+        result.scalar = (uint64_t) value;
+        break;
+    }
+    }
+    __asm__ volatile("fnstsw %0" : "=m"(result.status));
+    __asm__ volatile("fnclex\n\tfldcw %0" : : "m"(old));
+    return result;
+}
+
+static struct boundary_result
+software_boundary(enum boundary_operation op, extFloat80_t a,
+                  uint_fast8_t rounding_mode)
+{
+    struct boundary_result result = { 0 };
+
+    softfloat_roundingMode = rounding_mode;
+    softfloat_detectTininess = softfloat_tininess_afterRounding;
+    extF80_roundingPrecision = 64;
+    softfloat_exceptionFlags = 0;
+    switch (op) {
+    case BOUNDARY_STORE_F32:
+        result.scalar = extF80_to_f32(a).v;
+        break;
+    case BOUNDARY_STORE_F64:
+        result.scalar = extF80_to_f64(a).v;
+        break;
+    case BOUNDARY_FRNDINT:
+        result.value = extF80_roundToInt(a, rounding_mode, true);
+        break;
+    case BOUNDARY_FIST_I32:
+        result.scalar = (uint32_t) (int32_t)
+            extF80_to_i32(a, rounding_mode, true);
+        break;
+    default:
+        result.scalar = (uint64_t) (int64_t)
+            extF80_to_i64(a, rounding_mode, true);
+        break;
+    }
+    result.status = softfloat_x87_exception_bits(softfloat_exceptionFlags);
+    return result;
+}
+
 static int equal(extFloat80_t a, extFloat80_t b)
 {
     return a.signExp == b.signExp && a.signif == b.signif;
+}
+
+/* SoftFloat has five IEEE flags; x87 denormal-operand bit 1 is derived below. */
+static uint16_t softfloat_x87_exception_bits(uint_fast8_t flags)
+{
+    uint16_t bits = 0;
+    if (flags & softfloat_flag_invalid) bits |= UINT16_C(1) << 0;
+    if (flags & softfloat_flag_infinite) bits |= UINT16_C(1) << 2;
+    if (flags & softfloat_flag_overflow) bits |= UINT16_C(1) << 3;
+    if (flags & softfloat_flag_underflow) bits |= UINT16_C(1) << 4;
+    if (flags & softfloat_flag_inexact) bits |= UINT16_C(1) << 5;
+    return bits;
+}
+
+static int is_subnormal_ext80(extFloat80_t value)
+{
+    return (value.signExp & UINT16_C(0x7fff)) == 0 && value.signif != 0;
+}
+
+static int is_zero_ext80(extFloat80_t value)
+{
+    return (value.signExp & UINT16_C(0x7fff)) == 0 && value.signif == 0;
+}
+
+static int check_boundary(enum boundary_operation op, extFloat80_t a,
+                          const char *input_class,
+                          const struct rounding_profile *profile)
+{
+    struct boundary_result h = hardware_boundary(op, a, profile->control_word);
+    struct boundary_result s = software_boundary(op, a, profile->softfloat_mode);
+    uint16_t expected_status = s.status;
+    int same_value;
+
+    /* FSTP and FISTP do not signal #D; FRNDINT does for a subnormal source. */
+    if (op == BOUNDARY_FRNDINT && is_subnormal_ext80(a)) {
+        expected_status |= UINT16_C(1) << 1;
+    }
+
+    same_value = op == BOUNDARY_FRNDINT
+               ? equal(h.value, s.value) : h.scalar == s.scalar;
+    if (!same_value || (h.status & UINT16_C(0x003f)) != expected_status) {
+        fprintf(stderr,
+                "mismatch class=%s boundary=%s rounding=%s"
+                " a=%04" PRIx16 ":%016" PRIx64
+                " hw_ext=%04" PRIx16 ":%016" PRIx64
+                " sf_ext=%04" PRIx16 ":%016" PRIx64
+                " hw_scalar=%016" PRIx64 " sf_scalar=%016" PRIx64
+                " x87_status=%04" PRIx16 " sf_flags=%02x expected=%02" PRIx16 "\n",
+                input_class, boundary_name(op), profile->name,
+                a.signExp, a.signif,
+                h.value.signExp, h.value.signif,
+                s.value.signExp, s.value.signif,
+                h.scalar, s.scalar, h.status,
+                (unsigned) softfloat_exceptionFlags, expected_status);
+        return 0;
+    }
+    record_exception_bits(boundary_exception_counts, h.status);
+    return 1;
 }
 
 static uint32_t next32(uint32_t *state)
@@ -154,25 +351,38 @@ static extFloat80_t finite_pc53_ext80(uint32_t *state)
 static int check_ext80(enum operation op, extFloat80_t a, extFloat80_t b,
                        const char *input_class)
 {
-    extFloat80_t h;
+    struct hardware_result h;
     extFloat80_t s;
+    uint16_t expected_status;
 
-    if (op == OP_SQRT) a.signExp &= UINT16_C(0x7fff);
     h = hardware(op, a, b);
     s = software(op, a, b);
-    if (!equal(h, s)) {
+    expected_status = softfloat_x87_exception_bits(softfloat_exceptionFlags);
+    /* Invalid sqrt and zero-divide take priority over #D for these forms. */
+    if ((op == OP_SQRT
+         && !(a.signExp & UINT16_C(0x8000))
+         && is_subnormal_ext80(a))
+        || (op != OP_SQRT
+            && (is_subnormal_ext80(a) || is_subnormal_ext80(b))
+            && !(op == OP_DIV && is_zero_ext80(b)))) {
+        expected_status |= UINT16_C(1) << 1;
+    }
+    if (!equal(h.value, s)
+        || (h.status & UINT16_C(0x003f)) != expected_status) {
         fprintf(stderr,
                 "mismatch class=%s op=%s"
                 " a=%04" PRIx16 ":%016" PRIx64
                 " b=%04" PRIx16 ":%016" PRIx64
                 " hw=%04" PRIx16 ":%016" PRIx64
-                " sf=%04" PRIx16 ":%016" PRIx64 " flags=%02x\n",
+                " sf=%04" PRIx16 ":%016" PRIx64
+                " x87_status=%04" PRIx16 " sf_flags=%02x expected=%02" PRIx16 "\n",
                 input_class, operation_name(op),
                 a.signExp, a.signif, b.signExp, b.signif,
-                h.signExp, h.signif, s.signExp, s.signif,
-                (unsigned) softfloat_exceptionFlags);
+                h.value.signExp, h.value.signif, s.signExp, s.signif,
+                h.status, (unsigned) softfloat_exceptionFlags, expected_status);
         return 0;
     }
+    record_exception_bits(basic_exception_counts, h.status);
     return 1;
 }
 
@@ -183,7 +393,6 @@ static int check_f32(enum operation op, uint32_t a_bits, uint32_t b_bits)
     extFloat80_t a;
     extFloat80_t b;
 
-    if (op == OP_SQRT) af.v &= UINT32_C(0x7fffffff);
     a = f32_to_extF80(af);
     b = f32_to_extF80(bf);
     return check_ext80(op, a, b, "f32");
@@ -234,8 +443,31 @@ int main(int argc, char **argv)
         { .signif = 0xfffffffffffff800, .signExp = 0xbfff },
         { .signif = 0xfffffffffffff800, .signExp = 0xfffe }
     };
+    static const extFloat80_t fixed_conversion[] = {
+        { .signif = 0xc000000000000000, .signExp = 0x3fff },
+        { .signif = 0xa000000000000000, .signExp = 0x4000 },
+        { .signif = 0xc000000000000000, .signExp = 0xbfff },
+        { .signif = 0xa000000000000000, .signExp = 0xc000 },
+        { .signif = 0xfffffffe00000000, .signExp = 0x401d },
+        { .signif = 0xffffffff00000000, .signExp = 0x401d },
+        { .signif = 0x8000000000000000, .signExp = 0x401e },
+        { .signif = 0x8000000080000000, .signExp = 0x401e },
+        { .signif = 0x8000000000000000, .signExp = 0xc01e },
+        { .signif = 0x8000000080000000, .signExp = 0xc01e },
+        { .signif = 0xfffffffffffff800, .signExp = 0x403d },
+        { .signif = 0x8000000000000000, .signExp = 0x403e },
+        { .signif = 0x8000000000000800, .signExp = 0x403e },
+        { .signif = 0x8000000000000000, .signExp = 0xc03e },
+        { .signif = 0x8000000000000800, .signExp = 0xc03e }
+    };
+    static const struct rounding_profile profiles[] = {
+        { "nearest-even", UINT16_C(0x027f), softfloat_round_near_even },
+        { "toward-zero", UINT16_C(0x0e7f), softfloat_round_minMag }
+    };
     uint64_t checked_f32 = 0;
     uint64_t checked_ext80 = 0;
+    uint64_t checked_boundary_f32 = 0;
+    uint64_t checked_boundary_ext80 = 0;
 
     if (argc > 3) {
         fprintf(stderr, "usage: %s [f32-cases [ext80-cases]]\n", argv[0]);
@@ -279,7 +511,56 @@ int main(int argc, char **argv)
     }
 
     printf("matched %" PRIu64 " f32-derived and %" PRIu64
-           " canonical PC53 ext80 basic-operation results at x87 CW 0x027f\n",
+           " canonical PC53 ext80 basic-operation result/status tuples"
+           " at x87 CW 0x027f\n",
            checked_f32, checked_ext80);
+    print_exception_counts("basic", basic_exception_counts);
+
+    for (size_t p = 0; p < sizeof profiles / sizeof profiles[0]; ++p) {
+        for (unsigned raw_op = BOUNDARY_STORE_F32;
+             raw_op <= BOUNDARY_FIST_I64; ++raw_op) {
+            enum boundary_operation op = (enum boundary_operation) raw_op;
+
+            for (size_t i = 0; i < sizeof fixed_f32 / sizeof fixed_f32[0]; ++i) {
+                float32_t input = { fixed_f32[i] };
+                if (!check_boundary(op, f32_to_extF80(input), "f32", &profiles[p])) {
+                    return 1;
+                }
+                ++checked_boundary_f32;
+            }
+            for (uint64_t i = 0; i < f32_cases; ++i) {
+                float32_t input = { finite_f32(next32(&state)) };
+                if (!check_boundary(op, f32_to_extF80(input), "f32", &profiles[p])) {
+                    return 1;
+                }
+                ++checked_boundary_f32;
+            }
+
+            for (size_t i = 0; i < sizeof fixed_ext80 / sizeof fixed_ext80[0]; ++i) {
+                if (!check_boundary(op, fixed_ext80[i], "ext80", &profiles[p])) {
+                    return 1;
+                }
+                ++checked_boundary_ext80;
+            }
+            for (size_t i = 0;
+                 i < sizeof fixed_conversion / sizeof fixed_conversion[0]; ++i) {
+                if (!check_boundary(op, fixed_conversion[i], "ext80", &profiles[p])) {
+                    return 1;
+                }
+                ++checked_boundary_ext80;
+            }
+            for (uint64_t i = 0; i < ext80_cases; ++i) {
+                extFloat80_t input = finite_pc53_ext80(&state);
+                if (!check_boundary(op, input, "ext80", &profiles[p])) return 1;
+                ++checked_boundary_ext80;
+            }
+        }
+    }
+
+    printf("matched %" PRIu64 " f32-derived and %" PRIu64
+           " canonical PC53 ext80 store/round/conversion result/status tuples"
+           " across nearest-even and toward-zero\n",
+           checked_boundary_f32, checked_boundary_ext80);
+    print_exception_counts("boundary", boundary_exception_counts);
     return 0;
 }

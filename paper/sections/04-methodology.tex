@@ -92,14 +92,19 @@ instructions~\cite{intel-x87-transcendentals}; Microsoft documents the exposed
 control modes~\cite{microsoft-control87}.
 
 Berkeley SoftFloat Release 3e is used as an independent executable oracle for
-the first basic-operation experiment~\cite{hauser-softfloat3e}.  Its
+the first arithmetic-boundary experiments~\cite{hauser-softfloat3e}.  Its
 \code{extF80\_roundingPrecision = 64} setting denotes precision equivalent to
 binary64---a 53-bit significand with the extended exponent range---and affects
 extended add, subtract, multiply, divide, and square root.  Hardware/SoftFloat
 differential tests can reject a candidate semantics quickly.  They cannot
 establish that SoftFloat, the assembly harness, or a future formalization is
-correct, and they do not cover x87 status, conversion, or transcendental
-semantics.
+correct.  The experiment separately maps SoftFloat's five exception flags and
+the x87 denormal-operand bit, then tests binary32/binary64 stores,
+\code{frndint}, and signed 32/64-bit \code{fistp} under nearest-even and
+toward-zero.  Denormal signaling and exception priority follow the Intel and
+AMD instruction references~\cite{intel-sdm-vol2a,amd-apm-vol5}, not an assumed
+one-to-one SoftFloat mapping.  Condition codes, complete helper ABIs, and
+transcendental semantics remain outside this oracle.
 
 The fidelity representation is address-indexed.  Each retained arithmetic
 operation records its pinned original address, x87 stack/control inputs,
