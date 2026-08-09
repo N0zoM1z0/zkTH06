@@ -16,7 +16,7 @@ jobs:
 
     steps:
       - name: Check out zkTH06
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7.0.1
 
       - name: Install compiler and SDL development packages
         run: |
