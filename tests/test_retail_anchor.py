@@ -38,6 +38,7 @@ def retail_frame() -> dict[str, object]:
         "score": 0,
         "deaths": 0,
         "bombs_used": 0,
+        "is_time_stopped": 0,
         "num_retries": 0,
         "current_power": 0,
         "lives": 2,
@@ -48,6 +49,16 @@ def retail_frame() -> dict[str, object]:
         "player_x_bits": "0x43400000",
         "player_y_bits": "0x43c00000",
         "player_z_bits": "0x3efae148",
+        "movement_min_x_bits": "0x41000000",
+        "movement_min_y_bits": "0x41800000",
+        "movement_size_x_bits": "0x43b80000",
+        "movement_size_y_bits": "0x43d00000",
+        "horizontal_multiplier_bits": "0x3f800000",
+        "vertical_multiplier_bits": "0x3f800000",
+        "orthogonal_speed_bits": "0x40800000",
+        "orthogonal_focus_speed_bits": "0x40000000",
+        "diagonal_speed_bits": "0x403504f3",
+        "diagonal_focus_speed_bits": "0x3fb504f3",
         "effective_rate_bits": "0x3f800000",
         "x87_control_word": "0x007f",
         "mxcsr": "0x00001fa0",
@@ -64,12 +75,23 @@ def reference_frame() -> dict[str, object]:
         "rng_seed": 28967,
         "rng_generation": 2,
         "input": 0,
+        "is_time_stopped": 0,
         "effective_rate_bits": 0x3F800000,
+        "movement_min_x_bits": 0x41000000,
+        "movement_min_y_bits": 0x41800000,
+        "movement_size_x_bits": 0x43B80000,
+        "movement_size_y_bits": 0x43D00000,
         "player": {
             "x_bits": 0x43400000,
             "y_bits": 0x43C00000,
             "z_bits": 0x3EFAE148,
             "state": 3,
+            "horizontal_multiplier_bits": 0x3F800000,
+            "vertical_multiplier_bits": 0x3F800000,
+            "orthogonal_speed_bits": 0x40800000,
+            "orthogonal_focus_speed_bits": 0x40000000,
+            "diagonal_speed_bits": 0x403504F3,
+            "diagonal_focus_speed_bits": 0x3FB504F3,
         },
         "lives": 2,
         "bombs": 3,
@@ -98,7 +120,7 @@ def main() -> int:
     committed_evidence = json.loads(evidence_text)
     assert committed_evidence["status"] == "match"
     assert committed_evidence["compared_frames"] == 2000
-    assert len(committed_evidence["compared_fields"]) == 23
+    assert len(committed_evidence["compared_fields"]) == 34
     assert committed_evidence["target_executable_sha256"] == TARGET_SHA256
     assert committed_evidence["replay_sha256"] == (
         "01bc11b9226932bddeeeff675f1741b89b129f4c8820b3b1cf185a1cb19ad10f"

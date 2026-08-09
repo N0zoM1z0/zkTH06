@@ -240,6 +240,18 @@ results remain relevant to the CRT wrapper profile and to stress cases with the
 extended exponent range, but they do not retroactively validate operations
 executed under the observed `0x007f` ambient word.
 
+The first bounded PC24 implementation is now the player-position microkernel
+under [`zkvm/player-motion`](../zkvm/player-motion). It decodes finite normal
+binary32 values into exact integer dyadics, rounds every mapped multiply and add
+to 24 significand bits with ties to even, and performs the ordered clamps on raw
+bits. It rejects exceptional classes, subnormal results, overflow, distant
+exponent additions, and Player states outside the sliced callback gate. The
+implementation matches 1,999 consecutive retail-derived transitions and a
+50,000-pair deterministic host-binary32 differential test. Neither test proves
+the arithmetic algorithm, the ambient word at each interior instruction, or
+the mapping from retail instructions to the Rust transition; those remain the
+next code-binding and formal obligations.
+
 The same probe mirrors the 244 mapped comparison forms with `fcomp m32fp` and
 `fcomp m64fp`. It checks C0, C1, C2, and C3 plus exception bits, including
 fixed infinity, quiet-NaN, signaling-NaN, signed-zero, and invalid-versus-

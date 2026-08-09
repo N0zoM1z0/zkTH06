@@ -13,6 +13,7 @@
     "score",
     "deaths",
     "bombs_used",
+    "is_time_stopped",
     "num_retries",
     "current_power",
     "lives",
@@ -23,7 +24,17 @@
     "player_x_bits",
     "player_y_bits",
     "player_z_bits",
-    "effective_rate_bits"
+    "effective_rate_bits",
+    "movement_min_x_bits",
+    "movement_min_y_bits",
+    "movement_size_x_bits",
+    "movement_size_y_bits",
+    "horizontal_multiplier_bits",
+    "vertical_multiplier_bits",
+    "orthogonal_speed_bits",
+    "orthogonal_focus_speed_bits",
+    "diagonal_speed_bits",
+    "diagonal_focus_speed_bits"
   ],
   "compared_frames": 2000,
   "config_sha256": "979ad921be658e746040c14b633a2c5114c18529244c6e1ed4b9312beb175d37",
@@ -40,13 +51,13 @@
     "rng_generation_max": 3555,
     "rng_generation_min": 2
   },
-  "reference_trace_sha256": "d8903ec95c182d2d615c55f6c96279d15c5c4f110ffb85cbdf279f2c558fc1b5",
+  "reference_trace_sha256": "1e86bca1f7f2f2cddb5b5a2b520920c2f5aee6bb7010bc1d715a4bec2674f259",
   "replay_sha256": "01bc11b9226932bddeeeff675f1741b89b129f4c8820b3b1cf185a1cb19ad10f",
   "retail_mxcsr_values": [
     "0x00001fa0"
   ],
   "retail_trace_schema_version": 1,
-  "retail_trace_sha256": "9f2dfe9ae65a89b7eb5981514139b75266771f9f4369036f0385ef6cb8810d88",
+  "retail_trace_sha256": "e71f518a8bf6765c5e1920532c0bedd4d48aba6d960a0fdc67f22d1e5eff9543",
   "retail_x87_control_words": [
     "0x007f"
   ],

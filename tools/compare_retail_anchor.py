@@ -28,6 +28,7 @@ COMMON_FIELDS = (
     "score",
     "deaths",
     "bombs_used",
+    "is_time_stopped",
     "num_retries",
     "current_power",
     "lives",
@@ -39,6 +40,16 @@ COMMON_FIELDS = (
     "player_y_bits",
     "player_z_bits",
     "effective_rate_bits",
+    "movement_min_x_bits",
+    "movement_min_y_bits",
+    "movement_size_x_bits",
+    "movement_size_y_bits",
+    "horizontal_multiplier_bits",
+    "vertical_multiplier_bits",
+    "orthogonal_speed_bits",
+    "orthogonal_focus_speed_bits",
+    "diagonal_speed_bits",
+    "diagonal_focus_speed_bits",
 )
 
 
@@ -69,6 +80,16 @@ def normalize_retail(row: dict[str, Any]) -> dict[str, int]:
         "player_y_bits",
         "player_z_bits",
         "effective_rate_bits",
+        "movement_min_x_bits",
+        "movement_min_y_bits",
+        "movement_size_x_bits",
+        "movement_size_y_bits",
+        "horizontal_multiplier_bits",
+        "vertical_multiplier_bits",
+        "orthogonal_speed_bits",
+        "orthogonal_focus_speed_bits",
+        "diagonal_speed_bits",
+        "diagonal_focus_speed_bits",
     )
     normalized = {
         key: int(row[key]) for key in COMMON_FIELDS if key not in hex_fields
@@ -93,6 +114,7 @@ def normalize_reference(row: dict[str, Any]) -> dict[str, int]:
         "score": int(row["score"]),
         "deaths": int(row["deaths"]),
         "bombs_used": int(row["bombs_used"]),
+        "is_time_stopped": int(row["is_time_stopped"]),
         "num_retries": int(row["num_retries"]),
         "current_power": int(row["current_power"]),
         "lives": int(row["lives"]),
@@ -104,6 +126,16 @@ def normalize_reference(row: dict[str, Any]) -> dict[str, int]:
         "player_y_bits": int(player["y_bits"]),
         "player_z_bits": int(player["z_bits"]),
         "effective_rate_bits": int(row["effective_rate_bits"]),
+        "movement_min_x_bits": int(row["movement_min_x_bits"]),
+        "movement_min_y_bits": int(row["movement_min_y_bits"]),
+        "movement_size_x_bits": int(row["movement_size_x_bits"]),
+        "movement_size_y_bits": int(row["movement_size_y_bits"]),
+        "horizontal_multiplier_bits": int(player["horizontal_multiplier_bits"]),
+        "vertical_multiplier_bits": int(player["vertical_multiplier_bits"]),
+        "orthogonal_speed_bits": int(player["orthogonal_speed_bits"]),
+        "orthogonal_focus_speed_bits": int(player["orthogonal_focus_speed_bits"]),
+        "diagonal_speed_bits": int(player["diagonal_speed_bits"]),
+        "diagonal_focus_speed_bits": int(player["diagonal_focus_speed_bits"]),
     }
 
 

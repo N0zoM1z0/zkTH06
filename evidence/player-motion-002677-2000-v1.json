@@ -1,0 +1,21 @@
+{
+  "claim_boundary": "retail-derived consecutive player-position test vectors over one replay prefix; not a proof of arithmetic, source binding, whole-player, or whole-game equivalence",
+  "comparison_artifact": "retail-reference-002677-2000-v1.json",
+  "first_transition_index": 1,
+  "format": "little-endian ZKPMV1",
+  "header_bytes": 120,
+  "last_transition_index": 1999,
+  "record_bytes": 68,
+  "reference_trace_sha256": "1e86bca1f7f2f2cddb5b5a2b520920c2f5aee6bb7010bc1d715a4bec2674f259",
+  "replay_sha256": "01bc11b9226932bddeeeff675f1741b89b129f4c8820b3b1cf185a1cb19ad10f",
+  "retail_trace_sha256": "e71f518a8bf6765c5e1920532c0bedd4d48aba6d960a0fdc67f22d1e5eff9543",
+  "schema_version": 1,
+  "source_frames": 2000,
+  "target_executable_sha256": "9f76483c46256804792399296619c1274363c31cd8f1775fafb55106fb852245",
+  "tested_transitions": 1999,
+  "type": "zkth06.player-motion-vector",
+  "vector_sha256": "e3be92572824160c980842754a8821dfdcc44a8673f5b492c1c272a8d7263ac2",
+  "x87_control_words": [
+    "0x007f"
+  ]
+}

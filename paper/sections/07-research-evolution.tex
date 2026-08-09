@@ -220,7 +220,7 @@ exposed a gameplay mismatch: the host-uptime interpretation of
 reach DirectInput.  Both interventions were moved into a hash- and
 address-checked probe, restricted to pre-game timing normalization and zero
 physical input that ReplayManager overwrites.  The first 2,000 post-calc frames
-then matched the Linux reference on a 23-field raw projection, including Player
+then matched the Linux reference on a 34-field raw projection, including Player
 binary32 bits and RNG evolution.  This result changes the project gate from
 ``no original execution evidence'' to ``a narrow retail anchor exists.''  It
 licenses work on the first sliced-kernel boundary while keeping full canonical
@@ -228,6 +228,19 @@ subsystem export, replay diversity, noninterference, and formal code binding
 open.  The same run also observed ambient control word \code{0x007f} at every
 anchor, falsifying the working idea that the CRT's embedded \code{0x027f} could
 serve as one global gameplay profile.
+
+\paragraph{Phase U: freeze one fail-closed arithmetic slice before a full
+guest.}
+The enlarged anchor made the Player position transition self-contained: replay
+input, callback gates, bounds, multipliers, movement speeds, and expected raw
+positions were all observed on both executions.  Instead of waiting for a
+whole-game projection or using native Rust \code{f32}, the first microkernel
+implements only this transition with integer dyadics and explicit PC24
+rounding.  It matches 1,999 consecutive retail-derived transitions and rejects
+unsupported arithmetic classes or callback states.  This changes the route
+again: zkVM cost and code-binding work can start on a real executable slice,
+while formal arithmetic correctness, noninterference, broader replays, and the
+complete guest remain open rather than being implied by the finite match.
 
 Future changes to the central claim or state boundary should be appended here
 with the evidence that motivated them.

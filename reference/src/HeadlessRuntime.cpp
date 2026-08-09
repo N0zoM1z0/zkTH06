@@ -738,9 +738,14 @@ void HeadlessRuntime::WriteState(const char *terminalReason)
                  "\"scope\":{\"difficulty\":%d,\"character\":%d,\"shot_type\":%d,\"stage\":%d},"
                  "\"initial_seed\":%u,\"supervisor_state\":%d,\"stage\":%d,\"game_frame\":%u,"
                  "\"rng_seed\":%u,\"rng_generation\":%u,\"input\":%u,"
-                 "\"effective_rate_bits\":%u,"
+                 "\"is_time_stopped\":%d,\"effective_rate_bits\":%u,"
+                 "\"movement_min_x_bits\":%u,\"movement_min_y_bits\":%u,"
+                 "\"movement_size_x_bits\":%u,\"movement_size_y_bits\":%u,"
                  "\"player\":{\"x\":%.9g,\"y\":%.9g,\"z\":%.9g,"
-                 "\"x_bits\":%u,\"y_bits\":%u,\"z_bits\":%u,\"state\":%d},"
+                 "\"x_bits\":%u,\"y_bits\":%u,\"z_bits\":%u,\"state\":%d,"
+                 "\"horizontal_multiplier_bits\":%u,\"vertical_multiplier_bits\":%u,"
+                 "\"orthogonal_speed_bits\":%u,\"orthogonal_focus_speed_bits\":%u,"
+                 "\"diagonal_speed_bits\":%u,\"diagonal_focus_speed_bits\":%u},"
                  "\"lives\":%d,\"bombs\":%d,\"score\":%u,"
                  "\"deaths\":%d,\"bombs_used\":%d,\"num_retries\":%u,"
                  "\"current_power\":%u,\"rank\":%d,\"subrank\":%d,\"bullets\":[",
@@ -749,10 +754,21 @@ void HeadlessRuntime::WriteState(const char *terminalReason)
                  this->replayPath == NULL ? this->practiceStage : g_GameManager.currentStage, this->actualSeed,
                  g_Supervisor.curState, g_GameManager.currentStage,
                  g_GameManager.gameFrames, g_Rng.seed, g_Rng.generationCount, g_CurFrameInput,
+                 g_GameManager.isTimeStopped,
                  bit_cast_from_size(g_Supervisor.effectiveFramerateMultiplier),
+                 bit_cast_from_size(g_GameManager.playerMovementAreaTopLeftPos.x),
+                 bit_cast_from_size(g_GameManager.playerMovementAreaTopLeftPos.y),
+                 bit_cast_from_size(g_GameManager.playerMovementAreaSize.x),
+                 bit_cast_from_size(g_GameManager.playerMovementAreaSize.y),
                  g_Player.positionCenter.x, g_Player.positionCenter.y, g_Player.positionCenter.z,
                  bit_cast_from_size(g_Player.positionCenter.x), bit_cast_from_size(g_Player.positionCenter.y),
                  bit_cast_from_size(g_Player.positionCenter.z), g_Player.playerState,
+                 bit_cast_from_size(g_Player.horizontalMovementSpeedMultiplierDuringBomb),
+                 bit_cast_from_size(g_Player.verticalMovementSpeedMultiplierDuringBomb),
+                 bit_cast_from_size(g_Player.characterData.orthogonalMovementSpeed),
+                 bit_cast_from_size(g_Player.characterData.orthogonalMovementSpeedFocus),
+                 bit_cast_from_size(g_Player.characterData.diagonalMovementSpeed),
+                 bit_cast_from_size(g_Player.characterData.diagonalMovementSpeedFocus),
                  g_GameManager.livesRemaining, g_GameManager.bombsRemaining, g_GameManager.score,
                  g_GameManager.deaths, g_GameManager.bombsUsed, g_GameManager.numRetries,
                  g_GameManager.currentPower, g_GameManager.rank, g_GameManager.subRank);

@@ -8,10 +8,16 @@ an accepted result. Before freezing a zkVM guest, the project must first make
 that state machine agree frame-for-frame with the shipped 32-bit Windows game.
 
 > **Evidence boundary:** an address-bound Wine probe now matches the shipped
-> executable and Linux reference for a 23-field raw gameplay projection over
+> executable and Linux reference for a 34-field raw gameplay projection over
 > the first 2,000 frames of one tracked replay. This is finite differential
 > evidence, not whole-state equivalence. The current runner remains an
 > instrumented reference harness, not final proof semantics.
+
+The first proof-oriented executable slice is now present under `zkvm/`: an
+integer-only implementation of the PC24 player-position update whose inputs and
+outputs remain raw binary32 bits. It matches 1,999 consecutive transitions
+derived from the retail anchor. This freezes a narrow, fail-closed experiment,
+not a complete gameplay guest or a formal refinement theorem.
 
 A first owner-local Lean model now machine-checks why active-only Effect slots
 violate one-step noninterference and how a narrow dormant reuse shadow repairs
@@ -59,7 +65,8 @@ non-ECL alias completeness, and guest binding are still explicit obligations.
 The zkTH06 work lives at the repository root. The reconstructed game engine is
 kept as a supporting snapshot rather than as this repository's history:
 
-- `zkvm/` defines the future guest/public-input boundary;
+- `zkvm/` contains the first sliced kernel and defines the future guest/public-
+  input boundary;
 - `formal/` records the refinement theorem and machine-checking obligations;
 - `arithmetic/` contains exact-arithmetic experiments and their evidence
   boundaries;
@@ -108,8 +115,10 @@ inputs were produced by a human or without external tools.
 - Pass Normal no-miss/no-bomb, death/bomb, dialogue, all shot types, Lunatic,
   spell-heavy and Extra cases.
 
-The first 2,000-frame Normal anchor is complete for its 23-field projection.
-The full canonical subsystem projection and broader replay matrix remain open.
+The first 2,000-frame Normal anchor is complete for its 34-field projection,
+and its player-position subprojection drives a 1,999-transition integer PC24
+kernel test. The full canonical subsystem projection and broader replay matrix
+remain open.
 
 ### M1 — canonical gameplay kernel
 

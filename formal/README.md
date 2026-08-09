@@ -16,6 +16,15 @@ are profile/configuration facts only: they neither implement x87 operations
 nor prove SoftFloat equivalent to x87 or establish the Windows loader's entry
 word.
 
+The shipped-executable anchor subsequently observes ambient `0x007f` at all
+2,000 post-calc boundaries, so `0x027f` is treated as a wrapper-local profile,
+not a global gameplay assumption. The first Rust player-position microkernel
+implements a fail-closed integer PC24 subset and matches 1,999 retail-derived
+transitions. No Lean theorem currently proves that arithmetic implementation,
+the control word at each interior instruction, or its binding to the pinned
+binary; adding that theorem remains deliberately downstream of the executable
+slice and counterexample gate.
+
 [`ZkTH06/X87Exceptions.lean`](ZkTH06/X87Exceptions.lean) records the
 finite-input denormal-operand predicate exercised by the differential probe. It
 checks counterexamples to the rejected "any subnormal input" rule for divide

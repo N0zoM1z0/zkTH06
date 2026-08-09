@@ -46,9 +46,10 @@ Wine 11.0 and the tracked Normal Reimu A NN/NB replay.  A debugger verifies the
 expected bytes at the menu, input, and frame-anchor addresses and samples at
 \code{0x00420858}, immediately after \code{Chain::RunCalcChain}.  The Linux
 runner writes its diagnostic row at the corresponding return boundary.  The
-comparison covers 23 fields: route/frame metadata, complete replay input, RNG
+comparison covers 34 fields: route/frame metadata, complete replay input, RNG
 seed and generation, score/resources/rank, Player state and raw binary32 x/y/z
-bits, and raw effective-rate bits.
+bits, time-stop state, raw effective-rate bits, movement-area bounds, bomb
+movement multipliers, and all four character movement speeds.
 
 All 2,000 compared frames match.  This interval contains 27 distinct input
 masks, advances RNG generation from 2 to 3,555, and reaches score 767,990.
@@ -65,9 +66,28 @@ spurious multi-year catch-up loop.  XTest does not reach Wine DirectInput on
 this host, so the physical input routine returns zero; ReplayManager then
 overwrites the complete replay mask at its authentic calc priority.  The
 per-frame input equality is checked rather than assumed.  These interventions
-and the finite 23-field projection prevent promoting the result to whole-state
+and the finite 34-field projection prevent promoting the result to whole-state
 or whole-program equivalence, but they establish a real retail oracle for the
 first core slice.
+
+\subsection{Player-position sliced-kernel gate}
+
+The extended anchor exposes every value consumed by the position arithmetic.
+From its 2,000 post-calc rows, the first row supplies an initial observed
+position and the remaining rows define 1,999 consecutive transitions.  A
+compact fixed-width vector retains each input mask, time/player gate, raw
+movement environment, previous x/y bits, and expected next x/y bits while
+binding the target, replay, and retail-trace hashes in its header.
+
+The integer PC24 microkernel matches all 1,999 transitions exactly.  Separate
+unit tests exercise direction priority, focus speeds, clamps, signed zero,
+ties-to-even, unsupported classes, and time-stop ordering.  A deterministic
+50,000-pair normal-domain comparison also agrees with host binary32 add,
+multiply, and ordering; host floating point is used only as a test oracle, not
+by the kernel.  These results validate the reached implementation path but do
+not prove the integer rounding algorithm, per-instruction control state,
+instruction/source correspondence, reachable-domain invariant, or projection
+noninterference.
 
 \subsection{Canonical projection experiment}
 

@@ -54,6 +54,11 @@ Last updated: 2026-08-09
   1,844 writer candidates, including all 80 type-guard-bypassing
   increment/decrement operations,
   conditional on extraction/decoder/handler bindings.
+- A `no_std`, integer-only player-position microkernel that carries binary32
+  values as raw bits, implements the observed PC24 multiply/add/clamp order with
+  explicit round-to-nearest-even, and fails closed outside its finite
+  normal/zero and alive/invulnerable domain. A compact retail-derived vector
+  checks 1,999 consecutive transitions bit for bit.
 
 Compatibility playback intentionally restores every per-stage replay snapshot,
 matching shipped playback. It is an oracle-development mode, not the future
@@ -65,14 +70,16 @@ The first shipped-executable comparison uses the tracked Normal Reimu A
 no-miss/no-bomb replay (`01bc11b...ad10f`). The retail side runs Japanese TH06
 v1.02h (`9f76483c...52245`) under Wine 11.0 and stops at `0x00420858`, the
 instruction immediately after `Chain::RunCalcChain`. The Linux trace is written
-at the corresponding return boundary. Across frames 1--2,000, all 23 compared
+at the corresponding return boundary. Across frames 1--2,000, all 34 compared
 fields match exactly:
 
 - route, stage, frame, replay input, and Supervisor state;
 - RNG seed and generation count;
 - score, lives, bombs, deaths, bombs used, retries, power, rank, and subrank;
-- Player state and raw binary32 x/y/z bits; and
-- the raw effective-framerate multiplier bits.
+- Player state, time-stop state, and raw binary32 x/y/z bits;
+- the raw effective-framerate multiplier, movement-area bounds, and bomb
+  movement multipliers; and
+- all four character movement-speed records.
 
 This interval exercises 27 distinct input masks, advances RNG generation from
 2 to 3,555, and reaches score 767,990. At all 2,000 retail anchors the x87
@@ -97,6 +104,26 @@ matrix; and finite agreement cannot prove noninterference, source/binary
 correspondence, or guest refinement. Its immediate value is that the core
 replay/RNG/player/global path now has a real retail oracle and a first-mismatch
 mechanism.
+
+## First sliced transition
+
+The player-position slice consumes the now-retail-anchored input, player/time
+gate, effective-rate bits, movement bounds, bomb multipliers, and four speed
+records. It reproduces the source and mapped-instruction ordering without using
+host floating point. Instead, normal finite binary32 inputs are decoded as
+integer dyadics; each multiply and add is rounded explicitly to 24 significand
+bits with ties to even before the next operation. Ordered clamps operate on the
+same raw domain. Non-finite/subnormal values, subnormal results, overflow,
+unsupported exponent gaps, and dead/spawning frames fail closed.
+
+The 2,000 retail frames provide 1,999 consecutive transitions because the
+first post-calc row has no retail-exported predecessor. All 1,999 expected x/y
+bit pairs match. The vector and path-free manifest are in
+[`evidence/player-motion-002677-2000-v1.bin`](../evidence/player-motion-002677-2000-v1.bin)
+and its adjacent JSON file. This validates one reached trace and makes the
+kernel concrete enough for proof and zkVM cost work; it does not prove the
+integer arithmetic, PC24 control history, instruction/source binding,
+projection noninterference, or unreachable-domain invariants.
 
 ## Local corpus result
 

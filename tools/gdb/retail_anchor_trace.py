@@ -53,6 +53,7 @@ GM_DIFFICULTY = G_GAME_MANAGER + 0x010
 GM_IS_IN_REPLAY = G_GAME_MANAGER + 0x01C
 GM_DEATHS = G_GAME_MANAGER + 0x020
 GM_BOMBS_USED = G_GAME_MANAGER + 0x024
+GM_IS_TIME_STOPPED = G_GAME_MANAGER + 0x02C
 GM_CURRENT_POWER = G_GAME_MANAGER + 0x1810
 GM_NUM_RETRIES = G_GAME_MANAGER + 0x1818
 GM_LIVES = G_GAME_MANAGER + 0x181A
@@ -62,6 +63,10 @@ GM_SHOT_TYPE = G_GAME_MANAGER + 0x181E
 GM_DEMO_MODE = G_GAME_MANAGER + 0x1824
 GM_GAME_FRAMES = G_GAME_MANAGER + 0x1A30
 GM_CURRENT_STAGE = G_GAME_MANAGER + 0x1A34
+GM_MOVEMENT_MIN_X = G_GAME_MANAGER + 0x1A4C
+GM_MOVEMENT_MIN_Y = G_GAME_MANAGER + 0x1A50
+GM_MOVEMENT_SIZE_X = G_GAME_MANAGER + 0x1A54
+GM_MOVEMENT_SIZE_Y = G_GAME_MANAGER + 0x1A58
 GM_RANK = G_GAME_MANAGER + 0x1A70
 GM_SUBRANK = G_GAME_MANAGER + 0x1A7C
 
@@ -71,7 +76,13 @@ RNG_GENERATION = G_RNG + 0x004
 PLAYER_X = G_PLAYER + 0x440
 PLAYER_Y = G_PLAYER + 0x444
 PLAYER_Z = G_PLAYER + 0x448
+PLAYER_HORIZONTAL_MULTIPLIER = G_PLAYER + 0x9D0
+PLAYER_VERTICAL_MULTIPLIER = G_PLAYER + 0x9D4
 PLAYER_STATE = G_PLAYER + 0x9E0
+PLAYER_ORTHOGONAL_SPEED = G_PLAYER + 0x9F4
+PLAYER_ORTHOGONAL_FOCUS_SPEED = G_PLAYER + 0x9F8
+PLAYER_DIAGONAL_SPEED = G_PLAYER + 0x9FC
+PLAYER_DIAGONAL_FOCUS_SPEED = G_PLAYER + 0xA00
 
 MENU_GAME_STATE = G_MAIN_MENU + 0x81F0
 MENU_STATE_TIMER = G_MAIN_MENU + 0x81F4
@@ -227,6 +238,7 @@ def capture_frame(index: int) -> None:
             "score": memory.u32(GM_SCORE),
             "deaths": memory.i32(GM_DEATHS),
             "bombs_used": memory.i32(GM_BOMBS_USED),
+            "is_time_stopped": memory.i8(GM_IS_TIME_STOPPED),
             "num_retries": memory.u8(GM_NUM_RETRIES),
             "current_power": memory.u16(GM_CURRENT_POWER),
             "lives": memory.i8(GM_LIVES),
@@ -237,6 +249,16 @@ def capture_frame(index: int) -> None:
             "player_y_bits": f"0x{memory.u32(PLAYER_Y):08x}",
             "player_z_bits": f"0x{memory.u32(PLAYER_Z):08x}",
             "player_state": memory.i8(PLAYER_STATE),
+            "movement_min_x_bits": f"0x{memory.u32(GM_MOVEMENT_MIN_X):08x}",
+            "movement_min_y_bits": f"0x{memory.u32(GM_MOVEMENT_MIN_Y):08x}",
+            "movement_size_x_bits": f"0x{memory.u32(GM_MOVEMENT_SIZE_X):08x}",
+            "movement_size_y_bits": f"0x{memory.u32(GM_MOVEMENT_SIZE_Y):08x}",
+            "horizontal_multiplier_bits": f"0x{memory.u32(PLAYER_HORIZONTAL_MULTIPLIER):08x}",
+            "vertical_multiplier_bits": f"0x{memory.u32(PLAYER_VERTICAL_MULTIPLIER):08x}",
+            "orthogonal_speed_bits": f"0x{memory.u32(PLAYER_ORTHOGONAL_SPEED):08x}",
+            "orthogonal_focus_speed_bits": f"0x{memory.u32(PLAYER_ORTHOGONAL_FOCUS_SPEED):08x}",
+            "diagonal_speed_bits": f"0x{memory.u32(PLAYER_DIAGONAL_SPEED):08x}",
+            "diagonal_focus_speed_bits": f"0x{memory.u32(PLAYER_DIAGONAL_FOCUS_SPEED):08x}",
             "effective_rate_bits": f"0x{memory.u32(SUPERVISOR_EFFECTIVE_RATE):08x}",
             "x87_control_word": f"0x{int(gdb.parse_and_eval('$fctrl')) & 0xffff:04x}",
             "mxcsr": f"0x{int(gdb.parse_and_eval('$mxcsr')) & 0xffffffff:08x}",

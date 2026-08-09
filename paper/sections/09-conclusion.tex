@@ -5,8 +5,15 @@ a legacy game's execution.  The initial replay runner demonstrates that the
 reconstructed engine can consume real v1.02h witnesses deterministically and
 complete full runs, while strict parsing removes several ambient-memory and
 format-trust hazards.  A first shipped-executable anchor now agrees for 2,000
-frames on a 23-field raw projection.  The result is not yet a proof system and
+frames on a 34-field raw projection.  The result is not yet a proof system and
 does not yet establish whole-state equivalence with the shipped executable.
+
+A first \code{no\_std} player-position microkernel turns that anchor into an
+executable proof target.  It avoids native floating point, implements explicit
+integer PC24 rounding, fails closed outside its stated domain, and matches all
+1,999 consecutive transitions derived from the retail prefix.  This remains a
+narrow translation-validation result, not a formal arithmetic or refinement
+theorem and not a complete zkVM guest.
 
 An experimental shared binary protocol now emits real per-frame subsystem and
 root digests with raw floating-point bits, stable identities, and fail-closed
@@ -14,9 +21,9 @@ decoding.  Complete repeated Linux runs are byte-identical, and the first broad
 ANM experiment already exposed the distinction between allocated memory and
 future-live semantic state.  The retail probe already turns a mismatch in its
 narrow root projection into a reproducible first-frame/first-field diagnosis.
-The next concrete milestone is to resolve the known reuse and dynamic-job
-omissions and emit the complete canonical subsystem schema from the shipped
-executable before freezing the first sliced-kernel boundary.
+The next concrete milestone is to bind and prove this first sliced boundary
+while resolving the known reuse and dynamic-job omissions and enlarging the
+shipped-executable canonical subsystem schema.
 
 A first static arithmetic census now makes the floating-point gate concrete:
 the mapped game surface contains thousands of x87 operations, 26 inline

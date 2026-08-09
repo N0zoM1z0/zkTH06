@@ -37,6 +37,7 @@ replays/samples/th6_udLuRB.rpy
 tools/__pycache__/
 tests/__pycache__/
 formal/.lake/
+zkvm/target/
 
 # Verified local import of the proprietary retail data.
 data/imported/

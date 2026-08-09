@@ -94,6 +94,16 @@ approximate, range-reduction-dependent nature of x87 trigonometric
 instructions~\cite{intel-x87-transcendentals}; Microsoft documents the exposed
 control modes~\cite{microsoft-control87}.
 
+The first executable slice specializes this fidelity lane to player position.
+Binary32 values remain raw 32-bit words and are decoded into signed integer
+dyadics.  Every multiply and add is performed exactly in the integer domain and
+then rounded to a 24-bit significand with ties to even before the next mapped
+operation; ordered comparisons implement the two retail clamps.  Exceptional
+classes, subnormal results, overflow, exponent gaps outside the bounded
+implementation, and callback states that can respawn-write position are
+rejected.  This fail-closed subset makes incompleteness visible to the proof
+statement instead of silently substituting host floating-point behavior.
+
 Berkeley SoftFloat Release 3e is used as an independent executable oracle for
 the first arithmetic-boundary experiments~\cite{hauser-softfloat3e}.  Its
 \code{extF80\_roundingPrecision = 64} setting denotes precision equivalent to

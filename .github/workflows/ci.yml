@@ -53,8 +53,16 @@ jobs:
           python3 tests/test_item_score_corpus.py
           python3 tests/test_item_score_probe.py
           python3 tests/test_player_position_audit.py
+          python3 tests/test_player_motion_vector.py
           python3 tests/test_retail_anchor.py
           python3 tests/test_x87_audit.py
           reference/th06 --canonical-self-test
           python3 tests/test_canonical_trace.py reference/th06
           python3 tests/test_replay_validation.py reference/th06
+
+      - name: Install pinned Rust toolchain
+        run: rustup toolchain install 1.91.1 --profile minimal --no-self-update
+
+      - name: Test the sliced gameplay kernel
+        working-directory: zkvm
+        run: cargo test --workspace --locked

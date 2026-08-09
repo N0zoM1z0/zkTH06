@@ -1,13 +1,22 @@
-# zkVM guest boundary
+# zkVM kernel and guest boundary
 
-This directory is reserved for zkTH06-owned proof code: the versioned gameplay
-transition, witness/public-input schema, acceptance predicate and backend
-adapters.
+This directory contains zkTH06-owned proof code: sliced gameplay transitions
+now, and eventually the witness/public-input schema, acceptance predicate and
+backend adapters.
 
-No guest is frozen yet. M0 must first produce frame-identical canonical state
-digests between the shipped v1.02h behavior and the adapted runner. Encoding a
-known-divergent Linux simulation in a zkVM would prove the wrong semantics more
-efficiently, so guest implementation starts only after that differential gate.
+[`player-motion/`](player-motion/) is the first frozen microkernel. It advances
+only the Player x/y position projection for alive or invulnerable frames. All
+floating-point values enter and leave as raw `u32` bits; integer code performs
+each multiply, add, ordered comparison and binary32 store using a 24-bit
+significand and round-to-nearest-even. The implementation rejects non-finite or
+subnormal operands and results, overflow, unsupported exponent gaps, and player
+states whose enclosing callback can respawn-write position.
+
+The microkernel matches 1,999 consecutive transitions extracted from the first
+2,000-frame shipped-executable anchor. That establishes an executable
+translation-validation target for one projection. It does not freeze or claim
+a complete zkVM guest, whole-Player semantics, whole-state equivalence, or a
+formal source/binary refinement proof.
 
 The intended boundary is:
 
