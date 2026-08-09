@@ -60,6 +60,7 @@ The complete-image x87 counts include:
 | control/environment save, load, or clear | 77 |
 | transcendental or square-root | 65 |
 | rounding or float-to-integer conversion | 92 |
+| x87 comparisons | 350 |
 | floating or integer stores | 3,016 |
 
 The complete image contains 2,689 `fld`, 2,859 `fstp`, 30 `fsincos`, 17
@@ -85,6 +86,8 @@ implemented by the pinned reconstruction metadata. Together they contain:
 | direct x87 control/environment instructions | 0 |
 | `fsincos` instructions | 26 |
 | `frndint` instructions | 10 |
+| `fcomp` instructions | 244 |
+| `fcomp` DWORD/QWORD memory operands | 236 / 8 |
 | x87 stores | 1,793 |
 | stores to binary32-width DWORDs | 1,713 |
 | stores to binary64-width QWORDs | 80 |
@@ -109,6 +112,27 @@ The 26 mapped transcendental sites are all `fsincos`; they occur in ECL,
 stage-specific enemy instructions, bullet spawn/update/despawn, item update,
 and two draw routines. The address-level list is emitted by `--summary`.
 
+All 244 mapped comparison sites use `fcomp`; every site is immediately followed
+by `fnstsw ax`, one of six observed `and`/`test` masks, and one of `je`, `jne`,
+`jp`, or `jnp`. The audit emits all addresses and the eleven complete consumer
+signatures. These sequences, rather than a guessed source-level relation, are
+the branch-semantics extraction obligations.
+
+| Status consumer after `fnstsw ax` | Sites |
+| --- | ---: |
+| `and eax,0x100; je` / `jne` | 1 / 32 |
+| `and eax,0x4100; je` / `jne` | 18 / 22 |
+| `test ah,0x1; jne` | 13 |
+| `test ah,0x41; jne` / `jp` | 7 / 38 |
+| `test ah,0x44; jnp` / `jp` | 11 / 18 |
+| `test ah,0x5; jnp` / `jp` | 16 / 68 |
+
+The masks observe different unordered behavior. For example,
+`test ah,0x5; jp` branches for greater, equal, and unordered, while
+`test ah,0x5; jnp` branches only for less. `X87Compare.lean` evaluates every
+observed signature over the four x87 relations so that later IR extraction can
+preserve the machine branch exactly.
+
 ### Arithmetic hidden behind calls
 
 Counting only instructions inside a mapped game body misses statically linked
@@ -131,6 +155,12 @@ For example, `__ftol2` uses `fistp` plus an integer correction sequence, while
 two D3DX `F2IBegin`/`F2IEnd` pairs temporarily set the x87 rounding-control
 bits to toward-zero and then restore the prior word. These are semantic helper
 ABIs, not interchangeable calls to a host conversion routine.
+
+At all 77 mapped `__ftol2` calls, the preceding instruction is x87: 60 `fld`,
+seven `fmul`, four `fdiv`, two `fadd`, two `fsubp`, and two `fsubr`. A bounded
+straight-line result-use scan observes EAX at all 77 sites and EDX at none; one
+site consumes only AL. This supports a low-32-bit gameplay projection but does
+not prove that every reachable conversion is in range.
 
 ## Control-word evidence
 
@@ -176,7 +206,7 @@ plausible independent oracle for the reached arithmetic subset. The source is
 not vendored. [`tools/run_softfloat_probe.py`](../tools/run_softfloat_probe.py)
 exports exact commit
 `f74b1e48110ac3a27dd49b787d164e55e42d81d1` from an ignored checkout, verifies
-selected file hashes, compiles the 32 required translation units with the
+selected file hashes, compiles the 37 required translation units with the
 `8086` specialization in a temporary directory, and runs
 [`arithmetic/softfloat_probe.c`](../arithmetic/softfloat_probe.c).
 
@@ -189,6 +219,13 @@ to binary32/binary64, `frndint`, and signed 32/64-bit `fistp` under both
 `0x027f` and the D3DX helper's toward-zero profile `0x0e7f`. Both profile
 decodings and their SoftFloat configuration mappings are checked, without an
 arithmetic theorem, in `X87Profile.lean`.
+
+The same probe mirrors the 244 mapped comparison forms with `fcomp m32fp` and
+`fcomp m64fp`. It checks C0, C1, C2, and C3 plus exception bits, including
+fixed infinity, quiet-NaN, signaling-NaN, signed-zero, and invalid-versus-
+denormal priority cases. `X87Compare.lean` checks the documented relation
+encoding and truth tables of all eleven status-mask/branch signatures found by
+the audit. It does not prove that the binary implements the Lean definition.
 
 The comparison now covers x87 exception bits 0--5 as well as results.
 SoftFloat's invalid, divide-by-zero, overflow, underflow, and inexact flags map
@@ -222,16 +259,43 @@ profile, and family plus fixed boundary cases produced:
 All six exception bits occurred in the basic campaign: 1,001,228 invalid,
 88,466 denormal-operand, 56 divide-by-zero, 255,746 overflow, 265,276
 underflow, and 7,547,221 inexact observations. Counts overlap when multiple
-bits are set. Across both campaigns, 30,002,582 result/exception tuples matched.
+bits are set. A further 2,000,110 DWORD-memory and 2,000,110 QWORD-memory
+comparison tuples matched, with 76 invalid and 29,682 denormal-operand
+observations. Across all campaigns, 34,002,802 result/condition/exception
+tuples matched.
 
 This is host-specific counterexample search, not a proof that either
-implementation is correct. It does not cover x87 condition codes, TOP/tag
-state, stack faults, arbitrary NaN inputs, `fld m32fp` denormal signaling,
-comparisons, remainder, `fisttp`, complete `__ftol2` semantics, transcendental
-instructions, or address extraction. SoftFloat is therefore a candidate
+implementation is correct. It does not cover TOP/tag state, stack faults,
+arbitrary NaN payloads or noncanonical ext80 encodings, `fld m32fp` denormal
+signaling, remainder, `fisttp`, transcendental instructions, or address
+extraction. SoftFloat is therefore a candidate
 executable specification for a subset, not the soundness argument. Full
 commands and the dependency/license boundary are in
 [`arithmetic/README.md`](../arithmetic/README.md).
+
+## Extracted `__ftol2` experiment
+
+The audited helper occupies 117 bytes at `0x0045ba78`, with body SHA-256
+`5333b186c02836974c6f792303aeb2c00d856316b93ccbbe65f51def6ae661b4`.
+The local runner resolves that address through the verified PE section table,
+checks the body hash, and embeds it only in a temporary freestanding i386
+harness. No original byte is tracked or retained. The harness supplies one
+ext80 stack operand, executes the exact helper at control word `0x027f`, and
+returns EDX:EAX plus the status word.
+
+An independent integer decoder interprets canonical finite ext80 inputs as
+exact dyadic rationals. Across 1,000,014 fixed and deterministic PC53 samples
+in the signed-i64 domain, the complete EDX:EAX result always equaled truncation
+toward zero and the helper always returned with an empty x87 stack. This tests
+the body and ABI rather than merely its inner `fistp`. `X87Ftol2.lean` checks
+the nearest-integer correction table and EDX:EAX split/join identities, but
+does not connect raw encodings, executable bytes, or reachable inputs to those
+definitions.
+
+Exceptional/out-of-range inputs remain outside this result. Because the game
+consumes only EAX/AL, the desired simplification requires a proved invariant
+that all 77 reachable inputs truncate into signed 32 bits. The exact helper is
+retained until that range and the model-to-code binding are established.
 
 ## Transcendentals are a scope decision
 
@@ -299,10 +363,10 @@ equivalence.
    replay corpus.
 3. Add field-level snapshots so the first arithmetic divergence identifies the
    owning field and original operation site.
-4. Extend the pinned differential oracle through reached comparison/condition
-   sequences, `fisttp`, `fld` denormal signaling, and the complete `__ftol2`
-   ABI; then bind the resulting semantics to original instruction addresses
-   and a machine-checked definition.
+4. Bind comparison and conversion semantics to original instruction addresses;
+   prove the signed-i32 input invariant at all 77 `__ftol2` sites; and extend
+   the oracle through `fisttp`, `fld` denormal signaling, remainder, and
+   exceptional helper inputs where dynamically relevant.
 5. Prove draw/D3DX noninterference one callback at a time. Only then may their
    x87 and XMM sites leave the arithmetic kernel.
 6. State and prove the chosen transcendental execution profile; corpus equality

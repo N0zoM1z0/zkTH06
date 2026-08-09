@@ -15,10 +15,12 @@ from dataclasses import dataclass
 from pathlib import Path
 
 
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2
 INSTRUCTION_RE = re.compile(r"^\s*([0-9a-fA-F]+):\s+([A-Za-z][A-Za-z0-9]*)\s*(.*)$")
 MEMORY_WIDTH_RE = re.compile(r"\b(BYTE|WORD|DWORD|QWORD|TBYTE) PTR\b")
 XMM_REGISTER_RE = re.compile(r"\bxmm(?:[0-9]|1[0-5])\b", re.IGNORECASE)
+EAX_REGISTER_RE = re.compile(r"\b(?:eax|ax|ah|al)\b", re.IGNORECASE)
+EDX_REGISTER_RE = re.compile(r"\b(?:edx|dx|dh|dl)\b", re.IGNORECASE)
 
 CONTROL_MNEMONICS = frozenset(
     {
@@ -42,6 +44,21 @@ TRANSCENDENTAL_MNEMONICS = frozenset(
 )
 ROUNDING_MNEMONICS = frozenset({"fist", "fistp", "fisttp", "frndint"})
 STORE_MNEMONICS = frozenset({"fist", "fistp", "fisttp", "fst", "fstp"})
+COMPARISON_MNEMONICS = frozenset(
+    {
+        "fcom",
+        "fcomi",
+        "fcomip",
+        "fcomp",
+        "fcompp",
+        "ftst",
+        "fucom",
+        "fucomi",
+        "fucomip",
+        "fucomp",
+        "fucompp",
+    }
+)
 
 # These entry points transfer control into adjacent or shared x87 bodies, so
 # their small mapping ranges do not themselves contain the relevant x87
@@ -155,6 +172,52 @@ def site_dict(instruction: Instruction, function: FunctionRange | None) -> dict[
     }
 
 
+def comparison_site_dict(
+    instructions: list[Instruction],
+    index: int,
+    function_index: "FunctionIndex",
+) -> dict[str, object]:
+    """Describe the bounded status-word consumer after one x87 comparison.
+
+    MSVC 7 normally lowers a source comparison to FCOMP, FNSTSW AX, a TEST or
+    AND mask, and a conditional branch.  This recognizer deliberately records
+    only that local syntactic fact; it does not claim reachability or recover a
+    source-level predicate.
+    """
+    instruction = instructions[index]
+    function = function_index.find(instruction.address)
+    site = site_dict(instruction, function)
+    site["memory_width"] = memory_width(instruction)
+    site["status_transfer"] = None
+    site["status_filter"] = None
+    site["conditional_branch"] = None
+    site["consumer_signature"] = None
+
+    followers: list[Instruction] = []
+    for candidate in instructions[index + 1 : index + 5]:
+        if function_index.find(candidate.address) != function:
+            break
+        followers.append(candidate)
+    if len(followers) < 3:
+        return site
+
+    status, status_filter, branch = followers[:3]
+    if status.mnemonic not in {"fnstsw", "fstsw"}:
+        return site
+    if status_filter.mnemonic not in {"and", "test"}:
+        return site
+    if not branch.mnemonic.startswith("j") or branch.mnemonic == "jmp":
+        return site
+
+    site["status_transfer"] = f"{status.mnemonic} {status.operands}".strip()
+    site["status_filter"] = f"{status_filter.mnemonic} {status_filter.operands}".strip()
+    site["conditional_branch"] = branch.mnemonic
+    site["consumer_signature"] = "; ".join(
+        (site["status_transfer"], site["status_filter"], branch.mnemonic)
+    )
+    return site
+
+
 def direct_call_target(instruction: Instruction) -> int | None:
     """Return the absolute target of a direct objdump call, if present."""
     if instruction.mnemonic != "call":
@@ -165,6 +228,59 @@ def direct_call_target(instruction: Instruction) -> int | None:
         return None
 
 
+def _destination_register(instruction: Instruction) -> str | None:
+    destination = instruction.operands.split(",", 1)[0].strip().lower()
+    return destination if re.fullmatch(r"e?[abcd]x|[abcd][hl]", destination) else None
+
+
+def _return_register_observation(
+    instructions: list[Instruction],
+    call_index: int,
+    function_index: "FunctionIndex",
+) -> tuple[bool, bool]:
+    """Conservatively scan one straight-line suffix for EDX:EAX consumption."""
+    function = function_index.find(instructions[call_index].address)
+    eax_live = True
+    edx_live = True
+    eax_observed = False
+    edx_observed = False
+    write_only = {"lea", "mov", "movsx", "movzx", "pop"}
+
+    for instruction in instructions[call_index + 1 : call_index + 33]:
+        if function_index.find(instruction.address) != function:
+            break
+        destination = _destination_register(instruction)
+        reads_eax = EAX_REGISTER_RE.search(instruction.operands) is not None
+        reads_edx = EDX_REGISTER_RE.search(instruction.operands) is not None
+        if instruction.mnemonic in write_only:
+            if destination in {"eax", "ax", "ah", "al"}:
+                reads_eax = False
+            if destination in {"edx", "dx", "dh", "dl"}:
+                reads_edx = False
+        if instruction.mnemonic in {"sub", "xor"}:
+            operands = [part.strip().lower() for part in instruction.operands.split(",")]
+            if len(operands) == 2 and operands[0] == operands[1]:
+                reads_eax = reads_eax and operands[0] not in {"eax", "ax", "ah", "al"}
+                reads_edx = reads_edx and operands[0] not in {"edx", "dx", "dh", "dl"}
+
+        if eax_live and reads_eax:
+            eax_observed = True
+            eax_live = False
+        if edx_live and reads_edx:
+            edx_observed = True
+            edx_live = False
+
+        if destination == "eax" or instruction.mnemonic == "call":
+            eax_live = False
+        if destination == "edx" or instruction.mnemonic == "call":
+            edx_live = False
+        if instruction.mnemonic.startswith("j") or instruction.mnemonic.startswith("ret"):
+            break
+        if not eax_live and not edx_live:
+            break
+    return eax_observed, edx_observed
+
+
 def x87_helper_calls_from_th06(
     instructions: list[Instruction],
     function_index: "FunctionIndex",
@@ -173,7 +289,7 @@ def x87_helper_calls_from_th06(
     """Aggregate direct calls from reconstructed game code into x87 helpers."""
     helpers: dict[tuple[str, int], dict[str, object]] = {}
     call_count = 0
-    for instruction in instructions:
+    for instruction_index, instruction in enumerate(instructions):
         target = direct_call_target(instruction)
         if target is None:
             continue
@@ -197,9 +313,19 @@ def x87_helper_calls_from_th06(
                 "start": f"0x{callee.start:08x}",
                 "direct_call_count": 0,
                 "callers": {},
+                "predecessor_mnemonics": Counter(),
+                "bounded_eax_observed_count": 0,
+                "bounded_edx_observed_count": 0,
             },
         )
         helper["direct_call_count"] += 1
+        if instruction_index:
+            helper["predecessor_mnemonics"][instructions[instruction_index - 1].mnemonic] += 1
+        eax_observed, edx_observed = _return_register_observation(
+            instructions, instruction_index, function_index
+        )
+        helper["bounded_eax_observed_count"] += eax_observed
+        helper["bounded_edx_observed_count"] += edx_observed
         caller_entry = helper["callers"].setdefault(
             caller.name,
             {"name": caller.name, "direct_call_count": 0, "sites": []},
@@ -210,6 +336,7 @@ def x87_helper_calls_from_th06(
     helper_rows: list[dict[str, object]] = []
     for helper in helpers.values():
         helper["callers"] = sorted(helper["callers"].values(), key=lambda row: row["name"])
+        helper["predecessor_mnemonics"] = dict(sorted(helper["predecessor_mnemonics"].items()))
         helper_rows.append(helper)
     helper_rows.sort(key=lambda row: (-row["direct_call_count"], row["start"]))
     return {
@@ -253,6 +380,8 @@ def audit(
                     "control_instructions": 0,
                     "transcendental_instructions": 0,
                     "rounding_instructions": 0,
+                    "comparison_instructions": 0,
+                    "comparison_memory_widths": Counter(),
                     "store_instructions": 0,
                     "store_memory_widths": Counter(),
                 },
@@ -263,6 +392,9 @@ def audit(
             entry["control_instructions"] += instruction.mnemonic in CONTROL_MNEMONICS
             entry["transcendental_instructions"] += instruction.mnemonic in TRANSCENDENTAL_MNEMONICS
             entry["rounding_instructions"] += instruction.mnemonic in ROUNDING_MNEMONICS
+            entry["comparison_instructions"] += instruction.mnemonic in COMPARISON_MNEMONICS
+            if instruction.mnemonic in COMPARISON_MNEMONICS:
+                entry["comparison_memory_widths"][memory_width(instruction)] += 1
             entry["store_instructions"] += instruction.mnemonic in STORE_MNEMONICS
             if instruction.mnemonic in STORE_MNEMONICS:
                 entry["store_memory_widths"][memory_width(instruction)] += 1
@@ -277,11 +409,19 @@ def audit(
     for entry in per_function.values():
         entry["mnemonics"] = dict(sorted(entry["mnemonics"].items()))
         entry["memory_widths"] = dict(sorted(entry["memory_widths"].items()))
+        entry["comparison_memory_widths"] = dict(
+            sorted(entry["comparison_memory_widths"].items())
+        )
         entry["store_memory_widths"] = dict(sorted(entry["store_memory_widths"].items()))
         function_rows.append(entry)
     function_rows.sort(key=lambda entry: (-entry["x87_instructions"], entry["start"]))
 
     helper_calls = x87_helper_calls_from_th06(instructions, function_index, set(per_function))
+    comparison_sites = [
+        comparison_site_dict(instructions, index, function_index)
+        for index, instruction in enumerate(instructions)
+        if instruction.mnemonic in COMPARISON_MNEMONICS
+    ]
     xmm_functions = Counter()
     unmapped_xmm = 0
     for instruction in xmm:
@@ -311,9 +451,11 @@ def audit(
             "control": sum(mnemonic_counts[mnemonic] for mnemonic in CONTROL_MNEMONICS),
             "transcendental": sum(mnemonic_counts[mnemonic] for mnemonic in TRANSCENDENTAL_MNEMONICS),
             "rounding_or_integer_conversion": sum(mnemonic_counts[mnemonic] for mnemonic in ROUNDING_MNEMONICS),
+            "comparisons": sum(mnemonic_counts[mnemonic] for mnemonic in COMPARISON_MNEMONICS),
             "stores": sum(mnemonic_counts[mnemonic] for mnemonic in STORE_MNEMONICS),
         },
         "key_sites": key_sites,
+        "comparison_sites": comparison_sites,
         "functions": function_rows,
         "direct_x87_helper_calls_from_th06": helper_calls,
     }
@@ -331,6 +473,7 @@ def summarize(result: dict[str, object]) -> dict[str, object]:
         "control": "control_instructions",
         "transcendental": "transcendental_instructions",
         "rounding_or_integer_conversion": "rounding_instructions",
+        "comparisons": "comparison_instructions",
         "stores": "store_instructions",
     }
     game_categories = {
@@ -339,9 +482,22 @@ def summarize(result: dict[str, object]) -> dict[str, object]:
     }
     game_mnemonics = Counter()
     game_store_widths = Counter()
+    game_comparison_widths = Counter()
     for function in game_functions:
         game_mnemonics.update(function["mnemonics"])
         game_store_widths.update(function["store_memory_widths"])
+        game_comparison_widths.update(function["comparison_memory_widths"])
+
+    game_comparison_sites = [
+        site
+        for site in audit_result["comparison_sites"]
+        if site["function"] is not None and site["function"].startswith("th06::")
+    ]
+    comparison_consumer_signatures = Counter(
+        site["consumer_signature"]
+        for site in game_comparison_sites
+        if site["consumer_signature"] is not None
+    )
 
     helper_summary = audit_result["direct_x87_helper_calls_from_th06"]
     return {
@@ -385,6 +541,11 @@ def summarize(result: dict[str, object]) -> dict[str, object]:
             ),
             "categories": game_categories,
             "mnemonics": dict(sorted(game_mnemonics.items())),
+            "comparison_memory_widths": dict(sorted(game_comparison_widths.items())),
+            "comparison_consumer_chain_count": sum(comparison_consumer_signatures.values()),
+            "comparison_consumer_signatures": dict(
+                sorted(comparison_consumer_signatures.items())
+            ),
             "store_memory_widths": dict(sorted(game_store_widths.items())),
             "top_functions": game_functions[:25],
             "transcendental_sites": [
@@ -394,6 +555,7 @@ def summarize(result: dict[str, object]) -> dict[str, object]:
                 and site["function"] is not None
                 and site["function"].startswith("th06::")
             ],
+            "comparison_sites": game_comparison_sites,
         },
         "direct_x87_helper_calls_from_th06": {
             "direct_call_count": helper_summary["direct_call_count"],
@@ -403,6 +565,9 @@ def summarize(result: dict[str, object]) -> dict[str, object]:
                     "name": helper["name"],
                     "start": helper["start"],
                     "direct_call_count": helper["direct_call_count"],
+                    "predecessor_mnemonics": helper["predecessor_mnemonics"],
+                    "bounded_eax_observed_count": helper["bounded_eax_observed_count"],
+                    "bounded_edx_observed_count": helper["bounded_edx_observed_count"],
                     "callers": [
                         {
                             "name": caller["name"],

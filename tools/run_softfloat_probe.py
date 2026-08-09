@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build and run the pinned x87/SoftFloat result/status differential probe."""
+"""Build and run the pinned x87/SoftFloat result/status/condition probe."""
 
 from __future__ import annotations
 
@@ -37,6 +37,8 @@ PINNED_FILE_HASHES = {
 SOFTFLOAT_SOURCES = (
     "source/extF80_add.c",
     "source/extF80_div.c",
+    "source/extF80_eq_signaling.c",
+    "source/extF80_lt.c",
     "source/extF80_mul.c",
     "source/extF80_sqrt.c",
     "source/extF80_sub.c",
@@ -46,6 +48,7 @@ SOFTFLOAT_SOURCES = (
     "source/extF80_to_i32.c",
     "source/extF80_to_i64.c",
     "source/f32_to_extF80.c",
+    "source/f64_to_extF80.c",
     "source/s_addMagsExtF80.c",
     "source/s_approxRecipSqrt32_1.c",
     "source/s_approxRecipSqrt_1Ks.c",
@@ -54,9 +57,11 @@ SOFTFLOAT_SOURCES = (
     "source/8086/s_commonNaNToExtF80UI.c",
     "source/8086/s_extF80UIToCommonNaN.c",
     "source/8086/s_f32UIToCommonNaN.c",
+    "source/8086/s_f64UIToCommonNaN.c",
     "source/s_normRoundPackToExtF80.c",
     "source/s_normSubnormalExtF80Sig.c",
     "source/s_normSubnormalF32Sig.c",
+    "source/s_normSubnormalF64Sig.c",
     "source/8086/s_propagateNaNExtF80UI.c",
     "source/s_roundPackToExtF80.c",
     "source/s_roundPackToF32.c",
@@ -177,8 +182,8 @@ def parse_args() -> argparse.Namespace:
     root = Path(__file__).resolve().parents[1]
     parser = argparse.ArgumentParser(
         description=(
-            "compare selected x87 arithmetic/boundary results and exception "
-            "bits with pinned Berkeley SoftFloat Release 3e"
+            "compare selected x87 arithmetic/boundary results, exceptions, "
+            "and condition codes with pinned Berkeley SoftFloat Release 3e"
         )
     )
     parser.add_argument(
@@ -202,7 +207,7 @@ def main() -> int:
     machine = platform.machine().lower()
     if machine not in {"amd64", "x86_64"}:
         raise ProbeError(
-            "the pinned 20-file SoftFloat build profile requires x86-64; "
+            "the selected SoftFloat build profile requires x86-64; "
             f"detected {machine}"
         )
 

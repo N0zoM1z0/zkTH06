@@ -43,6 +43,7 @@ jobs:
         run: |
           python3 -m py_compile tools/*.py tests/*.py
           python3 -m json.tool data/manifest.json >/dev/null
+          python3 tests/test_ftol2_probe.py
           python3 tests/test_x87_audit.py
           reference/th06 --canonical-self-test
           python3 tests/test_canonical_trace.py reference/th06

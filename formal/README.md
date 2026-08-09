@@ -23,6 +23,21 @@ by zero and negative square root, and distinguishes `frndint` from the tested
 `fstp`/`fistp` boundaries. This is a machine-checked classification model, not
 a proof of the Intel/AMD manuals, hardware, SoftFloat, or the assembly harness.
 
+[`ZkTH06/X87Compare.lean`](ZkTH06/X87Compare.lean) records the
+greater/less/equal/unordered C0/C2/C3 encoding and evaluates the eleven
+`fnstsw` mask/branch signatures found at all 244 mapped comparison sites. It
+also records FCOM's invalid-before-denormal priority for NaN inputs. These are
+finite truth tables attached to the static evidence, not a reachability or
+binary-decoding theorem.
+
+[`ZkTH06/X87Ftol2.lean`](ZkTH06/X87Ftol2.lean) checks that the helper's
+nearest-integer carry/borrow correction recovers truncation toward zero in all
+sign/rounding-position cases. It also proves the EDX:EAX split/join identity
+and that a low-32-bit observer is independent of EDX. The unproved premises
+remain substantial: raw ext80 decoding, signed-range safety at every reachable
+call, correspondence with the 117 extracted bytes, and the static observation
+that mapped game code never consumes EDX.
+
 ## Checked Effect reuse result
 
 [`ZkTH06/EffectReuse.lean`](ZkTH06/EffectReuse.lean) models the specific

@@ -20,6 +20,11 @@ D3DX toward-zero x87 profiles and their SoftFloat configuration correspondence
 without yet claiming complete arithmetic semantics.
 A finite-input exception model separately checks why denormal signaling must
 follow opcode priority rather than a single operand-class rule.
+Comparison truth tables now cover all eleven status-mask/branch forms at the
+244 mapped game comparison sites. A local extraction probe also executes the
+verified 117-byte `__ftol2` body without retaining proprietary bytes and checks
+its EDX:EAX truncation result over a bounded canonical domain; neither result
+is yet a code-binding or reachable-range proof.
 
 ## Repository boundary
 

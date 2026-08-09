@@ -100,6 +100,8 @@ until a specific DWORD or QWORD store.
     direct x87 control/environment instructions & 0 \\
     \code{fsincos} instructions & 26 \\
     \code{frndint} instructions & 10 \\
+    \code{fcomp} instructions & 244 \\
+    DWORD/QWORD \code{fcomp} operands & 236 / 8 \\
     x87 stores & 1,793 \\
     DWORD stores & 1,713 \\
     QWORD stores & 80 \\
@@ -110,6 +112,13 @@ until a specific DWORD or QWORD store.
   \label{tab:arithmetic-census}
 \end{table}
 
+Every mapped comparison is followed immediately by \code{fnstsw ax}, one of
+six observed masks, and a conditional branch.  The 244 sites form eleven
+complete consumer signatures.  Their greater/less/equal/unordered truth tables
+are checked in Lean, making the exact branch observation---including unordered
+behavior---an explicit extraction obligation rather than a guessed C++
+relation.
+
 Function-body counts alone are incomplete.  The audit also finds 163 direct
 calls from mapped game code into 18 x87 helpers or wrappers: 77 call
 \code{\_\_ftol2}, 16 each call \code{sin} and \code{cos}, 11 call
@@ -118,6 +127,12 @@ XMM-operand instruction lines, none inside a mapped \code{th06::} range; they
 belong to a Pentium-4 \code{pow} implementation, a CRT helper used by D3DX
 rasterization, and feature detection.  Their removal still requires a
 transitive noninterference argument for the corresponding draw paths.
+
+At the 77 \code{\_\_ftol2} sites, predecessor counts are 60 \code{fld}, seven
+\code{fmul}, four \code{fdiv}, and two each of \code{fadd}, \code{fsubp}, and
+\code{fsubr}.  A bounded straight-line scan observes EAX at every caller and
+EDX at none.  This identifies the candidate observable projection but does not
+establish a reachable input range.
 
 The CRT trigonometric wrappers embed raw x87 control word \code{0x027f}.  A
 small Lean definition checks its 53-bit significand precision,
@@ -135,11 +150,11 @@ nearest-even profile.  It also compares binary32/binary64 \code{fstp},
 \code{frndint}, and signed 32/64-bit \code{fistp} under nearest-even and the
 audited D3DX toward-zero profile.  The runner exports exact upstream commit
 \code{f74b1e48110ac3a27dd49b787d164e55e42d81d1}, verifies selected file hashes,
-and compiles only the 32 required translation units with the SoftFloat
+and compiles only the 37 required translation units with the SoftFloat
 \code{8086} specialization.  The probe source for this run had SHA-256
 \begin{center}
 \small\ttfamily
-cf55d2ed7bde6c1020877b427eca43bc0f4e49f8ab7ffa29bfc4d8fdb487b392.
+b062a031b5866b7e86514db17d162ecbdf9398b0a5d0c5530dfcf6c4889ffe71.
 \end{center}
 
 Raw result representations and x87 exception bits 0--5 are compared.  The
@@ -153,6 +168,13 @@ campaign.  A finite-class Lean definition checks both counterexamples and the
 boundary distinction, but does not prove that the manuals, hardware, or
 SoftFloat implement that definition.
 
+The comparison campaign additionally mirrors \code{fcomp m32fp} and
+\code{fcomp m64fp}.  It checks C0, C1, C2, C3, and exception bits using
+finite random pairs plus fixed infinities, quiet/signaling NaNs, signed zeros,
+and invalid-versus-denormal priority cases.  A separate Lean definition checks
+the eleven reached status-mask/branch truth tables, without claiming hardware
+or binary correspondence.
+
 On an AMD EPYC 9654 with GCC 11.4.0, one million deterministic pseudorandom
 cases per operation, profile, and input family, plus fixed boundary cases,
 yielded Table~\ref{tab:softfloat-probe}.
@@ -162,27 +184,54 @@ yielded Table~\ref{tab:softfloat-probe}.
   \small
   \begin{tabular}{@{}lrrr@{}}
     \toprule
-    Family & binary32-derived & PC53 extended & Mismatches \\
+    Family & Tuple set A & Tuple set B & Mismatches \\
     \midrule
     Five basic operations & 5,000,798 & 5,001,314 & 0 \\
     Five boundaries, two RC profiles & 10,000,140 & 10,000,330 & 0 \\
+    \code{fcomp m32fp}/\code{m64fp} & 2,000,110 & 2,000,110 & 0 \\
     \bottomrule
   \end{tabular}
-  \caption{Host-specific x87/SoftFloat result/exception counterexample search.}
+  \caption{Host-specific x87/SoftFloat result/condition/exception
+  counterexample search.  Sets A/B are binary32-derived/PC53 extended for the
+  first two rows and m32fp/m64fp memory operands for comparisons.}
   \label{tab:softfloat-probe}
 \end{table}
 
 All six exception bits occurred in the basic campaign: 1,001,228 invalid,
 88,466 denormal-operand, 56 divide-by-zero, 255,746 overflow, 265,276
 underflow, and 7,547,221 inexact observations.  Counts overlap when an
-instruction sets multiple bits.  Across both campaigns, 30,002,582 tuples
-matched and the measured run took 4.3 seconds.
+instruction sets multiple bits.  The comparison campaign observed 76 invalid
+and 29,682 denormal-operand flags; its relation counts were 2,001,320 greater,
+1,998,808 less, 16 equal, and 76 unordered.  Across all campaigns, 34,002,802
+tuples matched and the measured run took 3.6 seconds.
 
 Canonical PC53 inputs retain the full extended exponent range, set the
 explicit integer bit consistently with the exponent, and clear the eleven
 significand bits below the selected precision.  The zero-mismatch result makes
 SoftFloat a plausible oracle for this subset on the measured host; it proves
-neither implementation correct.  Condition codes, TOP/tag state, arbitrary
-NaN inputs, \code{fld m32fp} denormal signaling, comparisons, remainder,
-complete helper ABIs, transcendental instructions, dynamic reachability, and
-model-to-code binding remain outside the experiment.
+neither implementation correct.  TOP/tag state, arbitrary NaN payloads and
+noncanonical encodings, \code{fld m32fp} denormal signaling, remainder,
+transcendental instructions, dynamic reachability, and model-to-code binding
+remain outside the experiment.
+
+\subsection{Extracted \code{\_\_ftol2} experiment}
+
+The helper occupies 117 bytes at virtual address \code{0x0045ba78}; the local
+extractor binds its body by SHA-256 after first verifying the complete retail
+image.  It retains the bytes only in a temporary directory and links them into
+a freestanding i386 stream harness, so neither the executable fragment nor a
+derived object is redistributed.
+
+An independent Python decoder computes truncation toward zero directly from
+the sign, exponent, and significand of canonical finite ext80 values.  On the
+same host, 1,000,014 fixed and deterministic PC53 inputs in the signed-i64
+domain produced identical complete EDX:EAX values; every invocation returned
+the x87 stack to empty, and 908,273 cases left the inexact flag set.  The run
+took 3.5 seconds.  A Lean case model separately checks the helper's
+nearest-even carry/borrow correction and the EDX:EAX split/join identity.
+
+The result is deliberately not generalized to NaNs or out-of-range inputs.
+Nor does it prove that mapped gameplay calls stay within signed i32, even
+though static consumers observe only EAX or AL.  Reachable-range invariants and
+binary-to-model correspondence remain required before the helper can be
+replaced by a smaller truncation operation in the proof kernel.

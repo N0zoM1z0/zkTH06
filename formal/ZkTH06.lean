@@ -1,3 +1,5 @@
 import ZkTH06.EffectReuse
 import ZkTH06.X87Exceptions
+import ZkTH06.X87Compare
+import ZkTH06.X87Ftol2
 import ZkTH06.X87Profile

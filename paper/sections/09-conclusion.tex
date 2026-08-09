@@ -22,13 +22,17 @@ the mapped game surface contains thousands of x87 operations, 26 inline
 \code{fsincos} sites, 1,793 stores, and numerous calls into conversion and
 transcendental helpers.  The embedded \code{0x027f} control profile is decoded
 in Lean together with the D3DX toward-zero profile.  A pinned SoftFloat probe
-matches 30,002,582 hardware result/exception tuples across basic arithmetic,
-stores, rounding, and integer conversion, after an initial denormal-priority
-rule was falsified and corrected.  This remains counterexample search: startup
-state, condition codes, helper ABIs, address binding, and transcendental
-microarchitecture are not yet proved.  The fidelity design therefore binds
-operations to original addresses and store widths instead of assuming
-source-level host arithmetic is exact.
+matches 34,002,802 hardware result/condition/exception tuples across basic
+arithmetic, stores, rounding, integer conversion, and both reached comparison
+widths, after an initial denormal-priority rule was falsified and corrected.
+All 244 mapped comparison consumers are classified into eleven checked truth
+tables.  A temporary i386 harness additionally matches 1,000,014 in-domain
+executions of the exact \code{\_\_ftol2} body against dyadic truncation.  This
+remains counterexample search: startup state, load/remainder behavior,
+reachable helper ranges, address binding, and transcendental microarchitecture
+are not yet proved.  The fidelity design therefore binds operations to original
+addresses and store widths instead of assuming source-level host arithmetic is
+exact.
 
 That evidence will guide the projection, but it cannot prove a slice sound.
 The intended end state additionally requires a machine-checked commuting

@@ -12,11 +12,15 @@
   Host \code{libm}, spill behavior, and intermediate precision may diverge by
   one or more bits and later alter collisions.  A pinned SoftFloat experiment
   agrees with hardware results and six exception bits for tested arithmetic,
-  store, rounding, and integer-conversion cases, but it is neither formally
-  verified nor complete x87 state semantics.  Condition codes, load exceptions,
-  complete helper ABIs, address binding, and transcendental behavior remain
-  open.  The address-indexed exact baseline, code binding, and any fixed-point
-  refinement have not yet been implemented or proved.
+  store, rounding, integer-conversion, and comparison cases, but it is neither
+  formally verified nor complete x87 state semantics.  The comparison probe
+  includes C0--C3 and selected NaNs, while a separate exact-byte
+  \code{\_\_ftol2} probe covers full register results only for canonical finite
+  signed-i64 inputs.  Load exceptions, arbitrary/noncanonical NaNs, remainder,
+  exceptional helper inputs, the helper's reachable signed-i32 range, address
+  binding, and transcendental behavior remain open.  The address-indexed exact
+  baseline, code binding, and any fixed-point refinement have not yet been
+  implemented or proved.
   \item \textbf{Draw-chain effects.}  Headless mode skips drawing, but some draw
   callbacks write flags, ANM fields, laser positions, or other state that may be
   read later.  Each removal needs dependency analysis and corpus validation.

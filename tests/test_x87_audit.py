@@ -22,17 +22,34 @@ DISASSEMBLY = """
   40100c: fsincos
   40100e: fldcw  WORD PTR [esp+0x10]
   401012: call   0x401040
+  401016: fcomp  DWORD PTR [esp+0x14]
+  40101a: fnstsw ax
+  40101c: test   ah,0x5
+  40101f: jp     0x401030
   401020: fistp  DWORD PTR [esp]
   401040: fsin
+  401042: mov    DWORD PTR [esp],eax
   401044: addss  xmm0,xmm1
 """
 
 
 def main() -> int:
     instructions = x87_audit.parse_disassembly(DISASSEMBLY)
-    assert len(instructions) == 9
-    assert sum(x87_audit.is_x87(instruction) for instruction in instructions) == 7
+    assert len(instructions) == 14
+    assert sum(x87_audit.is_x87(instruction) for instruction in instructions) == 9
     assert sum(x87_audit.uses_xmm(instruction) for instruction in instructions) == 1
+
+    register_use = x87_audit.parse_disassembly(
+        """
+  500000: call   0x500100
+  500005: mov    eax,0x0
+  50000a: push   edx
+"""
+    )
+    register_map = [x87_audit.FunctionRange("th06::RegisterUse", 0x500000, 0x20)]
+    assert x87_audit._return_register_observation(
+        register_use, 0, x87_audit.FunctionIndex(register_map)
+    ) == (False, True)
 
     with tempfile.TemporaryDirectory(prefix="zkth06-x87-") as directory:
         mapping = Path(directory) / "mapping.csv"
@@ -44,8 +61,8 @@ def main() -> int:
         functions = x87_audit.load_mapping(mapping)
         result = x87_audit.audit(instructions, functions, {"th06::First"})
 
-    assert result["instruction_count"] == 9
-    assert result["x87_instruction_count"] == 7
+    assert result["instruction_count"] == 14
+    assert result["x87_instruction_count"] == 9
     assert result["unmapped_x87_instruction_count"] == 0
     assert result["xmm_operand_instruction_count"] == 1
     assert result["mapped_xmm_operand_instruction_count"] == 1
@@ -57,13 +74,16 @@ def main() -> int:
         "control": 1,
         "transcendental": 2,
         "rounding_or_integer_conversion": 1,
+        "comparisons": 1,
         "stores": 2,
     }
     assert result["memory_widths_by_mnemonic"]["fld"] == {"dword": 1}
     first = next(function for function in result["functions"] if function["name"] == "th06::First")
     second = next(function for function in result["functions"] if function["name"] == "th06::Second")
     assert first["implemented"] is True
-    assert first["x87_instructions"] == 5
+    assert first["x87_instructions"] == 7
+    assert first["comparison_instructions"] == 1
+    assert first["comparison_memory_widths"] == {"dword": 1}
     assert first["store_memory_widths"] == {"dword": 1}
     assert second["implemented"] is False
     assert second["x87_instructions"] == 1
@@ -75,6 +95,9 @@ def main() -> int:
             "name": "helper_sin",
             "start": "0x00401040",
             "direct_call_count": 1,
+            "predecessor_mnemonics": {"fldcw": 1},
+            "bounded_eax_observed_count": 1,
+            "bounded_edx_observed_count": 0,
             "callers": [
                 {
                     "name": "th06::First",
@@ -96,6 +119,25 @@ def main() -> int:
     )
     assert summary["mapped_th06_functions"]["function_count"] == 2
     assert summary["mapped_th06_functions"]["marked_implemented_count"] == 1
+    assert summary["mapped_th06_functions"]["comparison_memory_widths"] == {"dword": 1}
+    assert summary["mapped_th06_functions"]["comparison_consumer_chain_count"] == 1
+    assert summary["mapped_th06_functions"]["comparison_consumer_signatures"] == {
+        "fnstsw ax; test ah,0x5; jp": 1
+    }
+    assert summary["mapped_th06_functions"]["comparison_sites"] == [
+        {
+            "address": "0x00401016",
+            "mnemonic": "fcomp",
+            "operands": "DWORD PTR [esp+0x14]",
+            "function": "th06::First",
+            "function_offset": 0x16,
+            "memory_width": "dword",
+            "status_transfer": "fnstsw ax",
+            "status_filter": "test ah,0x5",
+            "conditional_branch": "jp",
+            "consumer_signature": "fnstsw ax; test ah,0x5; jp",
+        }
+    ]
     assert summary["mapped_th06_functions"]["store_memory_widths"] == {"dword": 2}
     print("validated x87 disassembly parsing and function attribution")
     return 0

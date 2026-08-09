@@ -25,7 +25,8 @@ As of 9 August 2026, the following components are implemented:
   narrow dormant radius/angle shadow, with no admitted theorem or custom axiom;
   \item a hash-bound x87/XMM audit that attributes instruction sites and direct
   helper calls through the authoritative mapping, emits a path-free JSON
-  summary, and has a proprietary-input-free synthetic test;
+  summary, extracts all 244 mapped comparison/status/branch chains and bounded
+  helper-result consumers, and has proprietary-input-free synthetic tests;
   \item checked Lean decodes of target control word \code{0x027f} and the D3DX
   toward-zero profile \code{0x0e7f}; their narrow theorems cover precision,
   rounding, exception-mask fields, and corresponding SoftFloat configuration
@@ -34,10 +35,15 @@ As of 9 August 2026, the following components are implemented:
   for results and six x87 exception bits across five basic operations, two
   store widths, \code{frndint}, and two signed \code{fistp} widths, using
   finite binary32-derived operands and canonical 53-bit-precision extended
-  intermediates;
+  intermediates; the same probe checks DWORD/QWORD \code{fcomp} C0--C3 and
+  fixed infinity/NaN/denormal priority cases;
   \item a finite-input Lean exception-priority model checking the rejected
   denormal rule's divide-by-zero and negative-square-root counterexamples and
   the tested \code{frndint}/\code{fstp}/\code{fistp} boundary distinction;
+  \item a local-only extractor and freestanding i386 harness for the verified
+  117-byte \code{\_\_ftol2} body, an independent exact-dyadic truncation model,
+  and Lean checks of the helper correction table, EDX:EAX reconstruction, and
+  low-32-bit projection;
   \item Linux CI that builds the reference runner and cross-checks both replay
   validators on three valid and three deliberately malformed cases, while also
   requiring canonical-record corruption to fail closed.

@@ -27,9 +27,13 @@ Last updated: 2026-08-09
 - A reproducible, commit-pinned Berkeley SoftFloat Release 3e differential
   probe for x87 results and six exception bits, covering basic arithmetic,
   binary32/binary64 stores, `frndint`, and signed 32/64-bit `fistp` across
-  nearest-even and toward-zero profiles.
+  nearest-even and toward-zero profiles, plus DWORD/QWORD `fcomp` condition
+  codes and canonical NaN/denormal priority cases.
 - A checked finite-input Lean model of the rejected naive denormal rule and the
   instruction-specific predicate exercised by that probe.
+- An exact-byte, temporary i386 harness for the pinned `__ftol2` body, an
+  independent dyadic truncation model, and Lean checks of its correction and
+  EDX:EAX projection logic.
 
 Compatibility playback intentionally restores every per-stage replay snapshot,
 matching shipped playback. It is an oracle-development mode, not the future
@@ -87,6 +91,12 @@ target QWORDs. A further 163 direct game-to-helper call sites reach 18 x87
 helpers or wrappers, led by 77 `__ftol2`, 16 `sin`, 16 `cos`, 11 `sqrt`, and 7
 `atan2` calls.
 
+The mapped game surface also contains 244 `fcomp` sites: 236 have DWORD and
+eight have QWORD memory operands. Every one has a complete immediate
+`fnstsw ax`/mask/conditional-branch consumer, spanning eleven signatures. At
+all 77 `__ftol2` sites a straight-line scan observes EAX (or AL) and never EDX;
+the preceding x87 operations are also inventoried.
+
 The CRT trigonometric wrappers embed x87 control word `0x027f` (53-bit
 significand precision, round-to-nearest-even, exceptions masked), but static
 analysis has not proved the loader-established word at game entry. The exact
@@ -100,9 +110,13 @@ all six x87 exception bits. On an AMD EPYC 9654, 30,002,582 deterministic
 result/exception tuples across binary32-derived and PC53 extended inputs,
 nearest-even, and toward-zero produced no mismatch. The experiment itself
 found and rejected a naive denormal-operand rule before the instruction-specific
-model passed. This remains host-specific counterexample search: condition
-codes, load exceptions, full helper ABIs, transcendentals, address binding, and
-a model-to-code proof remain open. The reproduction and claim boundary are in
+model passed. An additional 4,000,220 DWORD/QWORD comparison tuples matched,
+including fixed ordered/unordered and exception-priority cases. Separately,
+1,000,014 executions of the exact extracted `__ftol2` body matched signed-i64
+dyadic truncation and returned an empty x87 stack. These remain host-specific
+counterexample searches: load exceptions, out-of-range helper inputs,
+transcendentals, address binding, reachable-range invariants, and a
+model-to-code proof remain open. The reproduction and claim boundary are in
 [`../arithmetic/README.md`](../arithmetic/README.md).
 
 ## Remaining M0 gates
@@ -115,8 +129,9 @@ a model-to-code proof remain open. The reproduction and claim boundary are in
 3. Export the same schema from the original executable or an exact-reference
    build and identify the first differing field.
 4. Record the entry x87/CPU profile, instrument reached arithmetic sites,
-   extend the oracle through comparisons, load exceptions, and full helper
-   ABIs, and replace host-libm behavior with an exact, address-bound arithmetic
-   baseline; prove skipped-draw arithmetic noninterference before removing it.
+   cover load/remainder and exceptional helper behavior where reachable, prove
+   the `__ftol2` signed-i32 input invariant, and replace host-libm behavior with
+   an exact, address-bound arithmetic baseline; prove skipped-draw arithmetic
+   noninterference before removing it.
 5. Add canonical-proof playback that derives stage transitions and rejects a
    replay whose stage snapshots do not match live state.

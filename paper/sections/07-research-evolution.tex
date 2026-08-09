@@ -104,5 +104,20 @@ result strengthened the executable oracle while reinforcing that floating
 point must be modeled as an instruction/state machine rather than as pure real
 arithmetic plus a single rounding function.
 
+\paragraph{Phase M: preserve machine comparisons and narrow helper claims by
+proved domains.}
+The next audit found that all 244 mapped comparisons use memory-operand
+\code{fcomp} followed by one of eleven concrete status-mask/branch sequences.
+Replacing them with a host-language comparison would erase the unordered path,
+so the design now retains the C0/C2/C3 relation and the actual consumer mask.
+The SoftFloat probe was extended through both reached memory widths and fixed
+NaN/denormal priority cases.  In parallel, executing the exact 117-byte
+\code{\_\_ftol2} body showed truncation agreement throughout a canonical
+signed-i64 test domain, while the call audit showed gameplay observes only
+EAX/AL.  This did not license a global cast replacement: it instead exposed a
+new invariant obligation that every reachable caller input lies in signed i32.
+Thus simplification is admitted by a range theorem, not by the apparent intent
+of the reconstructed cast or by passing samples.
+
 Future changes to the central claim or state boundary should be appended here
 with the evidence that motivated them.
