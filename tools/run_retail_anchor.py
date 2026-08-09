@@ -118,6 +118,11 @@ def main() -> int:
     parser.add_argument("--output", required=True, type=Path)
     parser.add_argument("--frames", type=int, default=100)
     parser.add_argument(
+        "--wine-prefix",
+        type=Path,
+        help="use a dedicated, already initialized Wine prefix",
+    )
+    parser.add_argument(
         "--timeout",
         type=int,
         help="GDB capture timeout in seconds (default scales with frame count)",
@@ -202,6 +207,13 @@ def main() -> int:
                     "MESA_GLTHREAD": "false",
                 }
             )
+            if args.wine_prefix is not None:
+                wine_prefix = args.wine_prefix.expanduser().resolve()
+                if not (wine_prefix / "system.reg").is_file():
+                    raise RuntimeError(
+                        f"Wine prefix is not initialized: {wine_prefix}"
+                    )
+                environment["WINEPREFIX"] = str(wine_prefix)
             with wine_log.open("wb") as wine_output:
                 wine_process = subprocess.Popen(
                     [wine, f"./{manifest['required_files'][0]['filename']}"],

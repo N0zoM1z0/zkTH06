@@ -24,10 +24,14 @@ Relative to the pinned headless snapshot, this directory adds:
 - bounded replay cursors and fail-closed playback errors;
 - deterministic playback terminals and richer diagnostic traces; and
 - canonical revision-0.2 subsystem tracing with fail-closed output and
-  future-live ANM field guards.
+  future-live ANM field guards;
+- a retail-anchor-compatible JSONL projection for configured/effective rate,
+  Player life/position, respawn and active-bomb state, all invulnerability
+  timer words, movement bounds, bomb multipliers, and character speeds.
 
-Field-level mismatch export and original/exact-reference differential
-instrumentation remain future work. Proof-kernel, formal, arithmetic-audit, and
+The narrow JSONL projection is compared against an address-bound retail Wine
+probe outside this directory. Broad field-level export for the eleven canonical
+subsystems remains future work. Proof-kernel, formal, arithmetic-audit, and
 zkVM-specific code belongs outside this directory.
 
 ## License and assets

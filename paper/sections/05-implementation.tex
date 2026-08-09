@@ -71,6 +71,11 @@ As of 9 August 2026, the following components are implemented:
   eight mapped functions, 21 pinned source anchors, five binary32 constants,
   four character-speed records, and four comparison contracts, plus total Lean
   proofs of non-NaN clamping, initial/respawn bounds, and grab-box bounds;
+  \item a byte-free enclosing player-state audit of 55 instruction roles across
+  five mapped functions and 30 pinned source anchors, covering post-spawn
+  anchor construction, time-stop/bomb ordering, invulnerable-to-alive timer
+  evolution, alive ticks, and the movement life-state gate for the selected
+  fail-closed profile;
   \item a byte-free audit of 77 point-item score instructions, four score
   profiles, five difficulty-table entries, and eight helper calls, together
   with Lean proofs over exact rational and exceptional coordinate classes of
@@ -87,6 +92,10 @@ As of 9 August 2026, the following components are implemented:
   proof, verifying key, executable-commit descriptor, deterministic workload
   builder, and a manifest binding source/artifact hashes, authenticated public
   values, five meter points, proving resources, and negative verification;
+  \item a stronger enclosing-state OpenVM adapter whose 4,018-byte private
+  payload contains only fixed configuration and replay masks, together with a
+  second tracked proof bundle, a 1,999-transition full-state oracle, exact
+  public-digest inspection, and one-bit-negative commitment/digest checks;
   \item Linux CI that builds the reference runner and cross-checks both replay
   validators on three valid and three deliberately malformed cases, while also
   requiring canonical-record corruption to fail closed.
@@ -95,9 +104,11 @@ As of 9 August 2026, the following components are implemented:
 The current compatibility path intentionally restores each replay stage
 snapshot because that mirrors shipped playback and enables oracle development.
 It is not yet canonical proof playback.  The first backend micro-slice is
-frozen and proven, but no complete gameplay guest is claimed: its movement
-environment is still witness-supplied.  The retail exporter currently covers
-a 34-field root projection,
+frozen and proven, and the selected enclosing profile no longer accepts its
+movement environment as per-frame witness data.  No complete gameplay guest is
+claimed: the post-calc anchor is fixed, and collision/death/respawn, bombs,
+external time-stop writers, and non-full-speed timers fail closed or remain
+absent.  The retail exporter currently covers a 40-field root projection,
 while canonical projection revision 0.2 contains eleven broader
 subsystems.  Bringing that complete schema to the retail boundary remains
 open, and the state audit has already identified inactive Effect residue and

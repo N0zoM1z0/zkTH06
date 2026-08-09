@@ -39,7 +39,7 @@
     "zkvm/player-motion-openvm/openvm.toml": "66176cd349514666978faed7a789df0653eced83be1a2bcc70b0b5cc2c06ffcc",
     "zkvm/player-motion-openvm/src/main.rs": "7260fa578c78c672c51d0785ef25f34527bdcfc03e2d371d264f5aa4365efd2b",
     "zkvm/player-motion/Cargo.toml": "8c859effb9b0f39bb84531819b12b4cb0bd8864fa9c7035308e49a46ead9ce48",
-    "zkvm/player-motion/src/lib.rs": "1b9445361eee76ef42dc2d11c056a447c0c3b58442d5f8d84e05a3ef80c75ff5",
+    "evidence/source/openvm-player-motion-v1/player-motion-lib.rs": "1b9445361eee76ef42dc2d11c056a447c0c3b58442d5f8d84e05a3ef80c75ff5",
     "tools/build_player_motion_openvm_input.py": "abde1da5a4150c944b240ec693fe894106945349cf57ecda27d1796d823b596a"
   },
   "artifacts": {
@@ -180,6 +180,7 @@
     "hash_binding_overhead_percent": 10.2339,
     "decision": "discard the uncommitted existential transcript statement and retain the full-SHA-256-bound statement"
   },
+  "historical_source_note": "The player-motion library source compiled into this immutable proof is preserved under evidence/source because the live library later gained the enclosing-state module.",
   "privacy_claim": "not evaluated; the committed source vector is already public and this milestone measures integrity, soundness surface, and cost",
   "claim_boundary": "valid OpenVM application proof for the exact committed guest and a SHA-256-bound finite retail-derived player-motion workload/result; not a proof that witness environment words are derived from complete TH06 state, not whole-game equivalence, and not a formal proof of the Rust arithmetic"
 }

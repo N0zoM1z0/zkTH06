@@ -43,6 +43,10 @@ zkvm/player-motion-openvm/target/
 zkvm/player-motion-openvm/openvm/
 zkvm/player-motion-openvm/*.proof
 zkvm/player-motion-openvm/openvm_init.rs
+zkvm/player-state-openvm/target/
+zkvm/player-state-openvm/openvm/
+zkvm/player-state-openvm/*.proof
+zkvm/player-state-openvm/openvm_init.rs
 
 # Verified local import of the proprietary retail data.
 data/imported/

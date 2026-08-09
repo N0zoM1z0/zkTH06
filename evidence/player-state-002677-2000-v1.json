@@ -1,0 +1,54 @@
+{
+  "anchor_game_frame": 1,
+  "character": 0,
+  "claim_boundary": "finite retail/reference evidence for a closed full-speed player-position/life-timer profile; excludes bomb, hit/death, respawn, and ECL time-stop writes and is not whole-player or whole-game equivalence",
+  "comparison_artifact": "retail-reference-002677-2000-enclosing-v1.json",
+  "comparison_sha256": "64c52e6599702bf68ad4340cea0496705cb6581795a450edc47a3d0d6e937352",
+  "derived_environment": {
+    "diagonal_focus_speed_bits": 1068827891,
+    "diagonal_speed_bits": 1077216499,
+    "effective_rate_bits": 1065353216,
+    "framerate_multiplier_bits": 1065353216,
+    "horizontal_multiplier_bits": 1065353216,
+    "movement_min_x_bits": 1090519040,
+    "movement_min_y_bits": 1098907648,
+    "movement_size_x_bits": 1136132096,
+    "movement_size_y_bits": 1137704960,
+    "orthogonal_focus_speed_bits": 1073741824,
+    "orthogonal_speed_bits": 1082130432,
+    "vertical_multiplier_bits": 1065353216
+  },
+  "final_state": {
+    "game_frame": 2000,
+    "invulnerability_timer": 1760,
+    "player_state": 0,
+    "x_bits": 1124577352,
+    "y_bits": 1118370860
+  },
+  "format": "little-endian ZKPSV1",
+  "generator": {
+    "path": "tools/build_player_state_vector.py",
+    "sha256": "c043eea7492073d0f639517942c93c56abc633a5417d9e3ab766707b8ffdcf01"
+  },
+  "header_bytes": 160,
+  "initial_state": {
+    "game_frame": 1,
+    "invulnerability_timer": 239,
+    "player_state": 3,
+    "x_bits": 1128267776,
+    "y_bits": 1136656384
+  },
+  "last_game_frame": 2000,
+  "profile": "full-speed-no-bomb-no-hit-no-time-stop-write",
+  "record_bytes": 20,
+  "reference_trace_sha256": "185cdd7af77bafbb31700a45a57442418ca86124ee77174afeda1c0bba9fa65d",
+  "replay_sha256": "01bc11b9226932bddeeeff675f1741b89b129f4c8820b3b1cf185a1cb19ad10f",
+  "retail_trace_sha256": "da633e4a29bb707ad47129b8ab77de3c0ceaac62c8b7b5d0bb2ea095f466412c",
+  "schema_version": 1,
+  "shot_type": 0,
+  "source_frames": 2000,
+  "target_executable_sha256": "9f76483c46256804792399296619c1274363c31cd8f1775fafb55106fb852245",
+  "tested_transitions": 1999,
+  "type": "zkth06.enclosing-player-state-vector",
+  "vector_sha256": "09e0abea35cb2855c57af7ae36150437d1edd84cf6a2a261bed09f835223e1ad"
+}

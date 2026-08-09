@@ -259,5 +259,23 @@ reproducible OpenVM proof of a fixed sliced workload/result, while derivation of
 the movement environment from complete gameplay state becomes the explicit
 next boundary rather than hidden witness trust.
 
+\paragraph{Phase W: replace environment records with an enclosing state.}
+Hashing the environment transcript prevented post-hoc substitution but did not
+make its contents consequences of TH06 state: a prover could still choose any
+internally valid sequence of eleven rate/bounds/multiplier/speed/gate words and
+commit it.  The next transition therefore fixes a versioned post-calc anchor,
+carries Player life state, invulnerability timer, time-stop and bomb flags, and
+derives the motion environment from the preceding state plus one character/shot
+configuration.  Unsupported bomb input/active callbacks, hit/death paths,
+external time-stop writers, and non-full-speed timers fail closed.  The new
+private record is only a 16-bit replay mask.  A 40-field retail/reference trace
+matches for 2,000 anchors, a compact vector checks all 1,999 state transitions,
+and a 55-instruction/30-source-anchor artifact makes the selected retail
+ordering reviewable.  The OpenVM proof reduces payload size from 95,976 to
+4,018 bytes and cells from 254,156,116 to 209,865,030 while authenticating a
+stronger final state.  This closes the immediate witness boundary without
+overstating the result: deriving the anchor from registration and proving
+complete writer exclusion/refinement are now the next explicit obligations.
+
 Future changes to the central claim or state boundary should be appended here
 with the evidence that motivated them.

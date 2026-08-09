@@ -277,6 +277,15 @@ its conservative base status:
   This narrows the player invariant to candidate-not-NaN, complete-writer,
   scheduling, arithmetic/code-binding, and guest-refinement obligations; it
   does not discharge them.
+- [`player-state-enclosing-v1.json`](player-state-enclosing-v1.json) checks 55
+  additional instruction roles across `Player::AddedCallback`,
+  `Player::OnUpdate`, both timer helpers, and the movement call; it also pins 30
+  source anchors. For the full-speed/no-bomb/no-hit/no-time-stop-write profile,
+  it records the post-spawn anchor, timer/state recurrence, callback ordering,
+  and the fail-closed writer boundary, while directly sealing the preceding
+  position/speed/bounds artifact. It remains static correspondence evidence,
+  not a verified decoder, reachability/writer-completeness proof, or Rust
+  refinement theorem.
 - [`item-score-v1.json`](item-score-v1.json) checks 77 instruction signatures
   across the four difficulty profiles, the five-entry difficulty table, all
   eight retained score conversions, their repeated binary32 field loads, and
@@ -312,6 +321,11 @@ python3 tools/player_position_audit.py \
   --mapping repos/th06/config/mapping.csv \
   --source-root repos/th06 \
   --check arithmetic/player-position-v1.json
+python3 tools/player_state_enclosing_audit.py \
+  local/original-th06/東方紅魔郷.exe \
+  --mapping repos/th06/config/mapping.csv \
+  --source-root repos/th06 \
+  --check arithmetic/player-state-enclosing-v1.json
 python3 tools/item_score_audit.py \
   local/original-th06/東方紅魔郷.exe \
   --mapping repos/th06/config/mapping.csv \

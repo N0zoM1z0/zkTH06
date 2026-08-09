@@ -52,6 +52,15 @@ COMMON_FIELDS = (
     "diagonal_focus_speed_bits",
 )
 
+ENCLOSING_PLAYER_FIELDS = (
+    "framerate_multiplier_bits",
+    "player_respawn_timer",
+    "player_bomb_is_in_use",
+    "player_invulnerability_timer_previous",
+    "player_invulnerability_timer_subframe_bits",
+    "player_invulnerability_timer_current",
+)
+
 
 def sha256_file(path: Path) -> str:
     digest = hashlib.sha256()
@@ -74,7 +83,7 @@ def read_jsonl(path: Path) -> list[dict[str, Any]]:
     return rows
 
 
-def normalize_retail(row: dict[str, Any]) -> dict[str, int]:
+def normalize_retail(row: dict[str, Any], fields: tuple[str, ...]) -> dict[str, int]:
     hex_fields = (
         "player_x_bits",
         "player_y_bits",
@@ -90,18 +99,20 @@ def normalize_retail(row: dict[str, Any]) -> dict[str, int]:
         "orthogonal_focus_speed_bits",
         "diagonal_speed_bits",
         "diagonal_focus_speed_bits",
+        "framerate_multiplier_bits",
+        "player_invulnerability_timer_subframe_bits",
     )
     normalized = {
-        key: int(row[key]) for key in COMMON_FIELDS if key not in hex_fields
+        key: int(row[key]) for key in fields if key not in hex_fields
     }
-    normalized.update({key: int(row[key], 16) for key in hex_fields})
+    normalized.update({key: int(row[key], 16) for key in fields if key in hex_fields})
     return normalized
 
 
-def normalize_reference(row: dict[str, Any]) -> dict[str, int]:
+def normalize_reference(row: dict[str, Any], enclosing_player: bool) -> dict[str, int]:
     player = row["player"]
     scope = row["scope"]
-    return {
+    normalized = {
         "supervisor_state": int(row["supervisor_state"]),
         "stage": int(row["stage"]),
         "game_frame": int(row["game_frame"]),
@@ -137,6 +148,24 @@ def normalize_reference(row: dict[str, Any]) -> dict[str, int]:
         "diagonal_speed_bits": int(player["diagonal_speed_bits"]),
         "diagonal_focus_speed_bits": int(player["diagonal_focus_speed_bits"]),
     }
+    if enclosing_player:
+        normalized.update(
+            {
+                "framerate_multiplier_bits": int(row["framerate_multiplier_bits"]),
+                "player_respawn_timer": int(player["respawn_timer"]),
+                "player_bomb_is_in_use": int(player["bomb_is_in_use"]),
+                "player_invulnerability_timer_previous": int(
+                    player["invulnerability_timer_previous"]
+                ),
+                "player_invulnerability_timer_subframe_bits": int(
+                    player["invulnerability_timer_subframe_bits"]
+                ),
+                "player_invulnerability_timer_current": int(
+                    player["invulnerability_timer_current"]
+                ),
+            }
+        )
+    return normalized
 
 
 def write_report(path: Path, report: dict[str, Any]) -> None:
@@ -149,6 +178,11 @@ def main() -> int:
     parser.add_argument("retail", type=Path)
     parser.add_argument("reference", type=Path)
     parser.add_argument("--report", type=Path, help="write a path-free JSON evidence summary")
+    parser.add_argument(
+        "--enclosing-player",
+        action="store_true",
+        help="also compare timer, bomb-state, and configured-rate fields",
+    )
     args = parser.parse_args()
 
     retail_rows = read_jsonl(args.retail)
@@ -162,6 +196,7 @@ def main() -> int:
         raise ValueError("retail trace target mismatch")
 
     retail_frames = [row for row in retail_rows[1:] if row.get("type") == FRAME_KIND]
+    fields = COMMON_FIELDS + (ENCLOSING_PLAYER_FIELDS if args.enclosing_player else ())
     report: dict[str, Any] = {
         "type": "zkth06.retail-reference-comparison",
         "schema_version": 1,
@@ -181,7 +216,8 @@ def main() -> int:
         "wine_version": header.get("wine_version"),
         "gdb_version": header.get("gdb_version"),
         "config_sha256": header.get("config_sha256"),
-        "compared_fields": list(COMMON_FIELDS),
+        "comparison_profile": "enclosing-player" if args.enclosing_player else "base",
+        "compared_fields": list(fields),
         "retail_x87_control_words": sorted(
             {str(row["x87_control_word"]) for row in retail_frames}
         ),
@@ -223,8 +259,8 @@ def main() -> int:
     for index, (retail, reference) in enumerate(zip(retail_frames, reference_rows)):
         if int(retail.get("index", -1)) != index:
             raise ValueError(f"non-contiguous retail index at row {index}")
-        lhs = normalize_retail(retail)
-        rhs = normalize_reference(reference)
+        lhs = normalize_retail(retail, fields)
+        rhs = normalize_reference(reference, args.enclosing_player)
         differing = {
             key: {"retail": lhs[key], "reference": rhs[key]}
             for key in lhs

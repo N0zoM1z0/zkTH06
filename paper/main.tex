@@ -33,16 +33,20 @@ digest projection is emitted by the runtime and independently checked by C++
 and Python.  Four locally pinned six-stage replays complete under the
 compatibility runner, and repeated complete canonical runs produce
 byte-identical traces.  An address-bound Wine experiment additionally matches
-the shipped executable and Linux reference for 2,000 frames on a 34-field raw
+the shipped executable and Linux reference for 2,000 frames on a 40-field raw
 projection, while observing ambient x87 control word \code{0x007f} at every
 post-calc anchor.  A first \code{no\_std} player-position microkernel then uses
 integer dyadics and explicit PC24 round-to-nearest-even rather than host
-floating point; it matches 1,999 consecutive retail-derived transitions.  The
-same crate now runs in an OpenVM v2.0.1 RV32IM guest whose public value is a
-full SHA-256 commitment to the private workload and computed endpoint.  Its
-tracked application proof binds the exact guest executable, executes 6,205,625
-instructions at an estimated 254,156,116 cells, proves in 75.65 seconds with
-approximately 48.0 GiB peak resident memory, and verifies in 0.12 seconds.  A
+floating point; it matches 1,999 consecutive retail-derived transitions.  An
+enclosing transition now derives life state, invulnerability timer, time-stop
+carry, movement rate/bounds, bomb multipliers, and character speeds from the
+preceding state and one fixed configuration instead of accepting eleven
+per-frame environment words.  The same crate runs in an OpenVM v2.0.1 RV32IM
+guest whose public value commits the private input masks and complete endpoint.
+Its tracked application proof binds the exact guest executable, executes
+5,412,644 instructions at an estimated 209,865,030 cells, proves in 73.18
+seconds with approximately 47.1 GiB peak resident memory, and verifies in 0.11
+seconds.  A
 hash-bound static audit attributes 5,980 x87
 instructions to mapped game functions and identifies direct transcendental,
 conversion-helper, store-boundary, and control-profile obligations.  These
@@ -69,8 +73,9 @@ including 80 increment/decrement operations that bypass the readonly guard.
 Extraction and runtime-decoder binding remain open.  A sealed Linux probe
 observes 2,081 collected items without a range violation, but does not promote
 that corpus result into a proof.
-These results establish a first narrow retail anchor, executable sliced
-transition, and arithmetic proof surface only; exact x87
+These results establish a first narrow retail anchor, fail-closed enclosing
+transition profile, and arithmetic proof surface only; the fixed post-calc
+anchor, collision/death/respawn, bombs, time-stop writers, exact x87
 transcendental semantics, presentation-dependent state, and a complete
 retail canonical-subsystem exporter remain open equivalence gates.  This living paper
 records the research questions, implementation evidence, negative results, and

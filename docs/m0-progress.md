@@ -64,6 +64,15 @@ Last updated: 2026-08-09
   endpoint into all 32 public-value bytes, and has a tracked application proof,
   verifying key, vm executable, exact commitment descriptor, and path-free
   performance/source-binding manifest.
+- A fail-closed enclosing player-state transition for the full-speed/no-bomb/
+  no-hit/no-time-stop-write profile. It fixes the post-calc anchor and derives
+  life state, invulnerability timer, time-stop carry, character speeds,
+  movement bounds, rate, and inactive-bomb multipliers from preceding state
+  and one character/shot configuration rather than per-frame witness words.
+- A 55-instruction, 30-source-anchor static audit for that enclosing
+  transition, a 40-field retail/reference comparison, a 1,999-transition state
+  vector, and a second tracked OpenVM application proof whose private
+  per-frame record is only the replay input mask.
 
 Compatibility playback intentionally restores every per-stage replay snapshot,
 matching shipped playback. It is an oracle-development mode, not the future
@@ -75,22 +84,26 @@ The first shipped-executable comparison uses the tracked Normal Reimu A
 no-miss/no-bomb replay (`01bc11b...ad10f`). The retail side runs Japanese TH06
 v1.02h (`9f76483c...52245`) under Wine 11.0 and stops at `0x00420858`, the
 instruction immediately after `Chain::RunCalcChain`. The Linux trace is written
-at the corresponding return boundary. Across frames 1--2,000, all 34 compared
-fields match exactly:
+at the corresponding return boundary. Across frames 1--2,000, the original 34
+fields and six enclosing-state fields match exactly:
 
 - route, stage, frame, replay input, and Supervisor state;
 - RNG seed and generation count;
 - score, lives, bombs, deaths, bombs used, retries, power, rank, and subrank;
 - Player state, time-stop state, and raw binary32 x/y/z bits;
 - the raw effective-framerate multiplier, movement-area bounds, and bomb
-  movement multipliers; and
-- all four character movement-speed records.
+  movement multipliers;
+- all four character movement-speed records; and
+- the configured framerate multiplier, respawn timer, active-bomb flag, and
+  invulnerability timer previous/subframe/current words.
 
 This interval exercises 27 distinct input masks, advances RNG generation from
 2 to 3,555, and reaches score 767,990. At all 2,000 retail anchors the x87
 control word is `0x007f` and MXCSR is `0x00001fa0`. The path-free sealed summary
 and raw trace hashes are in
 [`evidence/retail-reference-002677-2000-v1.json`](../evidence/retail-reference-002677-2000-v1.json).
+The enhanced result is sealed in
+[`evidence/retail-reference-002677-2000-enclosing-v1.json`](../evidence/retail-reference-002677-2000-enclosing-v1.json).
 
 Two interventions are explicit parts of the diagnostic environment. First,
 Wine's `timeGetTime` reflects long host uptime while the game's last-frame
@@ -183,6 +196,52 @@ transition does so, a prover can commit a different internally valid workload.
 It also establishes no whole-game equivalence, formal arithmetic theorem, or
 zero-knowledge/privacy result. Those limits are recorded in
 [`evidence/openvm-player-motion-1999-v1.json`](../evidence/openvm-player-motion-1999-v1.json).
+
+## Enclosing player-state proof gate
+
+The next adapter removes the earlier proof's principal witness-trust problem.
+Its `ZKPSI1` private payload contains one fixed character/shot configuration
+and 1,999 little-endian replay input masks. It contains no initial position,
+life state, timer, time-stop flag, rate, movement bounds, bomb multipliers, or
+character speeds. The guest constructs the fixed first post-calc anchor and
+iterates the shared enclosing transition, revealing
+
+```text
+SHA256("zkTH06/openvm/player-state/v1\0" || input_payload ||
+       final_game_frame_le || final_x_bits_le || final_y_bits_le ||
+       final_life_state || final_flags || 0x0000 || final_timer_le).
+```
+
+The enhanced Wine/reference gate compares 40 fields on all 2,000 frames. The
+compact `ZKPSV1` evidence vector independently checks all 1,999 full-state
+transitions, including the invulnerable-to-alive transition at frame 240. A
+static artifact binds the selected contract to 55 retail instruction roles,
+five mapped functions, 30 pinned source anchors, and the earlier fixed
+position/speed/bounds audit.
+
+| Transitions | Guest instructions | Metered cells |
+| ---: | ---: | ---: |
+| 1 | 3,688 | 153,761 |
+| 10 | 21,369 | 828,793 |
+| 100 | 212,261 | 8,170,122 |
+| 1,000 | 2,761,414 | 107,139,819 |
+| 1,999 | 5,412,644 | 209,865,030 |
+
+The full private payload falls from 95,976 to 4,018 bytes (95.8135%), while
+metered cells fall by 44,291,086 (17.4267%) despite the stronger state/result
+statement. Application proving took 73.18 seconds and peaked at 49,431,532 KiB
+RSS; exact verification took 0.11 seconds. The expected executable commitment
+and statement digest both pass, while one-bit changes to each are rejected.
+The tracked bundle is
+[`evidence/openvm-player-state-1999-v1.json`](../evidence/openvm-player-state-1999-v1.json).
+
+This closes per-frame environment witnesses only for the named profile. The
+post-calc frame-one anchor is still fixed rather than derived from
+registration/pre-stage scheduling. Bomb input or an active bomb fails closed;
+collision death, spawning/respawn, ECL time-stop writers, and non-full-speed
+timer arithmetic are not implemented. The 55-instruction artifact is exact
+static signature evidence, not a verified decoder, compiler-correctness proof,
+whole-program writer theorem, or Rust refinement theorem.
 
 ## Local corpus result
 

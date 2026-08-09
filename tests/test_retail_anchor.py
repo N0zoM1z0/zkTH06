@@ -105,9 +105,14 @@ def reference_frame() -> dict[str, object]:
     }
 
 
-def run_comparator(retail: Path, reference: Path, report: Path) -> subprocess.CompletedProcess[str]:
+def run_comparator(
+    retail: Path, reference: Path, report: Path, *, enclosing_player: bool = False
+) -> subprocess.CompletedProcess[str]:
+    command = ["python3", str(COMPARATOR), str(retail), str(reference), "--report", str(report)]
+    if enclosing_player:
+        command.append("--enclosing-player")
     return subprocess.run(
-        ["python3", str(COMPARATOR), str(retail), str(reference), "--report", str(report)],
+        command,
         check=False,
         text=True,
         capture_output=True,
@@ -165,6 +170,36 @@ def main() -> int:
         assert evidence["retail_x87_control_words"] == ["0x007f"]
         assert evidence["retail_mxcsr_values"] == ["0x00001fa0"]
         assert str(temporary) not in report.read_text(encoding="utf-8")
+
+        enclosing_retail = retail_frame()
+        enclosing_retail.update(
+            {
+                "framerate_multiplier_bits": "0x3f800000",
+                "player_respawn_timer": 6,
+                "player_bomb_is_in_use": 0,
+                "player_invulnerability_timer_previous": -999,
+                "player_invulnerability_timer_subframe_bits": "0x00000000",
+                "player_invulnerability_timer_current": 239,
+            }
+        )
+        enclosing_reference = reference_frame()
+        enclosing_reference["framerate_multiplier_bits"] = 0x3F800000
+        enclosing_reference["player"].update(
+            {
+                "respawn_timer": 6,
+                "bomb_is_in_use": 0,
+                "invulnerability_timer_previous": -999,
+                "invulnerability_timer_subframe_bits": 0,
+                "invulnerability_timer_current": 239,
+            }
+        )
+        write_jsonl(retail, [header, enclosing_retail])
+        write_jsonl(reference, [enclosing_reference])
+        enclosing = run_comparator(retail, reference, report, enclosing_player=True)
+        assert enclosing.returncode == 0, enclosing.stderr
+        enclosing_evidence = json.loads(report.read_text(encoding="utf-8"))
+        assert enclosing_evidence["comparison_profile"] == "enclosing-player"
+        assert len(enclosing_evidence["compared_fields"]) == 40
 
         mismatching = retail_frame()
         mismatching["player_x_bits"] = "0x43400001"

@@ -47,6 +47,7 @@ G_MAIN_MENU = 0x006D46C0
 SUPERVISOR_CALC_COUNT = G_SUPERVISOR + 0x184
 SUPERVISOR_CUR_STATE = G_SUPERVISOR + 0x18C
 SUPERVISOR_EFFECTIVE_RATE = G_SUPERVISOR + 0x1A8
+SUPERVISOR_FRAMERATE_MULTIPLIER = G_SUPERVISOR + 0x1AC
 
 GM_SCORE = G_GAME_MANAGER + 0x004
 GM_DIFFICULTY = G_GAME_MANAGER + 0x010
@@ -78,11 +79,16 @@ PLAYER_Y = G_PLAYER + 0x444
 PLAYER_Z = G_PLAYER + 0x448
 PLAYER_HORIZONTAL_MULTIPLIER = G_PLAYER + 0x9D0
 PLAYER_VERTICAL_MULTIPLIER = G_PLAYER + 0x9D4
+PLAYER_RESPAWN_TIMER = G_PLAYER + 0x9D8
 PLAYER_STATE = G_PLAYER + 0x9E0
 PLAYER_ORTHOGONAL_SPEED = G_PLAYER + 0x9F4
 PLAYER_ORTHOGONAL_FOCUS_SPEED = G_PLAYER + 0x9F8
 PLAYER_DIAGONAL_SPEED = G_PLAYER + 0x9FC
 PLAYER_DIAGONAL_FOCUS_SPEED = G_PLAYER + 0xA00
+PLAYER_INVULNERABILITY_TIMER_PREVIOUS = G_PLAYER + 0x75B4
+PLAYER_INVULNERABILITY_TIMER_SUBFRAME = G_PLAYER + 0x75B8
+PLAYER_INVULNERABILITY_TIMER_CURRENT = G_PLAYER + 0x75BC
+PLAYER_BOMB_IS_IN_USE = G_PLAYER + 0x75C8
 
 MENU_GAME_STATE = G_MAIN_MENU + 0x81F0
 MENU_STATE_TIMER = G_MAIN_MENU + 0x81F4
@@ -249,6 +255,11 @@ def capture_frame(index: int) -> None:
             "player_y_bits": f"0x{memory.u32(PLAYER_Y):08x}",
             "player_z_bits": f"0x{memory.u32(PLAYER_Z):08x}",
             "player_state": memory.i8(PLAYER_STATE),
+            "player_respawn_timer": memory.i32(PLAYER_RESPAWN_TIMER),
+            "player_bomb_is_in_use": memory.u32(PLAYER_BOMB_IS_IN_USE),
+            "player_invulnerability_timer_previous": memory.i32(PLAYER_INVULNERABILITY_TIMER_PREVIOUS),
+            "player_invulnerability_timer_subframe_bits": f"0x{memory.u32(PLAYER_INVULNERABILITY_TIMER_SUBFRAME):08x}",
+            "player_invulnerability_timer_current": memory.i32(PLAYER_INVULNERABILITY_TIMER_CURRENT),
             "movement_min_x_bits": f"0x{memory.u32(GM_MOVEMENT_MIN_X):08x}",
             "movement_min_y_bits": f"0x{memory.u32(GM_MOVEMENT_MIN_Y):08x}",
             "movement_size_x_bits": f"0x{memory.u32(GM_MOVEMENT_SIZE_X):08x}",
@@ -260,6 +271,7 @@ def capture_frame(index: int) -> None:
             "diagonal_speed_bits": f"0x{memory.u32(PLAYER_DIAGONAL_SPEED):08x}",
             "diagonal_focus_speed_bits": f"0x{memory.u32(PLAYER_DIAGONAL_FOCUS_SPEED):08x}",
             "effective_rate_bits": f"0x{memory.u32(SUPERVISOR_EFFECTIVE_RATE):08x}",
+            "framerate_multiplier_bits": f"0x{memory.u32(SUPERVISOR_FRAMERATE_MULTIPLIER):08x}",
             "x87_control_word": f"0x{int(gdb.parse_and_eval('$fctrl')) & 0xffff:04x}",
             "mxcsr": f"0x{int(gdb.parse_and_eval('$mxcsr')) & 0xffffffff:08x}",
         }

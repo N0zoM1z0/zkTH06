@@ -8,19 +8,26 @@ an accepted result. Before freezing a zkVM guest, the project must first make
 that state machine agree frame-for-frame with the shipped 32-bit Windows game.
 
 > **Evidence boundary:** an address-bound Wine probe now matches the shipped
-> executable and Linux reference for a 34-field raw gameplay projection over
-> the first 2,000 frames of one tracked replay. This is finite differential
+> executable and Linux reference for a 40-field raw gameplay projection over
+> the first 2,000 frames of one tracked replay. The enclosing extension adds
+> configured rate, respawn/bomb state, and all three invulnerability-timer
+> words. This is finite differential
 > evidence, not whole-state equivalence. The current runner remains an
 > instrumented reference harness, not final proof semantics.
 
 The first proof-oriented executable slice is now present under `zkvm/`: an
 integer-only implementation of the PC24 player-position update whose inputs and
 outputs remain raw binary32 bits. It matches 1,999 consecutive transitions
-derived from the retail anchor. An OpenVM v2.0.1 RV32IM guest executes the same
-crate and publishes a full SHA-256 commitment to its private workload and
-computed endpoint. Its tracked application proof verifies against the exact
-guest commitment. This freezes a narrow, fail-closed backend slice, not a
-complete gameplay guest or a formal refinement theorem.
+derived from the retail anchor. The current enclosing transition no longer
+accepts its eleven movement-environment words per frame: from one fixed
+character/shot configuration and the preceding state it derives life state,
+time-stop carry, invulnerability timer, character speeds, movement bounds,
+full-speed rate, and inactive-bomb multipliers. An OpenVM v2.0.1 RV32IM guest
+executes that transition and publishes a full SHA-256 commitment to its private
+input masks and computed endpoint. Its tracked application proof verifies
+against the exact guest commitment. This freezes a narrow, fail-closed
+full-speed/no-bomb/no-hit profile, not a complete Player guest or a formal
+refinement theorem.
 
 A first owner-local Lean model now machine-checks why active-only Effect slots
 violate one-step noninterference and how a narrow dormant reuse shadow repairs
@@ -118,10 +125,10 @@ inputs were produced by a human or without external tools.
 - Pass Normal no-miss/no-bomb, death/bomb, dialogue, all shot types, Lunatic,
   spell-heavy and Extra cases.
 
-The first 2,000-frame Normal anchor is complete for its 34-field projection,
-and its player-position subprojection drives a 1,999-transition integer PC24
-kernel test. The full canonical subsystem projection and broader replay matrix
-remain open.
+The first 2,000-frame Normal anchor is complete for its enhanced 40-field
+projection. Its enclosing player-state subprojection drives 1,999 transitions
+from a fixed post-calc anchor and checks the life-state change at frame 240.
+The full canonical subsystem projection and broader replay matrix remain open.
 
 ### M1 — canonical gameplay kernel
 
@@ -138,14 +145,17 @@ remain open.
 - Chunk or recursively aggregate a full six-stage run only after the smaller
   statements pass differential tests.
 
-The first 1,999-transition micro-slice is now proven with OpenVM v2.0.1. Its
-hash-bound statement costs 254,156,116 metered cells; local application proving
-took 75.65 seconds with 50,308,612 KiB peak RSS, and verification took 0.12
-seconds. The tracked proof, verifying key, vm executable, source bindings, and
-explicit claim boundary are in
-[`evidence/openvm-player-motion-1999-v1.json`](evidence/openvm-player-motion-1999-v1.json).
-The next soundness gate is deriving the private movement environment from the
-enclosing canonical TH06 state rather than accepting it as witness data.
+The first enclosing 1,999-transition profile is now proven with OpenVM v2.0.1.
+Its private payload is 4,018 bytes rather than the earlier 95,976-byte
+environment transcript, and the hash-bound statement costs 209,865,030 metered
+cells. Local application proving took 73.18 seconds with 49,431,532 KiB peak
+RSS, and verification took 0.11 seconds. The tracked proof, verifying key, vm
+executable, source bindings, negative checks, and explicit claim boundary are
+in
+[`evidence/openvm-player-state-1999-v1.json`](evidence/openvm-player-state-1999-v1.json).
+The next soundness gates are deriving the post-calc anchor from registration
+and adding the currently fail-closed collision/death/respawn, bomb-callback,
+time-stop-writer, and non-full-speed paths.
 
 The source audit and compatibility risks are in
 [`docs/initial-analysis.md`](docs/initial-analysis.md). Current corpus results
@@ -222,7 +232,7 @@ python3 tools/run_retail_anchor.py \
   --max-ticks 2000 --trace /path/to/zkTH06/local/reference-anchor.jsonl)
 
 python3 tools/compare_retail_anchor.py \
-  local/retail-anchor.jsonl local/reference-anchor.jsonl
+  local/retail-anchor.jsonl local/reference-anchor.jsonl --enclosing-player
 ```
 
 The probe requires Wine, Xvfb, GDB, passwordless local `sudo` for ptrace, and a

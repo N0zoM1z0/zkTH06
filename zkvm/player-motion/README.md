@@ -25,8 +25,17 @@ The crate intentionally uses no host floating-point operations outside tests.
 [`src/pc24.rs`](src/pc24.rs) decodes raw binary32 values as integer dyadics,
 performs exact intermediate integer arithmetic, and rounds explicitly. Values
 outside the current proved/tested domain fail closed instead of being
-approximated. This is compatible with an integer-only zkVM target, but it is not
-yet wired to a particular proof backend.
+approximated. Both the original environment-record adapter and the stronger
+enclosing-state adapter execute this same crate in OpenVM.
+
+[`src/enclosing.rs`](src/enclosing.rs) is the current stateful boundary. For a
+fixed character/shot configuration it constructs the first post-calc anchor
+and derives each next life state, invulnerability timer, carried time-stop and
+bomb flags, character speeds, full-speed rate, movement bounds, and inactive-
+bomb multipliers before calling the arithmetic slice. Its supported profile is
+deliberately `full-speed-no-bomb-no-hit-no-time-stop-write`; bomb input/active
+bombs and invalid state/timer combinations fail closed. Time stop returns
+before the bomb/timer/movement path, matching the audited retail ordering.
 
 Run the pinned toolchain tests with:
 
@@ -42,6 +51,13 @@ and sealed retail trace hashes. Each 68-byte record contains the frame index,
 input, gate state, raw movement environment, previous position, and expected
 next position. The 2,000 source frames yield 1,999 consecutive transitions.
 
+A second integration test consumes
+[`../../evidence/player-state-002677-2000-v1.bin`](../../evidence/player-state-002677-2000-v1.bin).
+It reconstructs the fixed anchor and checks all reached state/timer/position
+words across the same 1,999 transitions without supplying a per-frame motion
+environment. The retail/source signature bridge for this stateful profile is
+[`../../arithmetic/player-state-enclosing-v1.json`](../../arithmetic/player-state-enclosing-v1.json).
+
 The remaining soundness obligations are explicit:
 
 - bind the mapped retail instruction sequence and PC24 control state to this
@@ -50,8 +66,11 @@ The remaining soundness obligations are explicit:
   subset;
 - prove the domain checks hold for every reachable claimed frame, or enlarge
   the exact arithmetic semantics;
-- prove omitted Player state cannot affect this position projection within the
-  stated gate; and
+- derive the fixed post-calc anchor from registration and pre-stage scheduling;
+- prove complete writer exclusion for the profile's life state, timer,
+  time-stop, bomb, rate, bounds, and speed data;
+- implement collision/death/respawn, bomb callbacks, external time-stop writes,
+  and non-full-speed timers before enlarging the profile; and
 - bind the Rust code compiled for the eventual zkVM to the same transition
   relation.
 

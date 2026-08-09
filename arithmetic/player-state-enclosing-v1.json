@@ -1,0 +1,551 @@
+{
+  "schema_version": 1,
+  "kind": "zkth06.enclosing-player-state-audit",
+  "inputs": {
+    "executable_sha256": "9f76483c46256804792399296619c1274363c31cd8f1775fafb55106fb852245",
+    "mapping_sha256": "0f20300d5b107b36c933a7f7dc448407ee5f01c5cd7faad132d406c023163191",
+    "player_position_artifact_sha256": "d9df54457b70dd57ba1cf3989de0ec72a0bfff82955d1d375d71a3915c6f2bb4"
+  },
+  "generator": {
+    "path": "tools/player_state_enclosing_audit.py",
+    "sha256": "8ba7f2ff68622027160983bef92b395c785925c19ff1b34ae9459ddba7d4cb40",
+    "x87_audit_sha256": "93c6aee778f489c92788dc7dfc6c51749fa5f20d075305a4190616d9b5d46290",
+    "disassembler": "GNU objdump (GNU Binutils for Ubuntu) 2.38"
+  },
+  "upstream": {
+    "url": "https://github.com/GensokyoClub/th06",
+    "revision": "cc475a0bc3fef38683b0f02224c87ddba0a021d9",
+    "source_files": {
+      "src/Player.cpp": "5e3e81cff72796c98b9b87dc65d447333444917b63d9e4d493572f23145c26b5",
+      "src/Supervisor.cpp": "23ebefcc9a89282394224c5d806223daec9387740af2643eb926d5f79f73bd5a",
+      "src/ZunTimer.cpp": "e56be7279fdb012ce90316167a58497a34ea5664425ae9728648de5c89856771",
+      "src/ZunTimer.hpp": "635adfab6753f1e1e42d72894c5b49a35fc8179f3ecbf76cd1a4da73e50dbf84"
+    },
+    "anchors": [
+      {
+        "file": "src/Player.cpp",
+        "line": 27,
+        "anchor": "DIFFABLE_STATIC_ARRAY_ASSIGN(CharacterData, 4, g_CharData)",
+        "role": "fixed character table"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 98,
+        "anchor": "positionCenter.x = g_GameManager.arcadeRegionSize.x / 2.0f",
+        "role": "initial x"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 99,
+        "anchor": "positionCenter.y = g_GameManager.arcadeRegionSize.y - 64.0f",
+        "role": "initial y"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 114,
+        "anchor": "memcpy(&p->characterData",
+        "role": "copy fixed character record"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 115,
+        "anchor": "diagonalMovementSpeed =",
+        "role": "derive diagonal speed"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 119,
+        "anchor": "playerState = PLAYER_STATE_SPAWNING",
+        "role": "initial player state"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 120,
+        "anchor": "invulnerabilityTimer.SetCurrent(120)",
+        "role": "initial timer"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 131,
+        "anchor": "bombInfo.isInUse = 0",
+        "role": "initial bomb state"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 136,
+        "anchor": "verticalMovementSpeedMultiplierDuringBomb = 1.0",
+        "role": "initial vertical multiplier"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 137,
+        "anchor": "horizontalMovementSpeedMultiplierDuringBomb = 1.0",
+        "role": "initial horizontal multiplier"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 158,
+        "anchor": "if (g_GameManager.isTimeStopped)",
+        "role": "time-stop return precedes player update"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 170,
+        "anchor": "if (p->bombInfo.isInUse)",
+        "role": "bomb callback precedes state timer"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 174,
+        "anchor": "else if (!g_Gui.HasCurrentMsgIdx()",
+        "role": "bomb-input writer"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 278,
+        "anchor": "verticalMovementSpeedMultiplierDuringBomb = 1.0",
+        "role": "spawn multiplier reset"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 284,
+        "anchor": "playerState = PLAYER_STATE_INVULNERABLE",
+        "role": "spawn-to-invulnerable transition"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 289,
+        "anchor": "invulnerabilityTimer.SetCurrent(240)",
+        "role": "invulnerability timer reset"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 290,
+        "anchor": "respawnTimer = 6",
+        "role": "post-spawn bomb eligibility"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 298,
+        "anchor": "if (p->playerState == PLAYER_STATE_INVULNERABLE)",
+        "role": "invulnerable branch"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 300,
+        "anchor": "invulnerabilityTimer.Decrement(1)",
+        "role": "invulnerability decrement"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 303,
+        "anchor": "playerState = PLAYER_STATE_ALIVE",
+        "role": "invulnerable-to-alive transition"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 304,
+        "anchor": "invulnerabilityTimer.SetCurrent(0)",
+        "role": "alive timer reset"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 321,
+        "anchor": "invulnerabilityTimer.Tick()",
+        "role": "alive timer tick"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 323,
+        "anchor": "playerState != PLAYER_STATE_DEAD",
+        "role": "movement state gate"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 325,
+        "anchor": "HandlePlayerInputs()",
+        "role": "movement call"
+      },
+      {
+        "file": "src/ZunTimer.cpp",
+        "line": 43,
+        "anchor": "framerateMultiplier > 0.99f",
+        "role": "full-speed decrement branch"
+      },
+      {
+        "file": "src/ZunTimer.cpp",
+        "line": 45,
+        "anchor": "current = this->current - value",
+        "role": "full-speed integer decrement"
+      },
+      {
+        "file": "src/ZunTimer.hpp",
+        "line": 71,
+        "anchor": "previous = this->current",
+        "role": "timer previous update"
+      },
+      {
+        "file": "src/ZunTimer.hpp",
+        "line": 72,
+        "anchor": "TickTimer(&this->current, &this->subFrame)",
+        "role": "timer tick delegate"
+      },
+      {
+        "file": "src/Supervisor.cpp",
+        "line": 550,
+        "anchor": "framerateMultiplier <= 0.99f",
+        "role": "fractional tick branch"
+      },
+      {
+        "file": "src/Supervisor.cpp",
+        "line": 561,
+        "anchor": "*frames = *frames + 1",
+        "role": "full-speed integer tick"
+      }
+    ],
+    "correspondence_status": "manual-disassembly-source-alignment-unproved"
+  },
+  "mapped_functions": [
+    {
+      "name": "th06::ZunTimer::Decrement",
+      "start": "0x004241e5",
+      "size": 160
+    },
+    {
+      "name": "th06::Supervisor::TickTimer",
+      "start": "0x00424285",
+      "size": 110
+    },
+    {
+      "name": "th06::Player::HandlePlayerInputs",
+      "start": "0x00427860",
+      "size": 3482
+    },
+    {
+      "name": "th06::Player::OnUpdate",
+      "start": "0x004288c0",
+      "size": 2282
+    },
+    {
+      "name": "th06::Player::AddedCallback",
+      "start": "0x00429c50",
+      "size": 1118
+    }
+  ],
+  "checked_instruction_roles": [
+    {
+      "address": "0x00429ec4",
+      "mnemonic": "mov",
+      "role": "initialize spawning state"
+    },
+    {
+      "address": "0x00429eda",
+      "mnemonic": "mov",
+      "role": "initialize timer current to 120"
+    },
+    {
+      "address": "0x00429ee4",
+      "mnemonic": "mov",
+      "role": "initialize timer subframe to zero"
+    },
+    {
+      "address": "0x00429eee",
+      "mnemonic": "mov",
+      "role": "initialize timer previous to -999"
+    },
+    {
+      "address": "0x0042a02b",
+      "mnemonic": "mov",
+      "role": "initialize bomb inactive"
+    },
+    {
+      "address": "0x0042a082",
+      "mnemonic": "mov",
+      "role": "initialize vertical bomb multiplier to one"
+    },
+    {
+      "address": "0x0042a08f",
+      "mnemonic": "mov",
+      "role": "initialize horizontal bomb multiplier to one"
+    },
+    {
+      "address": "0x0042a09c",
+      "mnemonic": "mov",
+      "role": "initialize respawn timer to eight"
+    },
+    {
+      "address": "0x004288c6",
+      "mnemonic": "movsx",
+      "role": "load time-stop flag first"
+    },
+    {
+      "address": "0x004288cd",
+      "mnemonic": "test",
+      "role": "test time-stop flag"
+    },
+    {
+      "address": "0x004288cf",
+      "mnemonic": "je",
+      "role": "continue only when time is running"
+    },
+    {
+      "address": "0x004288d1",
+      "mnemonic": "mov",
+      "role": "time-stop callback result"
+    },
+    {
+      "address": "0x0042893a",
+      "mnemonic": "cmp",
+      "role": "test active bomb before state timer"
+    },
+    {
+      "address": "0x00428941",
+      "mnemonic": "je",
+      "role": "take no-active-bomb path"
+    },
+    {
+      "address": "0x0042894a",
+      "mnemonic": "call",
+      "role": "active bomb callback writer"
+    },
+    {
+      "address": "0x0042898b",
+      "mnemonic": "mov",
+      "role": "load current replay input for bomb test"
+    },
+    {
+      "address": "0x00428991",
+      "mnemonic": "and",
+      "role": "mask bomb input"
+    },
+    {
+      "address": "0x00428f38",
+      "mnemonic": "mov",
+      "role": "enter invulnerable state"
+    },
+    {
+      "address": "0x00428f81",
+      "mnemonic": "mov",
+      "role": "set invulnerability timer to 240"
+    },
+    {
+      "address": "0x00428f8b",
+      "mnemonic": "mov",
+      "role": "reset invulnerability subframe"
+    },
+    {
+      "address": "0x00428f95",
+      "mnemonic": "mov",
+      "role": "reset invulnerability previous"
+    },
+    {
+      "address": "0x00428f9e",
+      "mnemonic": "mov",
+      "role": "set post-spawn respawn timer"
+    },
+    {
+      "address": "0x00428fd8",
+      "mnemonic": "movsx",
+      "role": "load life state for timer branch"
+    },
+    {
+      "address": "0x00428fdf",
+      "mnemonic": "cmp",
+      "role": "select invulnerable branch"
+    },
+    {
+      "address": "0x00428fe8",
+      "mnemonic": "push",
+      "role": "decrement timer by one"
+    },
+    {
+      "address": "0x00428ff3",
+      "mnemonic": "call",
+      "role": "call ZunTimer Decrement"
+    },
+    {
+      "address": "0x00428ffb",
+      "mnemonic": "mov",
+      "role": "load decremented current timer"
+    },
+    {
+      "address": "0x00429004",
+      "mnemonic": "cmp",
+      "role": "test timer exhaustion"
+    },
+    {
+      "address": "0x00429008",
+      "mnemonic": "jg",
+      "role": "remain invulnerable while positive"
+    },
+    {
+      "address": "0x0042900d",
+      "mnemonic": "mov",
+      "role": "enter alive state"
+    },
+    {
+      "address": "0x00429022",
+      "mnemonic": "mov",
+      "role": "reset alive timer current"
+    },
+    {
+      "address": "0x0042902c",
+      "mnemonic": "mov",
+      "role": "reset alive timer subframe"
+    },
+    {
+      "address": "0x00429036",
+      "mnemonic": "mov",
+      "role": "reset alive timer previous"
+    },
+    {
+      "address": "0x004290d1",
+      "mnemonic": "mov",
+      "role": "load current timer before tick"
+    },
+    {
+      "address": "0x004290d4",
+      "mnemonic": "mov",
+      "role": "copy current timer to previous"
+    },
+    {
+      "address": "0x004290e9",
+      "mnemonic": "call",
+      "role": "call Supervisor TickTimer"
+    },
+    {
+      "address": "0x004290f1",
+      "mnemonic": "movsx",
+      "role": "load state for dead gate"
+    },
+    {
+      "address": "0x004290f8",
+      "mnemonic": "cmp",
+      "role": "reject dead movement"
+    },
+    {
+      "address": "0x00429100",
+      "mnemonic": "movsx",
+      "role": "load state for spawning gate"
+    },
+    {
+      "address": "0x00429107",
+      "mnemonic": "cmp",
+      "role": "reject spawning movement"
+    },
+    {
+      "address": "0x0042910f",
+      "mnemonic": "call",
+      "role": "call HandlePlayerInputs"
+    },
+    {
+      "address": "0x004241ed",
+      "mnemonic": "fld",
+      "role": "load configured rate for decrement"
+    },
+    {
+      "address": "0x004241f3",
+      "mnemonic": "fcomp",
+      "role": "compare decrement rate with binary32 0.99"
+    },
+    {
+      "address": "0x004241fb",
+      "mnemonic": "test",
+      "role": "select greater-than rate relation"
+    },
+    {
+      "address": "0x004241fe",
+      "mnemonic": "jne",
+      "role": "leave integer decrement only for non-greater rate"
+    },
+    {
+      "address": "0x00424203",
+      "mnemonic": "mov",
+      "role": "load timer current for integer decrement"
+    },
+    {
+      "address": "0x00424206",
+      "mnemonic": "sub",
+      "role": "subtract decrement amount"
+    },
+    {
+      "address": "0x0042420c",
+      "mnemonic": "mov",
+      "role": "store integer decrement"
+    },
+    {
+      "address": "0x0042428f",
+      "mnemonic": "fld",
+      "role": "load configured rate for tick"
+    },
+    {
+      "address": "0x00424295",
+      "mnemonic": "fcomp",
+      "role": "compare tick rate with binary32 0.99"
+    },
+    {
+      "address": "0x0042429d",
+      "mnemonic": "test",
+      "role": "select tick rate relation"
+    },
+    {
+      "address": "0x004242a0",
+      "mnemonic": "jp",
+      "role": "select full-speed integer tick"
+    },
+    {
+      "address": "0x004242e7",
+      "mnemonic": "mov",
+      "role": "load timer current for integer tick"
+    },
+    {
+      "address": "0x004242e9",
+      "mnemonic": "inc",
+      "role": "increment timer current"
+    },
+    {
+      "address": "0x004242ed",
+      "mnemonic": "mov",
+      "role": "store integer tick"
+    }
+  ],
+  "derived_profile_contract": {
+    "profile": "full-speed-no-bomb-no-hit-no-time-stop-write",
+    "anchor": {
+      "game_frame": 1,
+      "player_state": 3,
+      "invulnerability_timer": 239,
+      "timer_subframe_bits": "0x00000000",
+      "bomb_active": 0,
+      "position_x_bits": "0x43400000",
+      "position_y_bits": "0x43c00000"
+    },
+    "full_speed_rate_bits": "0x3f800000",
+    "inactive_bomb_multiplier_bits": "0x3f800000",
+    "invulnerable_step": "positive timer decrements by one; zero enters alive and resets timer",
+    "alive_step": "timer increments by one",
+    "time_stop_step": "return before bomb, timer, and movement",
+    "movement_state_gate": "alive and invulnerable states call HandlePlayerInputs",
+    "fixed_motion_contract_artifact_sha256": "d9df54457b70dd57ba1cf3989de0ec72a0bfff82955d1d375d71a3915c6f2bb4",
+    "unsupported_writers_fail_closed": [
+      "bomb activation or active bomb callback",
+      "collision death and respawn",
+      "ECL or other time-stop writes",
+      "non-full-speed timer arithmetic"
+    ]
+  },
+  "evidence_status": "exact static signatures and pinned source candidates for the closed profile, plus a direct binding to the fixed position/speed/bounds audit; not verified decoding, compiler correspondence, reachability, complete writer analysis, or guest refinement",
+  "open_obligations": [
+    "Prove or translation-validate each checked instruction and source alignment.",
+    "Derive the post-calc frame-one anchor from registration and the pre-stage update schedule.",
+    "Prove complete writer exclusion for time stop, player life state, timer, bomb state, and multipliers under the selected route.",
+    "Extend the transition to collision death, spawning, respawn, bombs, and non-full-speed timer arithmetic.",
+    "Prove the Rust enclosing transition refines the address-bound profile contract."
+  ],
+  "counts": {
+    "mapped_functions": 5,
+    "source_anchors": 30,
+    "checked_instruction_roles": 55
+  },
+  "artifact_sha256": "8e2e2504a94380ed37b0d5752aef62d1d14cb3de1d3f2d0f062e0c821077cc35"
+}

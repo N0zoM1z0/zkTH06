@@ -739,10 +739,15 @@ void HeadlessRuntime::WriteState(const char *terminalReason)
                  "\"initial_seed\":%u,\"supervisor_state\":%d,\"stage\":%d,\"game_frame\":%u,"
                  "\"rng_seed\":%u,\"rng_generation\":%u,\"input\":%u,"
                  "\"is_time_stopped\":%d,\"effective_rate_bits\":%u,"
+                 "\"framerate_multiplier_bits\":%u,"
                  "\"movement_min_x_bits\":%u,\"movement_min_y_bits\":%u,"
                  "\"movement_size_x_bits\":%u,\"movement_size_y_bits\":%u,"
                  "\"player\":{\"x\":%.9g,\"y\":%.9g,\"z\":%.9g,"
                  "\"x_bits\":%u,\"y_bits\":%u,\"z_bits\":%u,\"state\":%d,"
+                 "\"respawn_timer\":%d,\"bomb_is_in_use\":%u,"
+                 "\"invulnerability_timer_previous\":%d,"
+                 "\"invulnerability_timer_subframe_bits\":%u,"
+                 "\"invulnerability_timer_current\":%d,"
                  "\"horizontal_multiplier_bits\":%u,\"vertical_multiplier_bits\":%u,"
                  "\"orthogonal_speed_bits\":%u,\"orthogonal_focus_speed_bits\":%u,"
                  "\"diagonal_speed_bits\":%u,\"diagonal_focus_speed_bits\":%u},"
@@ -756,6 +761,7 @@ void HeadlessRuntime::WriteState(const char *terminalReason)
                  g_GameManager.gameFrames, g_Rng.seed, g_Rng.generationCount, g_CurFrameInput,
                  g_GameManager.isTimeStopped,
                  bit_cast_from_size(g_Supervisor.effectiveFramerateMultiplier),
+                 bit_cast_from_size(g_Supervisor.framerateMultiplier),
                  bit_cast_from_size(g_GameManager.playerMovementAreaTopLeftPos.x),
                  bit_cast_from_size(g_GameManager.playerMovementAreaTopLeftPos.y),
                  bit_cast_from_size(g_GameManager.playerMovementAreaSize.x),
@@ -763,6 +769,10 @@ void HeadlessRuntime::WriteState(const char *terminalReason)
                  g_Player.positionCenter.x, g_Player.positionCenter.y, g_Player.positionCenter.z,
                  bit_cast_from_size(g_Player.positionCenter.x), bit_cast_from_size(g_Player.positionCenter.y),
                  bit_cast_from_size(g_Player.positionCenter.z), g_Player.playerState,
+                 g_Player.respawnTimer, g_Player.bombInfo.isInUse,
+                 g_Player.invulnerabilityTimer.previous,
+                 bit_cast_from_size(g_Player.invulnerabilityTimer.subFrame),
+                 g_Player.invulnerabilityTimer.current,
                  bit_cast_from_size(g_Player.horizontalMovementSpeedMultiplierDuringBomb),
                  bit_cast_from_size(g_Player.verticalMovementSpeedMultiplierDuringBomb),
                  bit_cast_from_size(g_Player.characterData.orthogonalMovementSpeed),

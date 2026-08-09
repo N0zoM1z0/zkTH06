@@ -1,0 +1,208 @@
+{
+  "type": "zkth06.openvm-enclosing-player-state-proof",
+  "schema_version": 1,
+  "date_utc": "2026-08-09",
+  "backend": {
+    "name": "OpenVM",
+    "cargo_openvm_version": "2.0.1",
+    "cargo_openvm_revision": "b820b25baab6c5d9b055f64e0286b6b1058e707c",
+    "guest_target": "riscv32im-risc0-zkvm-elf",
+    "guest_toolchain": "nightly-2026-01-18",
+    "guest_rustc": "rustc 1.94.0-nightly (fe98ddcfc 2026-01-17)",
+    "vm_extensions": [
+      "rv32i",
+      "rv32m",
+      "io",
+      "sha2"
+    ]
+  },
+  "workload": {
+    "source_vector": "player-state-002677-2000-v1.bin",
+    "source_vector_bytes": 40160,
+    "source_vector_sha256": "09e0abea35cb2855c57af7ae36150437d1edd84cf6a2a261bed09f835223e1ad",
+    "retail_target_executable_sha256": "9f76483c46256804792399296619c1274363c31cd8f1775fafb55106fb852245",
+    "replay_sha256": "01bc11b9226932bddeeeff675f1741b89b129f4c8820b3b1cf185a1cb19ad10f",
+    "retail_trace_sha256": "da633e4a29bb707ad47129b8ab77de3c0ceaac62c8b7b5d0bb2ea095f466412c",
+    "retail_reference_comparison_sha256": "64c52e6599702bf68ad4340cea0496705cb6581795a450edc47a3d0d6e937352",
+    "profile": "full-speed-no-bomb-no-hit-no-time-stop-write",
+    "character": 0,
+    "shot_type": 0,
+    "transitions": 1999,
+    "input_payload_bytes": 4018,
+    "input_payload_sha256": "da0d10202325947707a90f1374e973217afca76484ea721d2b71266b6fc12a8b",
+    "expected_final_game_frame": 2000,
+    "expected_final_x_bits": 1124577352,
+    "expected_final_y_bits": 1118370860,
+    "expected_final_player_state": 0,
+    "expected_final_flags": 0,
+    "expected_final_invulnerability_timer": 1760,
+    "statement_domain_ascii": "zkTH06/openvm/player-state/v1",
+    "statement_domain_nul_terminated": true,
+    "expected_statement_sha256": "1743dee39bbb8ec0aea47858837da4c8025929d5e31eabaa7be07fd0accff7fd",
+    "statement_preimage": "domain || input_payload || final_game_frame_le || final_x_bits_le || final_y_bits_le || final_life_state || final_flags || zero_u16 || final_timer_le"
+  },
+  "source_bindings": {
+    "zkvm/player-motion/Cargo.toml": "8c859effb9b0f39bb84531819b12b4cb0bd8864fa9c7035308e49a46ead9ce48",
+    "zkvm/player-motion/src/enclosing.rs": "630206d0e8d1987207e44b0d3772c8f84749ad6f615f0e7f360dd7184128c7c8",
+    "zkvm/player-motion/src/lib.rs": "75b2b76638df83addee4bf6feb35cd321a370790739e635c54b3135ef9d21820",
+    "zkvm/player-motion/src/pc24.rs": "a8960adeec05c5ddaf5343902ae50895a8db9e030f77f5d5c5d664985b84945e",
+    "zkvm/player-state-openvm/Cargo.lock": "40b4234db95136ed1dd1d2b2fe9162d6de0dd91406ae0b50f14d9e86c8789c50",
+    "zkvm/player-state-openvm/Cargo.toml": "838ac243335361d744a019e5b50cd85207a5690ec01716a00414ca807f8e7e41",
+    "zkvm/player-state-openvm/openvm.toml": "66176cd349514666978faed7a789df0653eced83be1a2bcc70b0b5cc2c06ffcc",
+    "zkvm/player-state-openvm/src/main.rs": "d6866d129cdbf8b9baa493b3906852bbb1e30ff59a54f72706cc745c9ce23b50",
+    "tools/build_player_state_openvm_input.py": "dd42d40604e4287d47e19ea4e019361427c43c1f26dd0dc8689a30710c39bb26"
+  },
+  "evidence_bindings": {
+    "arithmetic/player-state-enclosing-v1.json": "0188d3cae608bcb1e86a4d0ea26e596385284153a2b5acb4c319d87eb1177cd7",
+    "evidence/player-state-002677-2000-v1.bin": "09e0abea35cb2855c57af7ae36150437d1edd84cf6a2a261bed09f835223e1ad",
+    "evidence/player-state-002677-2000-v1.json": "bb8e2b16492367f4e17fdb77f366c9490e439d98820db2cbbe6f0ba9ebe74255",
+    "evidence/retail-reference-002677-2000-enclosing-v1.json": "64c52e6599702bf68ad4340cea0496705cb6581795a450edc47a3d0d6e937352",
+    "tools/build_player_state_vector.py": "c043eea7492073d0f639517942c93c56abc633a5417d9e3ab766707b8ffdcf01",
+    "tools/player_state_enclosing_audit.py": "8ba7f2ff68622027160983bef92b395c785925c19ff1b34ae9459ddba7d4cb40"
+  },
+  "artifacts": {
+    "guest_elf": {
+      "bytes": 31236,
+      "sha256": "1b9324daa287a3e573b0ec3a1d0d3e14309f7733ef1e3137c70be61063d30122",
+      "tracked": false
+    },
+    "vm_executable": {
+      "path": "openvm-player-state-v1.vmexe",
+      "bytes": 236915,
+      "sha256": "c9c9230a027bb4d4924e539a2724cf01524c67f4f1c84ee621b872aa0bb95843",
+      "app_exe_commit": "0x00184760cbe4103bed2de6836de90bfa9c93f2612f971ec355ebed183f2d7814"
+    },
+    "app_proving_key": {
+      "bytes": 242775,
+      "sha256": "4e50cc10cecc2d74728d09fce80e583ddd3ff86602ce38e6e3107a77e18a86bf",
+      "tracked": false,
+      "reason": "deterministically regenerable and not required for verification"
+    },
+    "app_verifying_key": {
+      "path": "openvm-player-state-v1.app.vk",
+      "bytes": 241614,
+      "sha256": "09b509a234f028b4f251779a26adf4d87b66d40e07174f0f5e3a2d9782de958b"
+    },
+    "app_commit_descriptor": {
+      "path": "openvm-player-state-v1.app-commit.json",
+      "bytes": 182,
+      "sha256": "9b2d746e41dade4dc8bfd45aaa2952362624ba48dc547e645167c4b1a690fd96",
+      "note": "OpenVM v2.0.1 verify app consumes app_exe_commit only; the shared schema's unused app_vm_commit is canonical zero"
+    },
+    "app_proof": {
+      "path": "openvm-player-state-1999-v1.app.proof",
+      "bytes": 822892,
+      "sha256": "19f99606a97f54cb180ca66194a4f18c3ec138ad38b35968c85ba2bd4a44920e"
+    }
+  },
+  "meter": [
+    {
+      "transitions": 1,
+      "instructions": 3688,
+      "cells": 153761,
+      "statement_sha256": "7fa82315e866df24308a09c3527da26e23f1efddaaa871802cd71b0c388b470d"
+    },
+    {
+      "transitions": 10,
+      "instructions": 21369,
+      "cells": 828793,
+      "statement_sha256": "d825fb19ed0289e0c7dc522fe682735b867bd7edc3990c5b3841f28f3fef9690"
+    },
+    {
+      "transitions": 100,
+      "instructions": 212261,
+      "cells": 8170122,
+      "statement_sha256": "9939a35ab7dd33971ed3b4552401a7c9829d7019d5fb999e80c2716f866bc533"
+    },
+    {
+      "transitions": 1000,
+      "instructions": 2761414,
+      "cells": 107139819,
+      "statement_sha256": "173c10955a739096f4f8021ad0ef424a389dc0d12ab20dd831ce8a600546e4d0"
+    },
+    {
+      "transitions": 1999,
+      "instructions": 5412644,
+      "cells": 209865030,
+      "statement_sha256": "1743dee39bbb8ec0aea47858837da4c8025929d5e31eabaa7be07fd0accff7fd"
+    }
+  ],
+  "public_values_audit": {
+    "method": "OpenVM v2.0.1 SDK deserialization as ContinuationVmProof<SC>",
+    "tool_source_bindings": {
+      "tools/openvm-proof-inspect/Cargo.lock": "cb328a765cb2214d7b6284c9eb769cb952815242e356a12f656aa8a40fef332a",
+      "tools/openvm-proof-inspect/Cargo.toml": "5707b336099df1467ce2a7121439c1c46ce7eef0d0a18f9801b4979fbc1ff964",
+      "tools/openvm-proof-inspect/src/main.rs": "524b728225089418f27b147374f64534948c79c1d673a5dbee07a916cce732ec"
+    },
+    "decoded_bytes": [
+      23,
+      67,
+      222,
+      227,
+      155,
+      187,
+      142,
+      192,
+      174,
+      164,
+      120,
+      88,
+      131,
+      125,
+      164,
+      200,
+      2,
+      89,
+      41,
+      213,
+      227,
+      30,
+      171,
+      170,
+      123,
+      224,
+      127,
+      208,
+      172,
+      207,
+      247,
+      253
+    ],
+    "matches_expected_statement_sha256": true,
+    "one_bit_wrong_expected_digest_rejected": true
+  },
+  "proving": {
+    "elapsed_seconds": 73.18,
+    "user_cpu_seconds": 2317.34,
+    "system_cpu_seconds": 247.89,
+    "cpu_utilization_percent": 3505,
+    "max_rss_kib": 49431532,
+    "exit_status": 0
+  },
+  "verification": {
+    "elapsed_seconds": 0.11,
+    "user_cpu_seconds": 0.14,
+    "system_cpu_seconds": 0.19,
+    "max_rss_kib": 48548,
+    "expected_executable_commit_accepted": true,
+    "one_bit_wrong_executable_commit_rejected": true
+  },
+  "host": {
+    "kernel": "Linux 5.15.0-185-generic x86_64",
+    "cpu_model": "AMD EPYC 9654 96-Core Processor",
+    "logical_cpus": 192,
+    "memory_bytes": 810864480256
+  },
+  "design_iteration": {
+    "previous_environment_witness_payload_bytes": 95976,
+    "enclosing_state_payload_bytes": 4018,
+    "payload_reduction_percent": 95.8135,
+    "previous_environment_witness_cells": 254156116,
+    "enclosing_state_cells": 209865030,
+    "cell_reduction": 44291086,
+    "cell_reduction_percent": 17.4267,
+    "decision": "replace per-frame state/gate/environment witness records with one fixed configuration and replay input masks; derive the reached life state, timer, rates, bounds, multipliers, and speeds inside the guest"
+  },
+  "privacy_claim": "not evaluated; the committed source vector is already public and this milestone measures execution integrity, witness closure, and cost",
+  "claim_boundary": "valid OpenVM application proof for the exact committed enclosing-state guest and SHA-256-bound finite full-speed/no-bomb/no-hit/no-time-stop-write workload/result; per-frame movement environment words are no longer witness-provided, but the post-calc anchor is not yet derived from registration, and collision death, respawn, bomb callbacks, ECL time-stop writes, whole-player equivalence, whole-game equivalence, and a formal Rust arithmetic theorem remain outside this claim"
+}

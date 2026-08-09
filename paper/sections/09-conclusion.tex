@@ -5,7 +5,7 @@ a legacy game's execution.  The initial replay runner demonstrates that the
 reconstructed engine can consume real v1.02h witnesses deterministically and
 complete full runs, while strict parsing removes several ambient-memory and
 format-trust hazards.  A first shipped-executable anchor now agrees for 2,000
-frames on a 34-field raw projection.  The result is not yet a proof system and
+frames on a 40-field raw projection.  The result is not yet a proof system and
 does not yet establish whole-state equivalence with the shipped executable.
 
 A first \code{no\_std} player-position microkernel turns that anchor into an
@@ -14,12 +14,16 @@ integer PC24 rounding, fails closed outside its stated domain, and matches all
 1,999 consecutive transitions derived from the retail prefix.  This remains a
 narrow translation-validation result, not a formal arithmetic or refinement
 theorem and not a complete gameplay guest.  It is, however, now a real zkVM
-target: an OpenVM v2.0.1 RV32IM adapter calls the same crate, commits its complete
-private workload and computed endpoint with SHA-256, and produces a tracked
-application proof bound to the exact executable.  The 1,999-step statement
-costs 254,156,116 metered cells, proves in 75.65 seconds at roughly 48.0 GiB
-peak resident memory, and verifies in 0.12 seconds.  An earlier uncommitted-
-transcript design was rejected despite being 10.2339\% cheaper.
+target: an OpenVM v2.0.1 RV32IM adapter calls the same crate, commits its private
+replay masks and complete endpoint with SHA-256, and produces a tracked
+application proof bound to the exact executable.  An enclosing transition
+derives the life-state/timer sequence, time-stop carry, speeds, rate, bounds,
+and inactive-bomb multipliers instead of accepting eleven environment words
+per frame.  The 1,999-step statement costs 209,865,030 metered cells, proves in
+73.18 seconds at roughly 47.1 GiB peak resident memory, and verifies in 0.11
+seconds.  This follows two rejected or superseded boundaries: an uncommitted
+existential transcript and a 95,976-byte hash-bound but prover-chosen
+environment transcript.
 
 An experimental shared binary protocol now emits real per-frame subsystem and
 root digests with raw floating-point bits, stable identities, and fail-closed
@@ -27,10 +31,11 @@ decoding.  Complete repeated Linux runs are byte-identical, and the first broad
 ANM experiment already exposed the distinction between allocated memory and
 future-live semantic state.  The retail probe already turns a mismatch in its
 narrow root projection into a reproducible first-frame/first-field diagnosis.
-The next concrete milestone is to derive the currently private movement
-environment from enclosing committed gameplay state, while resolving the known
-reuse and dynamic-job omissions and enlarging the shipped-executable canonical
-subsystem schema.
+The next concrete milestone is to derive the fixed post-calc anchor from
+registration and pre-stage scheduling, then add or rule out collision/death/
+respawn, bomb, time-stop-writer, and non-full-speed paths while resolving the
+known reuse and dynamic-job omissions and enlarging the shipped-executable
+canonical subsystem schema.
 
 A first static arithmetic census now makes the floating-point gate concrete:
 the mapped game surface contains thousands of x87 operations, 26 inline

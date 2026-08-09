@@ -106,8 +106,8 @@ statement instead of silently substituting host floating-point behavior.
 
 The first backend adapter compiles this same crate for OpenVM v2.0.1's RV32IM
 target with integer, I/O, and SHA-256 extensions~\cite{openvm-v2}.  Its private
-input is a versioned payload containing the initial position and consecutive
-input/environment records.  After chaining the transition, the guest exposes
+input was a versioned payload containing the initial position and consecutive
+input/environment records.  After chaining the transition, the guest exposed
 all 32 available public-value bytes as
 \[
   D = \operatorname{SHA256}(\texttt{domain}\mathbin\Vert W
@@ -118,9 +118,26 @@ where $W$ is the byte-exact validated workload.  Thus the public statement
 binds both the complete private transcript and the result computed from it.
 An earlier adapter exposed start, end, and length without committing $W$; it
 was retained only as local reconnaissance because it proved merely that some
-witness transcript reached the endpoint.  Hash binding does not solve the next
-refinement obligation: the eleven per-step environment words remain supplied
-by $W$ rather than derived inside the guest from enclosing TH06 state.
+witness transcript reached the endpoint.  Full hash binding repaired that
+statement but left eleven per-step environment words under prover control.
+
+The next adapter therefore introduces a fail-closed enclosing transition.  Its
+private payload $W'$ contains one character/shot configuration followed only by
+one 16-bit replay mask per transition.  The guest fixes the first post-calc
+anchor and derives life state, invulnerability timer, carried time-stop/bomb
+flags, full-speed rate, movement bounds, inactive-bomb multipliers, and
+character speeds before invoking the arithmetic slice.  It exposes
+\[
+  D' = \operatorname{SHA256}(\texttt{state-domain}\mathbin\Vert W'
+       \mathbin\Vert S_{\mathrm{final}}^{\mathrm{LE}}).
+\]
+Bomb input, active bombs, invalid state/timer pairs, and arithmetic outside the
+accepted subset fail closed.  The profile assumes no collision/hit writer, no
+ECL time-stop writer, and full-speed replay timing.  Thus environment derivation
+is closed for this profile without implying that the fixed anchor or excluded
+writers have been refined.  A pinned static bridge checks 55 original
+instruction roles and 30 source anchors, while a 40-field retail/reference
+trace and a full-state vector provide finite translation-validation evidence.
 
 Berkeley SoftFloat Release 3e is used as an independent executable oracle for
 the first arithmetic-boundary experiments~\cite{hauser-softfloat3e}.  Its

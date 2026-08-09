@@ -10,14 +10,12 @@
 //! and signed zero.
 
 pub mod pc24;
-pub mod enclosing;
 
 use core::cmp::Ordering;
 
 use pc24::ArithmeticError;
 
 pub const INPUT_FOCUS: u16 = 0x0004;
-pub const INPUT_BOMB: u16 = 0x0002;
 pub const INPUT_UP: u16 = 0x0010;
 pub const INPUT_DOWN: u16 = 0x0020;
 pub const INPUT_LEFT: u16 = 0x0040;

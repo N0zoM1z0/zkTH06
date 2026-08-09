@@ -2,24 +2,29 @@
 
 \begin{itemize}
   \item \textbf{Partial retail equivalence only.}  A shipped-executable Wine
-  probe now agrees with the Linux reference for 2,000 frames and a 34-field
+  probe now agrees with the Linux reference for 2,000 frames and a 40-field
   raw projection on one replay.  It does not yet export the eleven canonical
   subsystem payloads, cover later stages or the replay matrix, prove that its
   input/timing interventions are noninterfering, or establish whole-state and
   whole-program equivalence.
   \item \textbf{The first microkernel is narrow.}  The integer PC24
-  player-position transition matches 1,999 consecutive retail-derived steps,
-  but it excludes dead/spawning writes and exceptional or subnormal arithmetic,
+  player-position transition and its enclosing life-timer profile match 1,999
+  consecutive retail-derived steps, but the profile fixes a post-calc anchor
+  and excludes collision death, spawning/respawn, bomb callbacks, external
+  time-stop writes, non-full-speed timers, and exceptional/subnormal arithmetic,
   and it does not model hitbox/orb/animation side effects.  Its dyadic rounding
   algorithm, reachable-domain checks, interior x87 control state, retail
   instruction binding, source-to-Rust correspondence, and projection
   noninterference are not yet machine-checked.  A tracked OpenVM application
   proof now binds the compiled guest, transcript digest, and result for this
   finite vector, but does not prove those refinement premises.
-  \item \textbf{Backend statement remains a slice.}  SHA-256 binds the exact
-  private workload and guest-computed endpoint, and the proof's public bytes
-  have been decoded and checked.  However, all eleven movement-environment
-  words are witness data rather than outputs of an enclosing TH06 transition.
+  \item \textbf{Backend statement remains a slice.}  The stronger SHA-256
+  statement binds fixed configuration, every private replay mask, and the
+  complete guest-computed endpoint; its public bytes have been decoded and
+  checked.  The eleven per-frame movement-environment words are now derived
+  inside the guest for the named full-speed/no-bomb/no-hit/no-time-stop-write
+  profile.  However, its initial anchor is fixed rather than derived, and the
+  omitted writers above are neither implemented nor proved unreachable.
   The proof therefore cannot establish replay authenticity, survival, stage
   completion, or whole-game execution.  Application-proof privacy and a
   zero-knowledge property were not evaluated; the current vector is public.

@@ -53,9 +53,13 @@ jobs:
           python3 tests/test_item_score_corpus.py
           python3 tests/test_item_score_probe.py
           python3 tests/test_player_position_audit.py
+          python3 tests/test_player_state_enclosing_audit.py
           python3 tests/test_player_motion_openvm_evidence.py
           python3 tests/test_player_motion_openvm_input.py
           python3 tests/test_player_motion_vector.py
+          python3 tests/test_player_state_openvm_input.py
+          python3 tests/test_player_state_openvm_evidence.py
+          python3 tests/test_player_state_vector.py
           python3 tests/test_retail_anchor.py
           python3 tests/test_x87_audit.py
           reference/th06 --canonical-self-test
