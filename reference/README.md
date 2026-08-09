@@ -65,6 +65,22 @@ follows the replay through bombs, deaths and respawns until the game returns to
 the replay menu. `replay-complete` is a playback terminal, not yet a proof
 acceptance predicate.
 
+For deterministic differential work, `--canonical-trace` writes one fixed-size
+binary digest record per gameplay tick:
+
+```sh
+./th06 --headless --replay /path/to/th6_ud0001.rpy \
+  --max-ticks 200000 --canonical-trace replay.canonical.bin
+python3 ../tools/canonical_trace.py replay.canonical.bin
+```
+
+The revision-0.2 writer uses raw float bits, stable slot identities, relative
+script offsets, and selected future-live ANM control state. It fails closed on
+output errors. It remains a selected-field diagnostic rather than a complete
+state commitment; see
+[`../docs/canonical-trace.md`](../docs/canonical-trace.md) and
+[`../docs/state-projection-audit.md`](../docs/state-projection-audit.md).
+
 Compatibility mode restores each stage snapshot exactly as the shipped game
 does. A later canonical-proof mode must instead derive cross-stage state and
 constrain every supplied snapshot.

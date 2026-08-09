@@ -84,8 +84,10 @@ fixture sources, redistribution status and hashes are in
 [`replays/README.md`](replays/README.md). The required retail-data identity and
 local import procedure are in [`data/README.md`](data/README.md). The evolving
 canonical digest protocol and its evidence boundary are in
-[`docs/canonical-trace.md`](docs/canonical-trace.md). Research questions,
-method and evaluation are maintained in
+[`docs/canonical-trace.md`](docs/canonical-trace.md); the proof-oriented field
+and reuse audit is in
+[`docs/state-projection-audit.md`](docs/state-projection-audit.md). Research
+questions, method and evaluation are maintained in
 [`paper/main.tex`](paper/main.tex).
 
 ## Reference runner
@@ -111,7 +113,7 @@ data directory as its working directory:
 ```sh
 /path/to/zkTH06/reference/th06 --headless \
   --replay /path/to/th6_ud0001.rpy --max-ticks 200000 \
-  --trace trace.jsonl
+  --canonical-trace trace.canonical.bin
 ```
 
 The C++ validator checks the byte transform, checksum, version, metadata,

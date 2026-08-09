@@ -7,13 +7,14 @@ namespace
 {
 constexpr u8 TRACE_MAGIC[8] = {'Z', 'K', 'T', 'H', '0', '6', 'C', 'T'};
 constexpr char SCHEMA_DESCRIPTOR[] =
-    "zkTH06 canonical trace schema 0.1\n"
+    "zkTH06 canonical trace schema 0.2\n"
     "wire=little-endian;float=ieee754-binary32-raw-bits;coverage=selected-fields\n"
+    "projection=runtime-selected-gameplay-v0.2;stable-slots=true;relative-script-offsets=true;anm-future-live=true\n"
     "subsystems=global,rng,player,player-bullets,enemies-ecl,enemy-bullets,lasers,items,stage,gui-message,effects\n"
-    "subsystem-digest=sha256(zkTH06-state-v0.1\\0||subsystem-u16-le||payload)\n"
-    "record-root=sha256(zkTH06-trace-root-v0.1\\0||record-prefix||subsystem-records)\n";
-constexpr char STATE_DOMAIN[] = "zkTH06-state-v0.1\0";
-constexpr char ROOT_DOMAIN[] = "zkTH06-trace-root-v0.1\0";
+    "subsystem-digest=sha256(zkTH06-state-v0.2\\0||subsystem-u16-le||payload)\n"
+    "record-root=sha256(zkTH06-trace-root-v0.2\\0||record-prefix||subsystem-records)\n";
+constexpr char STATE_DOMAIN[] = "zkTH06-state-v0.2\0";
+constexpr char ROOT_DOMAIN[] = "zkTH06-trace-root-v0.2\0";
 
 void SetError(char *error, size_t errorSize, const char *message)
 {

@@ -38,3 +38,28 @@ The Stage 6 final score is computed during gameplay: playback restores the
 preceding stage's score at Stage 6 entry but does not restore Stage 6's own end
 score.  Exact score agreement is therefore a useful end-to-end consistency
 check.  It remains much weaker than frame-level state equivalence.
+
+\subsection{Canonical projection experiment}
+
+Two independent complete revision-0.2 traces of the Normal Reimu A NN/NB run
+were byte-identical across all 85,759 frame records.  Both terminated at Stage
+6 frame 17,283 with score 172,519,700.  Each trace occupied 50,769,392 bytes and
+had SHA-256
+\begin{center}
+\small\ttfamily
+ea0cdf948ba7668cba31064dfa421a9c279fdab28bdbd1d57c817ba13db84117.
+\end{center}
+Although only fixed-size digests were retained, each run hashed
+6,192,210,130 bytes (5.767 GiB) of selected canonical payload.  Two concurrent
+local executions took 31.90 and 32.04 seconds and peaked at 38,388 and 38,724
+KiB resident memory.  This measures the current diagnostic implementation; it
+does not estimate zkVM proving cost.
+
+An earlier serializer hashed every named member of each Stage ANM VM.  Two
+2,000-tick runs then disagreed in the Stage subsystem at record zero, while RNG
+and all other subsystem digests agreed.  Inspection showed that Stage VMs are
+allocated with \code{malloc} and that disabled interpolation members are not
+initialized.  Encoding those members only when their control mode can read
+them restored byte identity for both the 2,000-tick and complete runs.  This is
+a concrete example of why a canonical state must follow future-read semantics
+rather than C++ object layout.

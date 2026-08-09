@@ -22,6 +22,7 @@ struct HeadlessRuntime
     bool canonicalSelfTest = false;
     const char *actionsPath = NULL;
     const char *tracePath = NULL;
+    const char *canonicalTracePath = NULL;
     const char *replayInfoPath = NULL;
     const char *replayPath = NULL;
     const char *canonicalSelfTestPath = NULL;
@@ -30,8 +31,13 @@ struct HeadlessRuntime
     i8 replayInitialBombs = 0;
     FILE *actionsFile = NULL;
     FILE *traceFile = NULL;
+    FILE *canonicalTraceFile = NULL;
     bool ownsActionsFile = false;
     bool ownsTraceFile = false;
+    bool ownsCanonicalTraceFile = false;
+    bool canonicalHeaderWritten = false;
+    bool outputError = false;
+    u64 canonicalRecords = 0;
     u64 actionRepeatsRemaining = 0;
     u16 repeatedAction = 0;
     bool inputReady = false;
@@ -49,6 +55,7 @@ struct HeadlessRuntime
     void ConfigureDirectReplay();
     u16 NextInput();
     void WriteState(const char *terminalReason);
+    bool WriteCanonicalState(const char *terminalReason);
     bool ShouldStopForHit() const;
     bool IsReplayComplete() const;
     bool AdvanceTick();

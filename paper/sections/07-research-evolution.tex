@@ -61,5 +61,14 @@ proof environment, but the theorem must also be bound to the actual C++
 reference and zkVM guest; a proof of an unconnected handwritten model would not
 close the claim.
 
+\paragraph{Phase I: distinguish allocated memory from future-live state.}
+The first real ANM projection was intentionally broad and immediately produced
+a false Stage divergence from uninitialized, disabled interpolation members.
+Guarding those members by the mode that can read them restored deterministic
+traces.  The same audit then exposed the converse error: inactive Effect slots
+retain motion values that can affect a later allocation, so active-only hashing
+is too narrow.  The state boundary is now developed as an explicit queue of
+owner-local overwrite-before-read and noninterference lemmas.
+
 Future changes to the central claim or state boundary should be appended here
 with the evidence that motivated them.

@@ -13,6 +13,12 @@ Last updated: 2026-08-09
 - Replay deaths, bombs and respawns continue rather than using the RL harness's
   first-hit terminal.
 - Deterministic terminal summaries and `replay-complete` detection.
+- Canonical trace revision 0.2 with a fixed 592-byte frame record, eleven
+  domain-separated subsystem digests, raw binary32 encoding, stable entity
+  indices, relative script offsets, and fail-closed output handling.
+- Real selected-field serializers for gameplay, ECL, Stage, GUI/message, and
+  future-live owner-local ANM state, plus an independent Python validator,
+  first-mismatch comparator, and payload statistics.
 
 Compatibility playback intentionally restores every per-stage replay snapshot,
 matching shipped playback. It is an oracle-development mode, not the future
@@ -46,12 +52,27 @@ All four full runs completed in 1.1–1.6 seconds each on the initial host and
 used less than 40 MiB RSS without tracing. These are local measurements, not a
 performance guarantee.
 
+Two independent complete canonical-trace runs of `th6_ud002677.rpy` produced
+85,759 byte-identical records and SHA-256:
+
+```text
+ea0cdf948ba7668cba31064dfa421a9c279fdab28bdbd1d57c817ba13db84117
+```
+
+Each run wrote a 50,769,392-byte digest trace and hashed 6,192,210,130 bytes of
+selected payload. Concurrent local runs completed in 31.90 and 32.04 seconds
+with less than 39 MiB RSS. The first attempt to include all named ANM members
+was nondeterministic at Stage record zero because disabled interpolation fields
+were uninitialized; guarded future-live encoding restored determinism. This is
+a useful projection-design counterexample, not original-game equivalence.
+
 ## Remaining M0 gates
 
-1. Replace inspection-oriented JSON with a versioned canonical binary frame
-   snapshot and subsystem digests.
-2. Include stable entity slot indices, raw float bits, ECL timeline/context,
-   player bullets/items, dialogue and required ANM/effect shadow state.
+1. Close or explicitly constrain the selected projection. Inactive Effect
+   residue and dynamic ScreenEffect jobs are known open noninterference cases;
+   see [`state-projection-audit.md`](state-projection-audit.md).
+2. Add a field-level canonical snapshot at a selected tick so a subsystem
+   mismatch can be reduced to its first field.
 3. Export the same schema from the original executable or an exact-reference
    build and identify the first differing field.
 4. Fix x87/libm and skipped-draw semantic differences until the corpus is

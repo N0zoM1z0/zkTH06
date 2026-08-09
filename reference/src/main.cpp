@@ -197,5 +197,5 @@ stop:
 
     SDL_ShowCursor(SDL_ENABLE);
     g_GameErrorContext.Flush();
-    return headlessAtLaunch && renderResult == RENDER_RESULT_EXIT_ERROR ? 1 : 0;
+    return headlessAtLaunch && (renderResult == RENDER_RESULT_EXIT_ERROR || g_HeadlessRuntime.outputError) ? 1 : 0;
 }

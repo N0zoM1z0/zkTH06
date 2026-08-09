@@ -7,12 +7,15 @@ complete full runs, while strict parsing removes several ambient-memory and
 format-trust hazards.  The result is not yet a proof system and is not yet an
 exact model of the shipped executable.
 
-An experimental shared binary protocol now defines per-frame subsystem and root
-digests with raw floating-point bits and fail-closed decoding.  The next
-concrete milestone is to freeze its gameplay projection, emit it from both the
-portable runner and the shipped executable, and add selected field-level
-snapshots.  This should turn ``the replay desynchronized'' into a reproducible
-first-frame, first-subsystem, first-field diagnosis.
+An experimental shared binary protocol now emits real per-frame subsystem and
+root digests with raw floating-point bits, stable identities, and fail-closed
+decoding.  Complete repeated Linux runs are byte-identical, and the first broad
+ANM experiment already exposed the distinction between allocated memory and
+future-live semantic state.  The next concrete milestone is to resolve the
+known reuse and dynamic-job omissions, add selected field-level snapshots, and
+emit the same schema from the shipped or an exact-reference executable.  This
+should turn ``the replay desynchronized'' into a reproducible first-frame,
+first-subsystem, first-field diagnosis.
 
 That evidence will guide the projection, but it cannot prove a slice sound.
 The intended end state additionally requires a machine-checked commuting

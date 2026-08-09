@@ -13,9 +13,13 @@ As of 9 August 2026, the following components are implemented:
   \item bounded, complete-mask input injection through the original callback;
   \item deterministic JSON diagnostics and explicit terminal reasons;
   \item a retail-data manifest and local SHA-256 verifier;
-  \item an experimental 0.1 canonical digest wire format with explicit endian
-  and raw-float encoding, domain-separated subsystem and frame hashes, a C++
-  synthetic fixture writer, and an independent Python validator;
+  \item experimental canonical projection revision 0.2 with explicit endian
+  and raw-float encoding, stable slot identities, relative script offsets,
+  domain-separated subsystem and frame hashes, and real runtime serializers
+  for eleven gameplay subsystems;
+  \item future-live ANM serialization for Player, bullets, enemies, lasers,
+  items, Stage, GUI/message, and effects, plus an independent Python validator,
+  first-mismatch comparator, corruption tests, and payload statistics;
   \item Linux CI that builds the reference runner and cross-checks both replay
   validators on three valid and three deliberately malformed cases, while also
   requiring canonical-record corruption to fail closed.
@@ -24,5 +28,7 @@ As of 9 August 2026, the following components are implemented:
 The current compatibility path intentionally restores each replay stage
 snapshot because that mirrors shipped playback and enables oracle development.
 It is not yet canonical proof playback.  No zkVM guest is frozen or claimed to
-be implemented.  Wire revision 0.1 commits only to selected synthetic fields;
-gameplay payload serializers and field-level mismatch snapshots remain open.
+be implemented.  Projection revision 0.2 commits only to selected fields.  A
+field-level mismatch snapshot remains open, and the state audit has already
+identified inactive Effect residue and dynamic screen-effect jobs that prevent
+claiming projection closure.

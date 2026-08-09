@@ -23,7 +23,14 @@
   \item \textbf{Projection soundness.}  Equal selected-field digests imply
   equality only of that projection under the SHA-256 collision-resistance
   assumption.  Until coverage is frozen and justified, omitted state can still
-  invalidate an observational-equivalence claim.
+  invalidate an observational-equivalence claim.  In particular, inactive
+  Effect slots retain future-live values, and dynamic screen-effect calc jobs
+  are not yet represented even though screen shake consumes the shared RNG.
+  \item \textbf{Initializedness is semantic.}  Some reconstructed structures
+  contain disabled members left uninitialized by the reference allocator.
+  Hashing or constraining such bytes creates false distinctions and may import
+  undefined host state into the statement.  Current ANM guards are tested but
+  not yet justified by an exhaustive future-read proof.
   \item \textbf{Model-to-code binding.}  The planned Lean refinement is not yet
   connected to the authoritative C++ transition or a zkVM guest.  Differential
   agreement can expose mistakes in such a connection but cannot prove it.

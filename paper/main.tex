@@ -28,9 +28,10 @@ cryptographic: the proof must represent the behavior of the shipped 32-bit
 Windows executable rather than a convenient but divergent port.  We develop a
 strict replay parser, a deterministic Linux compatibility runner, and a
 frame-level differential methodology for \thgame.  An experimental canonical
-digest wire format is independently checked by C++ and Python.  Four locally pinned
-six-stage replays complete under the compatibility runner, and repeated runs
-produce byte-identical traces.  These results establish same-host
+digest projection is emitted by the runtime and independently checked by C++
+and Python.  Four locally pinned six-stage replays complete under the
+compatibility runner, and repeated complete canonical runs produce
+byte-identical traces.  These results establish same-host
 self-consistency only; x87 arithmetic, presentation-dependent state, and an
 original-executable exporter remain open equivalence gates.  This living paper
 records the research questions, implementation evidence, negative results, and

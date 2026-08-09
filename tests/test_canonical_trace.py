@@ -42,6 +42,7 @@ def main() -> int:
         assert f"record_size={canonical_trace.RECORD_SIZE}" in completed.stdout
 
         header, records = canonical_trace.read_trace(fixture)
+        summary = canonical_trace.summarize(fixture)
         assert fixture.stat().st_size == canonical_trace.HEADER_SIZE + canonical_trace.RECORD_SIZE
         assert header.initial_seed == 0x1234
         assert header.difficulty == 2
@@ -62,6 +63,9 @@ def main() -> int:
         assert [subsystem.entity_count for subsystem in record.subsystems] == list(
             range(1, canonical_trace.SUBSYSTEM_COUNT + 1)
         )
+        assert summary["record_count"] == 1
+        assert summary["hashed_payload_bytes"] == sum(subsystem.byte_count for subsystem in record.subsystems)
+        assert summary["subsystem_stats"]["global"]["max_entities"] == 1
 
         identical = Path(directory) / "identical.bin"
         shutil.copyfile(fixture, identical)

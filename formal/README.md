@@ -53,6 +53,9 @@ equivalence.
   boundary even if the compatibility runner still mutates C++ globals.
 - Removed state receives a dependency record and a noninterference lemma; it is
   not deleted solely because corpus runs still finish.
+- Disabled or inactive storage is not treated uniformly: an uninitialized field
+  is excluded when its control mode makes it unreadable, while dormant residue
+  is retained whenever allocation can expose it before overwrite.
 - Integer overflow and shifts use bit-vector semantics. Floating-point values
   retain raw bits until an exact model or a proved refinement replaces them.
 - Script positions use stable identifiers or base-relative offsets, never host
@@ -75,3 +78,9 @@ The immediate engineering consequence is to extract small, deterministic,
 side-effect-explicit subsystem steps before freezing either the Lean model or
 the guest. Tool selection comes after the canonical state and arithmetic
 experiments make the required source subset concrete.
+
+The live field/reuse audit is in
+[`../docs/state-projection-audit.md`](../docs/state-projection-audit.md). Its
+first intended owner-local lemmas cover enemy template overwrite, canonical
+zeroed enemy bullets, item state-2 target initialization, guarded ANM
+interpolation, dormant Effect reuse, and dynamic screen-effect noninterference.

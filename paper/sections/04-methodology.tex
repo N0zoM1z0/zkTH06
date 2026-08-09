@@ -37,6 +37,13 @@ Player, player bullets, Enemy/ECL, enemy bullets, lasers, items, Stage,
 GUI/message, and Effects; owner-local ANM cursors will be embedded in the
 subsystem whose future transition they affect.
 
+Named C++ members are not automatically semantic state.  A member is admitted
+only when it is initialized and future-live under the current control mode.
+For example, ANM interpolation endpoints and timers are serialized only while
+the corresponding interpolation duration is active.  Conversely, an inactive
+allocation slot cannot be omitted merely because its active flag is clear: a
+reuse proof must show that every residual value is overwritten before read.
+
 \subsection{Differential loop}
 
 For each pinned replay, both runners must use the same data hashes and replay

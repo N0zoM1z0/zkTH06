@@ -111,7 +111,7 @@ class CanonicalTrace
 {
   public:
     static constexpr u16 VERSION_MAJOR = 0;
-    static constexpr u16 VERSION_MINOR = 1;
+    static constexpr u16 VERSION_MINOR = 2;
     static constexpr u16 HEADER_FLAG_SELECTED_FIELDS = 1;
     static constexpr u16 SUBSYSTEM_FLAG_SELECTED_FIELDS = 1;
 

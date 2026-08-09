@@ -73,7 +73,7 @@ RenderResult GameWindow::Render()
             terminalReason = "tick-limit";
         }
         g_HeadlessRuntime.WriteState(terminalReason);
-        if (g_HeadlessRuntime.inputError)
+        if (g_HeadlessRuntime.inputError || g_HeadlessRuntime.outputError)
         {
             return RENDER_RESULT_EXIT_ERROR;
         }

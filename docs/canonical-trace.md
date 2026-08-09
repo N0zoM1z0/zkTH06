@@ -1,9 +1,9 @@
 # Canonical digest trace protocol
 
-Status: experimental wire revision 0.1. The C++ writer, Python validator, and a
-cross-language synthetic fixture are implemented. Real gameplay-state payload
-serializers are the next integration step; revision 0.1 must not be presented
-as a complete state commitment.
+Status: experimental projection revision 0.2. The C++ writer, selected-field
+gameplay serializers, Python validator, and a cross-language synthetic fixture
+are implemented. Revision 0.2 must not be presented as a complete state
+commitment.
 
 ## Purpose and claim boundary
 
@@ -12,12 +12,14 @@ contains one digest for each ordered subsystem and a root digest over the
 record. It is designed to identify the first frame and subsystem on which two
 executions disagree.
 
-The trace is not a proof, signature, or complete snapshot. Revision 0.1 carries
+The trace is not a proof, signature, or complete snapshot. Revision 0.2 carries
 the `selected-fields` coverage flag. Equality therefore establishes equality
 only for the serialized projection, under the collision resistance of SHA-256.
 It does not establish equality of omitted state, fidelity to the shipped game,
 or zkVM soundness. A field-level snapshot is still required to explain the
-first subsystem mismatch.
+first subsystem mismatch. The field-by-field closure audit and its known effect
+reuse counterexample are maintained in
+[`state-projection-audit.md`](state-projection-audit.md).
 
 ## Encoding rules
 
@@ -94,18 +96,41 @@ Terminal codes are 0 for a nonterminal frame, 1 input error, 2 physical hit, 3
 replay complete, 4 successful chain exit, 5 erroneous chain exit, 6 tick
 limit, and 255 unknown.
 
+Frame-flag bit 0 means that gameplay input is ready, bit 1 identifies replay
+mode, bit 2 identifies direct Practice mode, and bit 3 records time-stop state.
+All other bits are reserved and currently zero.
+
+## Selected projection
+
+The runtime serializer covers gameplay counters and geometry, complete RNG
+state, Player and bomb state, stable active entity slots, Enemy/ECL contexts,
+shooters, lasers, items, Stage script/object state, GUI/message state, effects,
+and owner-local ANM control state. Raw object memory is never hashed.
+
+ANM interpolation payloads are conditional on the mode that can read them.
+This is necessary because the reference allocator leaves disabled fields
+uninitialized; including them caused two otherwise identical runs to disagree
+at their first Stage digest. Slot-specific values are emitted in stable array
+order. Script positions are base-relative offsets, and sprite references are
+validated stable indices into the loaded sprite table.
+
+The projection remains intentionally incomplete. In particular, inactive
+Effect slots retain values that can become future-live after reuse, and dynamic
+ScreenEffect calc jobs can consume the shared RNG. Revision 0.2 therefore is a
+differential probe and not yet the state of a sound sliced transition.
+
 ## Domain-separated hashes
 
 For subsystem identifier `id` and canonical payload `P`:
 
 ```text
-SHA256("zkTH06-state-v0.1\0" || u16le(id) || P)
+SHA256("zkTH06-state-v0.2\0" || u16le(id) || P)
 ```
 
 For the 560 record bytes before the root:
 
 ```text
-SHA256("zkTH06-trace-root-v0.1\0" || record_without_root)
+SHA256("zkTH06-trace-root-v0.2\0" || record_without_root)
 ```
 
 The byte count excludes the subsystem hash domain and identifier. It is useful
@@ -130,5 +155,39 @@ python3 tools/canonical_trace.py left.bin --compare right.bin
 ```
 
 The comparison reports the first differing record and all differing subsystem
-digests. CI also flips a byte in a temporary fixture and requires the validator
+digests. A summary also reports total hashed payload and per-subsystem byte and
+entity maxima. CI flips a byte in a temporary fixture and requires the validator
 to reject it.
+
+Real gameplay emission is headless-only and must run from a user-supplied game
+data directory:
+
+```sh
+/path/to/zkTH06/reference/th06 --headless \
+  --replay /path/to/replay.rpy --max-ticks 200000 \
+  --canonical-trace canonical.bin
+python3 /path/to/zkTH06/tools/canonical_trace.py canonical.bin
+```
+
+The writer fails the run on header, record, flush, or close errors. The legacy
+JSON trace can be emitted at the same time only to a different path.
+
+## Local deterministic full-run evidence
+
+Two independent revision-0.2 runs of the tracked Normal Reimu A no-miss,
+no-bomb replay both reached `replay-complete` after 85,759 records at Stage 6
+frame 17,283 with score 172,519,700. The 50,769,392-byte files were identical:
+
+```text
+ea0cdf948ba7668cba31064dfa421a9c279fdab28bdbd1d57c817ba13db84117
+```
+
+The serializer hashed 6,192,210,130 payload bytes (5.767 GiB) per run while
+retaining only the fixed-size digests. On the initial host the two concurrent
+runs took 31.90 and 32.04 seconds and peaked at 38,388 and 38,724 KiB RSS. These
+are implementation measurements, not a performance guarantee or equivalence
+result. The schema descriptor SHA-256 for this exact revision is:
+
+```text
+2f2119142b587312892744baa2193e5cfd7f2cef560eb38832a08ec498318c72
+```

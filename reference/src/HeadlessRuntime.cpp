@@ -1,6 +1,7 @@
 #include "HeadlessRuntime.hpp"
 
 #include "BulletManager.hpp"
+#include "CanonicalState.hpp"
 #include "CanonicalTrace.hpp"
 #include "Controller.hpp"
 #include "EnemyManager.hpp"
@@ -41,9 +42,10 @@ void PrintUsage(const char *program)
     std::fprintf(stderr,
                  "Usage: %s [--headless] [--max-ticks N] [--seed N] "
                  "[--practice-stage 1..6] [--difficulty 0..3] [--character 0..1] "
-                 "[--shot-type 0..1] [--actions PATH] [--trace PATH] [--step] [--auto-shoot] "
+                 "[--shot-type 0..1] [--actions PATH] [--trace PATH] [--canonical-trace PATH] "
+                 "[--step] [--auto-shoot] "
                  "[--continue-after-hit]\n"
-                 "       %s --headless --replay PATH [--max-ticks N] [--trace PATH]\n"
+                 "       %s --headless --replay PATH [--max-ticks N] [--trace PATH] [--canonical-trace PATH]\n"
                  "       %s --replay-info PATH\n"
                  "       %s --canonical-self-test [TRACE-PATH]\n",
                  program,
@@ -176,6 +178,15 @@ bool HeadlessRuntime::ParseArguments(int argc, char *argv[])
             }
             this->tracePath = argv[i];
         }
+        else if (std::strcmp(argv[i], "--canonical-trace") == 0)
+        {
+            if (++i >= argc)
+            {
+                PrintUsage(argv[0]);
+                return false;
+            }
+            this->canonicalTracePath = argv[i];
+        }
         else if (std::strcmp(argv[i], "--replay-info") == 0)
         {
             if (++i >= argc)
@@ -241,8 +252,8 @@ bool HeadlessRuntime::ParseArguments(int argc, char *argv[])
     if (this->replayInfoPath != NULL)
     {
         if (this->enabled || this->maxTicks != 0 || this->seedProvided || this->practiceStage != 0 ||
-            this->actionsPath != NULL || this->tracePath != NULL || this->autoShoot || this->stepMode ||
-            this->continueAfterHit)
+            this->actionsPath != NULL || this->tracePath != NULL || this->canonicalTracePath != NULL ||
+            this->autoShoot || this->stepMode || this->continueAfterHit)
         {
             std::fprintf(stderr, "--replay-info cannot be combined with runtime options\n");
             return false;
@@ -266,8 +277,8 @@ bool HeadlessRuntime::ParseArguments(int argc, char *argv[])
     }
     if (!this->enabled &&
         (this->maxTicks != 0 || this->seedProvided || this->practiceStage != 0 || this->actionsPath != NULL ||
-         this->tracePath != NULL || this->autoShoot || this->stepMode || this->continueAfterHit ||
-         this->replayPath != NULL))
+         this->tracePath != NULL || this->canonicalTracePath != NULL || this->autoShoot || this->stepMode ||
+         this->continueAfterHit || this->replayPath != NULL))
     {
         std::fprintf(stderr, "headless-only runtime options require --headless\n");
         return false;
@@ -282,9 +293,16 @@ bool HeadlessRuntime::ParseArguments(int argc, char *argv[])
         std::fprintf(stderr, "--step requires --practice-stage\n");
         return false;
     }
-    if (this->stepMode && (this->actionsPath != NULL || this->tracePath != NULL))
+    if (this->stepMode &&
+        (this->actionsPath != NULL || this->tracePath != NULL || this->canonicalTracePath != NULL))
     {
-        std::fprintf(stderr, "--step cannot be combined with --actions or --trace\n");
+        std::fprintf(stderr, "--step cannot be combined with file-based action or trace options\n");
+        return false;
+    }
+    if (this->tracePath != NULL && this->canonicalTracePath != NULL &&
+        std::strcmp(this->tracePath, this->canonicalTracePath) == 0)
+    {
+        std::fprintf(stderr, "--trace and --canonical-trace require different paths\n");
         return false;
     }
     return true;
@@ -442,6 +460,17 @@ bool HeadlessRuntime::InitializeIo()
         }
         this->ownsTraceFile = true;
     }
+    if (this->canonicalTracePath != NULL)
+    {
+        this->canonicalTraceFile = std::fopen(this->canonicalTracePath, "wb");
+        if (this->canonicalTraceFile == NULL)
+        {
+            std::perror(this->canonicalTracePath);
+            CloseIo();
+            return false;
+        }
+        this->ownsCanonicalTraceFile = true;
+    }
     return true;
 }
 
@@ -457,10 +486,21 @@ void HeadlessRuntime::CloseIo()
         std::fclose(this->traceFile);
         this->traceFile = NULL;
     }
+    if (this->canonicalTraceFile != NULL && this->ownsCanonicalTraceFile)
+    {
+        if (std::fclose(this->canonicalTraceFile) != 0)
+        {
+            std::perror(this->canonicalTracePath);
+            this->outputError = true;
+        }
+        this->canonicalTraceFile = NULL;
+    }
     this->actionsFile = NULL;
     this->traceFile = NULL;
+    this->canonicalTraceFile = NULL;
     this->ownsActionsFile = false;
     this->ownsTraceFile = false;
+    this->ownsCanonicalTraceFile = false;
 }
 
 void HeadlessRuntime::ConfigureDirectPractice()
@@ -595,6 +635,75 @@ bool HeadlessRuntime::IsReplayComplete() const
     return this->replayPath != NULL && g_Supervisor.curState == SUPERVISOR_STATE_MAINMENU_REPLAY;
 }
 
+bool HeadlessRuntime::WriteCanonicalState(const char *terminalReason)
+{
+    if (this->canonicalTraceFile == NULL)
+    {
+        return true;
+    }
+
+    char error[256];
+    if (!this->canonicalHeaderWritten)
+    {
+        CanonicalRunConfig config;
+        config.initialSeed = this->actualSeed;
+        config.difficulty = static_cast<u8>(this->difficulty);
+        config.character = static_cast<u8>(this->character);
+        config.shotType = static_cast<u8>(this->shotType);
+        config.startStage = static_cast<u8>(this->replayPath != NULL ? this->replayStartStage : this->practiceStage);
+        config.mode = this->replayPath != NULL ? CanonicalRunMode::REPLAY
+                                              : this->practiceStage != 0 ? CanonicalRunMode::PRACTICE
+                                                                         : CanonicalRunMode::UNKNOWN;
+        if (!CanonicalTrace::WriteHeader(this->canonicalTraceFile, config, error, sizeof(error)))
+        {
+            std::fprintf(stderr, "Canonical trace header failed: %s\n", error);
+            return false;
+        }
+        this->canonicalHeaderWritten = true;
+    }
+    if (!this->inputReady)
+    {
+        return true;
+    }
+
+    CanonicalFrameMetadata frame;
+    frame.tick = this->ticks;
+    frame.gameFrame = g_GameManager.gameFrames;
+    frame.stage = g_GameManager.currentStage;
+    frame.input = g_CurFrameInput;
+    frame.terminalReason = CanonicalTrace::ParseTerminalReason(terminalReason);
+    frame.flags = 1;
+    if (this->replayPath != NULL)
+    {
+        frame.flags |= 1 << 1;
+    }
+    if (this->practiceStage != 0)
+    {
+        frame.flags |= 1 << 2;
+    }
+    if (g_GameManager.isTimeStopped)
+    {
+        frame.flags |= 1 << 3;
+    }
+    frame.supervisorState = g_Supervisor.curState;
+    frame.recordIndex = this->canonicalRecords;
+
+    const CanonicalSubsystemDigests subsystems = CanonicalState::Capture();
+    if (!CanonicalTrace::WriteRecord(this->canonicalTraceFile, frame, subsystems, error, sizeof(error)))
+    {
+        std::fprintf(stderr, "Canonical trace record failed at index %llu: %s\n",
+                     static_cast<unsigned long long>(this->canonicalRecords), error);
+        return false;
+    }
+    this->canonicalRecords++;
+    if (terminalReason != NULL && std::fflush(this->canonicalTraceFile) != 0)
+    {
+        std::perror(this->canonicalTracePath);
+        return false;
+    }
+    return true;
+}
+
 void HeadlessRuntime::WriteState(const char *terminalReason)
 {
     this->terminalReason = terminalReason;
@@ -605,6 +714,10 @@ void HeadlessRuntime::WriteState(const char *terminalReason)
     if (this->replayPath != NULL && g_GameManager.currentStage >= this->replayStartStage)
     {
         this->inputReady = true;
+    }
+    if (!this->WriteCanonicalState(terminalReason))
+    {
+        this->outputError = true;
     }
     if (this->traceFile == NULL)
     {

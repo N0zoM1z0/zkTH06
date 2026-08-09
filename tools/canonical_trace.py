@@ -14,7 +14,7 @@ from typing import BinaryIO, Iterator
 
 
 MAGIC = b"ZKTH06CT"
-VERSION = (0, 1)
+VERSION = (0, 2)
 HEADER_SIZE = 64
 RECORD_PREFIX_SIZE = 32
 SUBSYSTEM_RECORD_SIZE = 48
@@ -36,14 +36,15 @@ RECORD_SIZE = RECORD_PREFIX_SIZE + SUBSYSTEM_COUNT * SUBSYSTEM_RECORD_SIZE + 32
 HEADER_FLAG_SELECTED_FIELDS = 1
 SUBSYSTEM_FLAG_SELECTED_FIELDS = 1
 SCHEMA_DESCRIPTOR = (
-    b"zkTH06 canonical trace schema 0.1\n"
+    b"zkTH06 canonical trace schema 0.2\n"
     b"wire=little-endian;float=ieee754-binary32-raw-bits;coverage=selected-fields\n"
+    b"projection=runtime-selected-gameplay-v0.2;stable-slots=true;relative-script-offsets=true;anm-future-live=true\n"
     b"subsystems=global,rng,player,player-bullets,enemies-ecl,enemy-bullets,lasers,items,stage,gui-message,effects\n"
-    b"subsystem-digest=sha256(zkTH06-state-v0.1\\0||subsystem-u16-le||payload)\n"
-    b"record-root=sha256(zkTH06-trace-root-v0.1\\0||record-prefix||subsystem-records)\n"
+    b"subsystem-digest=sha256(zkTH06-state-v0.2\\0||subsystem-u16-le||payload)\n"
+    b"record-root=sha256(zkTH06-trace-root-v0.2\\0||record-prefix||subsystem-records)\n"
 )
 SCHEMA_DIGEST = hashlib.sha256(SCHEMA_DESCRIPTOR).digest()
-ROOT_DOMAIN = b"zkTH06-trace-root-v0.1\0"
+ROOT_DOMAIN = b"zkTH06-trace-root-v0.2\0"
 
 HEADER_STRUCT = struct.Struct("<8sHHIIHHH6B32s")
 RECORD_PREFIX_STRUCT = struct.Struct("<QIiHBBiQ")
@@ -287,17 +288,42 @@ def summarize(path: Path) -> dict[str, object]:
         first: FrameRecord | None = None
         last: FrameRecord | None = None
         count = 0
+        total_payload_bytes = 0
+        subsystem_stats = [
+            {"total_bytes": 0, "min_bytes": None, "max_bytes": 0, "max_entities": 0}
+            for _ in SUBSYSTEM_NAMES
+        ]
         for record in iter_records(file):
             if first is None:
                 first = record
             last = record
             count += 1
+            for index, subsystem in enumerate(record.subsystems):
+                stats = subsystem_stats[index]
+                stats["total_bytes"] += subsystem.byte_count
+                stats["min_bytes"] = (
+                    subsystem.byte_count
+                    if stats["min_bytes"] is None
+                    else min(stats["min_bytes"], subsystem.byte_count)
+                )
+                stats["max_bytes"] = max(stats["max_bytes"], subsystem.byte_count)
+                stats["max_entities"] = max(stats["max_entities"], subsystem.entity_count)
+                total_payload_bytes += subsystem.byte_count
+    named_stats = {
+        name: {
+            **stats,
+            "min_bytes": 0 if stats["min_bytes"] is None else stats["min_bytes"],
+        }
+        for name, stats in zip(SUBSYSTEM_NAMES, subsystem_stats, strict=True)
+    }
     return {
         "valid": True,
         "path": str(path),
         "size": path.stat().st_size,
         "header": header.as_dict(),
         "record_count": count,
+        "hashed_payload_bytes": total_payload_bytes,
+        "subsystem_stats": named_stats,
         "first_record": None if first is None else first.as_dict(include_subsystems=True),
         "last_record": None if last is None else last.as_dict(include_subsystems=True),
     }
