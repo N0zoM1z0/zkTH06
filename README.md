@@ -12,6 +12,11 @@ that state machine agree frame-for-frame with the shipped 32-bit Windows game.
 > current runner is an instrumented reference harness, not final proof
 > semantics.
 
+A first owner-local Lean model now machine-checks why active-only Effect slots
+violate one-step noninterference and how a narrow dormant reuse shadow repairs
+that modeled allocation step. It is a proof-design result, not a whole-game or
+C++-binding theorem.
+
 ## Repository boundary
 
 The zkTH06 work lives at the repository root. The reconstructed game engine is

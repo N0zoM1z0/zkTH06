@@ -20,6 +20,9 @@ As of 9 August 2026, the following components are implemented:
   \item future-live ANM serialization for Player, bullets, enemies, lasers,
   items, Stage, GUI/message, and effects, plus an independent Python validator,
   first-mismatch comparator, corruption tests, and payload statistics;
+  \item a pinned Lean 4.32.0 Effect-reuse model with a checked active-only
+  noninterference counterexample and a commuting allocation theorem for a
+  narrow dormant radius/angle shadow, with no admitted theorem or custom axiom;
   \item Linux CI that builds the reference runner and cross-checks both replay
   validators on three valid and three deliberately malformed cases, while also
   requiring canonical-record corruption to fail closed.

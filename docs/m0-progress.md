@@ -19,6 +19,8 @@ Last updated: 2026-08-09
 - Real selected-field serializers for gameplay, ECL, Stage, GUI/message, and
   future-live owner-local ANM state, plus an independent Python validator,
   first-mismatch comparator, and payload statistics.
+- A Lean 4.32.0 owner-local Effect model that checks the active-only reuse
+  counterexample and a commuting allocation step with a narrow dormant shadow.
 
 Compatibility playback intentionally restores every per-stage replay snapshot,
 matching shipped playback. It is an oracle-development mode, not the future

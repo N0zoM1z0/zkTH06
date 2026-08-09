@@ -63,3 +63,12 @@ initialized.  Encoding those members only when their control mode can read
 them restored byte identity for both the 2,000-tick and complete runs.  This is
 a concrete example of why a canonical state must follow future-read semantics
 rather than C++ object layout.
+
+The complementary inactive-state failure is machine-checked in a small Lean
+model.  Two free Effect slots with equal active-only projections but distinct
+raw radius bits evolve to distinct projected states under the same spell-orbit
+allocation.  A second theorem shows that retaining dormant radius and angle
+makes this modeled allocation phase commute.  The proof compiles with Lean
+4.32.0 without \code{sorry}, admitted results, or custom axioms.  Its scope is
+only this allocation phase and does not establish sufficiency for all Effect
+callbacks or bind the model to compiled C++.

@@ -1,0 +1,6 @@
+name = "zkTH06Formal"
+version = "0.1.0"
+defaultTargets = ["ZkTH06"]
+
+[[lean_lib]]
+name = "ZkTH06"

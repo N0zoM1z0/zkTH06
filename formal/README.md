@@ -1,8 +1,34 @@
 # Formal refinement plan
 
-This directory is reserved for the machine-checked argument that the sliced
-zkTH06 gameplay kernel preserves the relevant behavior of the pinned reference
-transition. No theorem is implemented or claimed yet.
+This directory contains the beginning of the machine-checked argument that the
+sliced zkTH06 gameplay kernel preserves the relevant behavior of the pinned
+reference transition. One owner-local Effect allocation model is checked; no
+whole-frame, whole-game, or C++-binding theorem is claimed.
+
+## Checked Effect reuse result
+
+[`ZkTH06/EffectReuse.lean`](ZkTH06/EffectReuse.lean) models the specific
+spell-orbit allocation behavior found in the reference: a free Effect slot
+receives new positions while its radius and angle residue survive. It proves:
+
+1. two dormant slots can collide under an active-only projection;
+2. the same allocation exposes their different residue, giving a concrete
+   counterexample to one-step noninterference; and
+3. retaining the dormant radius/angle shadow makes this narrowly modeled
+   allocation step commute with a projected kernel step.
+
+The model treats floats as `BitVec 32`; it proves copying and projection facts,
+not floating-point arithmetic. Build the pinned Lean 4.32.0 project with:
+
+```sh
+cd formal
+lake build
+```
+
+The development contains no `sorry`, admitted theorem, or custom axiom. Its
+field scope is deliberately smaller than the full `Effect` structure, so the
+commuting theorem is not yet evidence that radius and angle alone form a
+sufficient full-game reuse shadow.
 
 ## Target theorem shape
 

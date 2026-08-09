@@ -110,6 +110,12 @@ effect_reuse_shadow_sufficient
 screen_effect_projection_noninterference
 ```
 
+The first checked artifact is
+[`../formal/ZkTH06/EffectReuse.lean`](../formal/ZkTH06/EffectReuse.lean). It
+constructs the active-only counterexample and proves the commuting allocation
+step for a narrow spell-orbit model retaining dormant radius and angle. The
+remaining effect fields and callbacks are still open.
+
 Each lemma needs a source/data binding and a reachable-state precondition. Once
 these hold, they can discharge cases of the global quotient obligation recorded
 in [`../formal/README.md`](../formal/README.md).

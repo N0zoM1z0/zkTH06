@@ -36,6 +36,7 @@ replays/samples/th6_udLuRB.rpy
 *.jsonl
 tools/__pycache__/
 tests/__pycache__/
+formal/.lake/
 
 # Verified local import of the proprietary retail data.
 data/imported/
