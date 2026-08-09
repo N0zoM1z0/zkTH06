@@ -238,14 +238,22 @@ Its 1,000,154 cases include quarter-step boundaries around IDs $-10025$ through
 $-10001$, dense deterministic PC53 samples, infinities, quiet/signaling NaNs,
 large finite values, a pseudo-denormal, and an unnormal.  All classifications
 matched; 3,084 operands selected a variable ID and nine cases set invalid.
-The combined campaign therefore executed the exact helper 2,000,168 times.
+All nine invalid cases returned the complete integer-indefinite result
+\code{0x8000000000000000}.  The combined campaign therefore executed the exact
+helper 2,000,168 times.
 
-The full-result claim is deliberately not generalized to NaNs or out-of-range
-inputs, and the classifier result is finite counterexample search rather than
-a universal theorem.  General integer consumers still require reachable-range
-invariants.  The ECL call instead requires exact agreement on the 25 sentinel
-outcomes, together with binary-to-model correspondence, before the helper can
-be replaced by a smaller classifier in the proof kernel.
+The signed-i64 truncation result is deliberately claimed only for its tested
+canonical finite domain.  The nine sampled invalid results and the classifier
+campaign are finite counterexample search, not universal exceptional
+semantics.  A separate byte-free artifact checks all 37 helper instruction
+signatures and records the masked-invalid path; a Lean bit-vector theorem
+checks that integer-indefinite projects to EAX zero and EDX
+\code{0x80000000}.  Those results remain conditional on verified decoding,
+architectural x87 semantics, entry stack/control state, branch binding, caller
+binding, and guest refinement.  General integer consumers still require their
+site-specific range or observation invariants.  The ECL call instead requires
+exact agreement on the 25 sentinel outcomes before the helper can be replaced
+by a smaller classifier in the proof kernel.
 
 \subsection{Address-level obligation ledger}
 
@@ -286,8 +294,8 @@ interval identity, and an abstract theorem checks irrelevance of the exact
 non-label integer.  These results narrow, but do not discharge, four remaining
 obligations: verified decode, universal helper/classifier agreement, target-to-
 variable binding, and guest refinement.  The eight retained scoring calls'
-finite-position and helper-range obligations remain open and are decomposed
-next.
+finite-player, collision, helper-observation, and code-binding obligations
+remain open and are decomposed next.
 
 \subsection{Point-item range decomposition}
 
@@ -303,15 +311,21 @@ The apparent range argument contains a NaN trap.  The collision function
 returns false when any ordered comparison proves the player and item boxes
 separate.  If an item coordinate is NaN, each such comparison is false and the
 function can instead return collision success.  Therefore collection alone is
-not a finiteness witness.  The proof target first requires finite/non-NaN item
-and player-box invariants.  Conditional on ordered coordinates, player center
-$y\in[16,432]$, player grab radius 12, and item half-size 8, a Lean integer
-theorem derives collected item $y\in[-4,452]$.  For every converted integer in
-that interval, the four score formulas produce $[27600,300000]$, their largest
-position penalty is 129600, and the selected score fits signed i32.  Given a
-pre-item score at most 999,999,999, a further theorem rules out u32 wrap in one
-award.  Difficulty $0..4$ is an additional reachable-state premise because the
-decoded invalid path bypasses profile assignment.
+not a finiteness witness.  Rather than assume item finiteness, the total model
+splits its binary32 coordinate into exact finite rationals, both infinities,
+and NaN.  With finite player center $y\in[16,432]$, player grab radius 12, and
+item half-size 8, a collected finite item lies in $[-4,452]$ and truncation
+toward zero preserves that interval.  Either infinity is vertically separated
+from the finite player box.  NaN may fall through to collision success, but
+masked-invalid \code{fistp} produces integer-indefinite; the audited scoring
+callers observe EAX zero and select the top-score branch.  Across this total
+case split the Lean theorem bounds all four score formulas by
+$[27600,300000]$; their largest finite position penalty is 129600 and every
+selected score fits signed i32.  Given a pre-item score at most 999,999,999, a
+further theorem rules out u32 wrap in one award.  This theorem is conditional
+on the finite bounded player box and exact collision/helper observations.
+Difficulty $0..4$ is an additional reachable-state premise because the decoded
+invalid path bypasses profile assignment.
 
 For invariant discovery, a debug Linux runner was executed under GDB with raw-
 binary32 breakpoints at all four source score calls.  The sealed report binds
@@ -341,6 +355,8 @@ Table~\ref{tab:item-score-range} summarizes the measurements.
 \end{table}
 
 No sample was exceptional or outside the candidate interval.  This supports
-the proposed invariant and gives both score branches substantial coverage, but
-does not discharge finite/non-NaN reachability, original-binary correspondence,
-exact helper refinement, or guest binding.
+the finite branch and gives both score branches substantial coverage, but the
+total theorem does not use corpus absence of exceptional item values as a
+premise.  The experiment does not discharge the finite bounded player
+invariant, original-binary collision/helper correspondence, exact x87
+refinement, or guest binding.

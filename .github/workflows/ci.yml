@@ -45,6 +45,7 @@ jobs:
           python3 -m json.tool data/manifest.json >/dev/null
           python3 tests/test_arithmetic_obligations.py
           python3 tests/test_ecl_var_dispatch.py
+          python3 tests/test_ftol2_helper_audit.py
           python3 tests/test_ftol2_source_candidates.py
           python3 tests/test_ftol2_probe.py
           python3 tests/test_item_score_audit.py

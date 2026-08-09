@@ -66,6 +66,22 @@ theorem edx_eax_reconstruct_result (result : I64Bits) :
 /-- The mapped game consumers project the helper result to EAX (or AL). -/
 def observedLow32 (result : I64Bits) : Register32 := eax result
 
+/-- Masked x87 invalid integer conversion stores the architectural integer-indefinite value. -/
+def integerIndefinite : I64Bits := 0x8000000000000000
+
+/-- The helper's invalid result has a zero low half and the sign bit alone in its high half. -/
+theorem integer_indefinite_register_projection :
+    eax integerIndefinite = 0x00000000 ∧
+      edx integerIndefinite = 0x80000000 := by
+  simp only [integerIndefinite, eax, edx]
+  bv_decide
+
+/-- Every audited caller that observes only EAX sees zero on the modeled invalid path. -/
+theorem integer_indefinite_observed_low32_zero :
+    observedLow32 integerIndefinite = 0x00000000 := by
+  simp only [observedLow32]
+  exact integer_indefinite_register_projection.left
+
 theorem high_half_irrelevant_to_observed_projection
     (highA highB low : Register32) :
     observedLow32 (joinRegisters highA low) =

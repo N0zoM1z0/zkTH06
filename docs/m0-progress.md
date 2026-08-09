@@ -33,15 +33,17 @@ Last updated: 2026-08-09
   instruction-specific predicate exercised by that probe.
 - An exact-byte, temporary i386 harness for the pinned `__ftol2` body, an
   independent dyadic truncation model, and Lean checks of its correction and
-  EDX:EAX projection logic.
+  EDX:EAX projection logic; a 37-instruction helper audit and sampled masked-
+  invalid integer-indefinite result now expose the low-EAX exceptional quotient.
 - A source/sink candidate ledger for all 77 helper calls, a pinned 25-way ECL
   dispatch audit, and a Lean bit-vector theorem for its wrapping-add/unsigned-
   compare classifier. Every correspondence and omission remains explicitly
   unproved.
 - A pinned four-profile point-item score audit covering eight helper calls and
-  77 key instruction roles, plus conditional Lean collection/score bounds and
-  a sealed 2,081-collection Linux corpus report. The non-NaN reachability
-  premise remains open.
+  77 key instruction roles, plus total rational/exceptional Lean score bounds
+  and a sealed 2,081-collection Linux corpus report. Item finiteness is no
+  longer a premise; finite bounded player state and exact helper/x87 binding
+  remain open.
 
 Compatibility playback intentionally restores every per-stage replay snapshot,
 matching shipped playback. It is an oracle-development mode, not the future
@@ -140,18 +142,19 @@ discharge protocol is in
 The derived source ledger classifies 68 calls as omission candidates and nine
 as retain candidates, but leaves every proof status open. The retained ECL call
 observes only membership in `-10025..-10001`; the other eight retained calls
-are point-item scoring conversions whose collected-item `y` bound remains to
-be proved.
+are point-item scoring conversions with a total exceptional-input quotient.
 
 The score blocks load the same binary32 `Item.currentPosition.y` field twice,
 compare signed EAX with 128, and apply difficulty constants before adding the
-result to gameplay score. A Lean integer model derives `-4..452` from ordered
-collection overlap and the expected player bounds, then proves scores remain in
-`27600..300000`. A GDB debug-runner probe observed 2,081 finite collections in
-the four-replay corpus, with no sample outside the candidate interval. This is
-useful invariant discovery, not retail-binary evidence or a proof: NaN makes
-ordered separation comparisons false, so finiteness must be established by
-induction from item/player initialization and every update path.
+result to gameplay score. A Lean rational model derives `-4..452` for finite
+items from ordered collection overlap and the expected player bounds, then
+proves scores remain in `27600..300000`. Its total coordinate model treats
+infinities as separated and NaN as a possible collision whose masked-invalid
+helper result has low EAX zero. Thus sound score bounds need a finite bounded
+player box, but no longer a universal item-position finiteness invariant. A GDB
+debug-runner probe observed 2,081 finite collections in the four-replay corpus,
+with no sample outside the candidate interval. This remains invariant-
+discovery evidence, not retail-binary evidence or a proof.
 The remaining control invariants are difficulty in `0..4` and pre-item score in
 `0..999999999`; the latter condition is sufficient in Lean to rule out u32
 wrap for one bounded award.
@@ -167,8 +170,8 @@ wrap for one bounded award.
    build and identify the first differing field.
 4. Record the entry x87/CPU profile, instrument reached arithmetic sites,
    cover load/remainder and exceptional helper behavior where reachable, prove
-   ECL helper-to-classifier refinement and the point-item finite/non-NaN plus
-   collection-range invariant,
+   ECL helper-to-classifier refinement and the point-item finite-player plus
+   total collision/helper quotient,
    and replace host-libm behavior with an exact, address-bound arithmetic
    baseline; prove skipped-draw arithmetic noninterference before removing it.
 5. Add canonical-proof playback that derives stage transitions and rejects a

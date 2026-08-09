@@ -1,0 +1,243 @@
+{
+  "schema_version": 1,
+  "kind": "zkth06.ftol2-helper-audit",
+  "inputs": {
+    "executable_sha256": "9f76483c46256804792399296619c1274363c31cd8f1775fafb55106fb852245",
+    "base_ledger_artifact_sha256": "1c4c128284bf5ab4aa36e636cd5ed15f0300e5295e7fb29f12c0cb2f897f65af"
+  },
+  "generator": {
+    "path": "tools/ftol2_helper_audit.py",
+    "sha256": "eb170be311b9d27873ab86289dfb0062269590d4d35a24d2d36a2a7e227d472a",
+    "x87_audit_sha256": "93c6aee778f489c92788dc7dfc6c51749fa5f20d075305a4190616d9b5d46290",
+    "run_ftol2_probe_sha256": "642f3d58ae37394ac616b470c7a8653788d6f3024086b37968df5e8d1a29084e",
+    "disassembler": "GNU objdump (GNU Binutils for Ubuntu) 2.38"
+  },
+  "helper": {
+    "address": "0x0045ba78",
+    "size": 117,
+    "sha256": "5333b186c02836974c6f792303aeb2c00d856316b93ccbbe65f51def6ae661b4",
+    "entry": "one x87 value in ST(0)",
+    "result": "signed 64-bit value split across EDX:EAX",
+    "required_control_word": "0x027f"
+  },
+  "masked_invalid_path": {
+    "architectural_premise": "masked-invalid FISTP m64int stores integer-indefinite 0x8000000000000000",
+    "stored_result": "0x8000000000000000",
+    "eax": "0x00000000",
+    "edx": "0x80000000",
+    "path": [
+      "zero EAX takes the zero-low-half branch",
+      "EDX masked by 0x7fffffff is zero",
+      "the correction block is skipped",
+      "two x87 values are popped before returning unchanged EDX:EAX"
+    ],
+    "score_site_observation": "the eight point-item callers observe signed EAX, so modeled invalid conversion supplies zero and selects the top-score branch"
+  },
+  "checked_instruction_roles": [
+    {
+      "address": "0x0045ba78",
+      "mnemonic": "push",
+      "role": "establish frame"
+    },
+    {
+      "address": "0x0045ba79",
+      "mnemonic": "mov",
+      "role": "copy stack pointer"
+    },
+    {
+      "address": "0x0045ba7b",
+      "mnemonic": "sub",
+      "role": "reserve local storage"
+    },
+    {
+      "address": "0x0045ba7e",
+      "mnemonic": "and",
+      "role": "align local storage"
+    },
+    {
+      "address": "0x0045ba81",
+      "mnemonic": "fld",
+      "role": "duplicate input"
+    },
+    {
+      "address": "0x0045ba83",
+      "mnemonic": "fst",
+      "role": "store binary32 sign probe"
+    },
+    {
+      "address": "0x0045ba87",
+      "mnemonic": "fistp",
+      "role": "convert nearest-even or integer-indefinite"
+    },
+    {
+      "address": "0x0045ba8b",
+      "mnemonic": "fild",
+      "role": "reload converted integer"
+    },
+    {
+      "address": "0x0045ba8f",
+      "mnemonic": "mov",
+      "role": "load input sign probe"
+    },
+    {
+      "address": "0x0045ba93",
+      "mnemonic": "mov",
+      "role": "load low result half"
+    },
+    {
+      "address": "0x0045ba97",
+      "mnemonic": "test",
+      "role": "test low result half"
+    },
+    {
+      "address": "0x0045ba99",
+      "mnemonic": "je",
+      "role": "handle zero-low-half result"
+    },
+    {
+      "address": "0x0045ba9b",
+      "mnemonic": "fsubp",
+      "role": "form rounding residual"
+    },
+    {
+      "address": "0x0045ba9d",
+      "mnemonic": "test",
+      "role": "test original sign"
+    },
+    {
+      "address": "0x0045ba9f",
+      "mnemonic": "jns",
+      "role": "select nonnegative correction"
+    },
+    {
+      "address": "0x0045baa1",
+      "mnemonic": "fstp",
+      "role": "store negative residual"
+    },
+    {
+      "address": "0x0045baa4",
+      "mnemonic": "mov",
+      "role": "load negative residual bits"
+    },
+    {
+      "address": "0x0045baa7",
+      "mnemonic": "xor",
+      "role": "remove negative residual sign"
+    },
+    {
+      "address": "0x0045baad",
+      "mnemonic": "add",
+      "role": "derive negative correction carry"
+    },
+    {
+      "address": "0x0045bab3",
+      "mnemonic": "adc",
+      "role": "correct negative low result half"
+    },
+    {
+      "address": "0x0045bab6",
+      "mnemonic": "mov",
+      "role": "load high result half"
+    },
+    {
+      "address": "0x0045baba",
+      "mnemonic": "adc",
+      "role": "correct negative high result half"
+    },
+    {
+      "address": "0x0045babd",
+      "mnemonic": "jmp",
+      "role": "join return path"
+    },
+    {
+      "address": "0x0045babf",
+      "mnemonic": "fstp",
+      "role": "store nonnegative residual"
+    },
+    {
+      "address": "0x0045bac2",
+      "mnemonic": "mov",
+      "role": "load nonnegative residual bits"
+    },
+    {
+      "address": "0x0045bac5",
+      "mnemonic": "add",
+      "role": "derive nonnegative correction borrow"
+    },
+    {
+      "address": "0x0045bacb",
+      "mnemonic": "sbb",
+      "role": "correct nonnegative low result half"
+    },
+    {
+      "address": "0x0045bace",
+      "mnemonic": "mov",
+      "role": "load high result half"
+    },
+    {
+      "address": "0x0045bad2",
+      "mnemonic": "sbb",
+      "role": "correct nonnegative high result half"
+    },
+    {
+      "address": "0x0045bad5",
+      "mnemonic": "jmp",
+      "role": "join return path"
+    },
+    {
+      "address": "0x0045bad7",
+      "mnemonic": "mov",
+      "role": "load high result half on zero-low path"
+    },
+    {
+      "address": "0x0045badb",
+      "mnemonic": "test",
+      "role": "recognize zero or integer-indefinite high half"
+    },
+    {
+      "address": "0x0045bae1",
+      "mnemonic": "jne",
+      "role": "correct other zero-low-half results"
+    },
+    {
+      "address": "0x0045bae3",
+      "mnemonic": "fstp",
+      "role": "pop reloaded integer on special path"
+    },
+    {
+      "address": "0x0045bae7",
+      "mnemonic": "fstp",
+      "role": "pop original input on special path"
+    },
+    {
+      "address": "0x0045baeb",
+      "mnemonic": "leave",
+      "role": "restore caller stack frame"
+    },
+    {
+      "address": "0x0045baec",
+      "mnemonic": "ret",
+      "role": "return EDX:EAX"
+    }
+  ],
+  "model_contracts": {
+    "integer_indefinite": "ZkTH06.X87Ftol2.integerIndefinite",
+    "register_projection": "ZkTH06.X87Ftol2.integer_indefinite_register_projection",
+    "observed_zero": "ZkTH06.X87Ftol2.integer_indefinite_observed_low32_zero",
+    "total_item_score": "ZkTH06.ItemPointScore.collected_score_range_without_item_finiteness"
+  },
+  "evidence_status": "exact static instruction signatures and a proved model consequence; not a verified decoder, architectural FISTP proof, reachable control-word/stack invariant, caller binding, or guest refinement",
+  "open_obligations": [
+    "Prove or translation-validate the 37 checked helper instructions.",
+    "Bind the entry x87 stack, tags, and 0x027f control word at every retained call.",
+    "Formalize masked-invalid FISTP m64int and its integer-indefinite store.",
+    "Bind the helper branches and stack cleanup to the modeled invalid path.",
+    "Bind each point-item FLD m32fp input and collision comparison to the total coordinate model.",
+    "Prove the guest conversion and score update refine the address-bound contract."
+  ],
+  "counts": {
+    "checked_instruction_roles": 37,
+    "point_item_callers_using_eax": 8
+  },
+  "artifact_sha256": "46c87767f9d864ebbb2eca60d698fdaa6f355674c51d231f510e369f77427153"
+}

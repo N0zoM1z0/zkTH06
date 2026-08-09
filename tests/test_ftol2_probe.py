@@ -70,6 +70,7 @@ def main() -> int:
     assert probe.ecl_var_id(probe.finite_float_to_ext80(-10000.75)) is None
     assert probe.ecl_var_id(probe.ext80(0, 0x7FFF, 0x8000000000000000)) is None
     assert probe.ecl_var_id(probe.ext80(0, 0x3FFF, 0x4000000000000000)) is None
+    assert probe.INTEGER_INDEFINITE == 0x8000000000000000
     classifier_inputs = probe.ecl_classifier_inputs(1000)
     assert len(classifier_inputs) == 1154
     assert sum(probe.ecl_var_id(value) is not None for value in classifier_inputs) > 0

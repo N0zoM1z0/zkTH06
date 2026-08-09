@@ -38,10 +38,12 @@ source/binary correspondence, helper semantics, reachability, or guest binding.
 The other eight retained calls are now bound to four point-item score blocks.
 A conditional Lean model derives a `-4..452` collected-item interval and safe
 score arithmetic, while a sealed Linux probe found 2,081 finite corpus
-collections inside that interval. The proof still needs a non-NaN invariant,
-exact helper refinement, verified decoding, and guest binding; collision success
-alone is not a finiteness proof because x87 unordered comparisons can fall
-through the AABB separation test.
+collections inside that interval. A total rational/exceptional model now avoids
+assuming that item positions are finite: infinities cannot overlap a finite
+player box, while NaN reaches the helper's modeled invalid low-EAX result zero
+and selects the bounded top-score branch. The proof still needs a finite,
+bounded player-box invariant, exact x87/helper semantics, verified decoding,
+and guest binding.
 
 ## Repository boundary
 

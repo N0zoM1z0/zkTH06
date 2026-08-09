@@ -33,11 +33,13 @@ binary-decoding theorem.
 [`ZkTH06/X87Ftol2.lean`](ZkTH06/X87Ftol2.lean) checks that the helper's
 nearest-integer carry/borrow correction recovers truncation toward zero in all
 sign/rounding-position cases. It also proves the EDX:EAX split/join identity
-and that a low-32-bit observer is independent of EDX. The unproved premises
-remain substantial: raw ext80 decoding, site-specific range or observation
-safety for every reachable call, correspondence with the 117 extracted bytes,
-and replacement of the bounded no-EDX-observer scan with complete control-flow
-evidence.
+and that a low-32-bit observer is independent of EDX. For the architectural
+integer-indefinite constant `0x8000000000000000`, it proves EAX is zero and EDX
+is `0x80000000`. The unproved premises remain substantial: raw ext80 decoding,
+the masked-invalid `fistp` semantics and entry control state, site-specific
+range or observation safety for every reachable call, correspondence with the
+117 extracted bytes, and replacement of the bounded no-EDX-observer scan with
+complete control-flow evidence.
 
 [`ZkTH06/EclVarId.lean`](ZkTH06/EclVarId.lean) isolates the observation made
 by the retained `EnemyEclInstr::GetVarFloat` call. It proves with `bv_decide`
@@ -55,10 +57,14 @@ Given player `y` in `16..432` and an ordered one-dimensional AABB overlap with
 the decoded radii 12 and 8, it derives item `y` in `-4..452`. It then proves all
 four scores lie in `27600..300000`, fit signed i32, and have lower-branch
 penalty at most 129600. Given the source frame cap `score ≤ 999999999`, it also
-proves one item addition cannot wrap u32. Entering this model requires separate
-finite/non-NaN, binary32-to-`__ftol2`, collision-code, and source/binary binding
-proofs. In particular, unordered comparisons mean collision success alone does
-not rule out NaN.
+proves one item addition cannot wrap u32. A second model represents finite
+binary32 values exactly as rationals alongside both infinities and NaN. It
+proves a total score bound without assuming item finiteness: infinities cannot
+overlap a finite bounded player box, while NaN's modeled invalid conversion has
+low EAX zero and selects the top-score branch. `X87Ftol2.lean` separately
+checks the integer-indefinite EDX:EAX split. Entering this total model still
+requires finite-player, binary32/x87, collision-code, helper-path, and source/
+binary binding proofs.
 
 The address-level bridge to these definitions is
 [`arithmetic/obligations-v1.json`](../arithmetic/obligations-v1.json). Its 244

@@ -300,10 +300,20 @@ combines exact fractional boundaries around `-10025..-10001`, dense
 deterministic PC53 samples, infinities, quiet/signaling NaNs, very large finite
 values, a pseudo-denormal, and an unnormal. All 1,000,154 exact-helper outputs
 agreed with the independent 25-way classifier; 3,084 selected a variable and
-nine set invalid. Together both campaigns execute the helper 2,000,168 times.
+nine set invalid. All nine invalid executions returned integer-indefinite
+`0x8000000000000000`, so their low EAX observation was zero. Together both
+campaigns execute the helper 2,000,168 times.
 
-Exceptional/out-of-range full results remain outside the first result, and the
-classifier campaign is finite testing rather than a theorem. The correct
+[`arithmetic/ftol2-helper-v1.json`](../arithmetic/ftol2-helper-v1.json)
+independently checks all 37 instruction signatures in the pinned helper. Its
+masked-invalid path records the architectural `fistp m64int` premise, the
+integer-indefinite split EDX:EAX `0x80000000:00000000`, the zero-low-half
+branch, correction bypass, and two-pop cleanup. Lean proves only the constant's
+register projection. The artifact is static evidence, not a verified decoder
+or a proof of the x87 premise, entry control word/stack, or guest refinement.
+
+Universal exceptional/out-of-range behavior remains outside the first result,
+and the nine invalid outcomes are finite testing rather than a theorem. The correct
 simplification premise is now site-specific. General EAX consumers require
 their actual reachable result range unless another observation quotient is
 proved; `GetVarFloat` needs only exact agreement on the 25 sentinel outcomes.
@@ -348,20 +358,23 @@ x86 arithmetic, and joins before adding `itemScore` to the gameplay score.
 The range proof decomposes rather than assuming that an acquired item must be
 near the player. The source AABB test is written as a disjunction of separating
 ordered comparisons. If an item coordinate is NaN, those comparisons are false
-and the code can fall through to collision success. Consequently the proof must
-first establish a reachable finite/non-NaN invariant for item positions and
-the player grab box.
+and the code can fall through to collision success. The first model therefore
+exposed a missing premise. A smaller observation quotient removes the need to
+prove item finiteness: with a finite player box, either a finite item overlaps
+and is geometrically bounded, an infinity is separated, or NaN reaches the
+helper's masked-invalid result. Integer-indefinite has low EAX zero, so NaN
+selects the top-score branch instead of entering the position arithmetic.
 
-Once comparisons are ordered, player center `y` in `16..432`, player grab
-radius 12, and item half-size 8 imply collected item `y` in `-4..452`. A Lean
-integer model checks this implication. For any truncated integer in that
-interval, it also proves that all four difficulty formulas return
-`27600..300000`, that the score fits signed i32, and that the largest lower-
-branch penalty is 129600. These theorems do not yet connect binary32, collision
-instructions, the helper body, or the guest to the integer assumptions.
-They also require reachable difficulty in `0..4`; given the source frame cap
-`score ≤ 999999999`, a further theorem checks that one bounded item award
-cannot wrap the global u32 score.
+The revised Lean model represents finite binary32 coordinates as exact
+rationals plus explicit positive-infinity, negative-infinity, and NaN classes.
+For finite values, player center `y` in `16..432`, player grab radius 12, and
+item half-size 8 imply item `y` in `-4..452`; truncation toward zero preserves
+that interval. Across all four coordinate classes, it proves scores remain in
+`27600..300000`. It also retains signed-i32, penalty, and conditional u32-score
+addition bounds. These theorems do not yet bind the binary collision
+instructions, masked-invalid `fistp`, helper control flow, player invariant, or
+guest. Reachable difficulty in `0..4` and pre-update score in
+`0..999999999` remain separate control obligations.
 
 A separate GDB probe on a debug Linux reconstruction observed 2,081 point-item
 collections across the four replay corpus. All were finite and inside the
@@ -369,7 +382,9 @@ candidate interval; raw values ranged from approximately 11.879809 to
 442.976013, with truncated values 11 through 442. The top/position branches
 were taken 1,413/668 times. The sealed report binds the probe, debug runner,
 source, replay, and data-manifest hashes. It is invariant-discovery evidence,
-not original-binary execution or a universal reachability proof.
+not original-binary execution or a universal reachability proof; after the
+total-case theorem, finite item reachability is no longer required for score
+safety.
 
 ## Transcendentals are a scope decision
 

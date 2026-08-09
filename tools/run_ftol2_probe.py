@@ -21,6 +21,7 @@ HELPER_SHA256 = "5333b186c02836974c6f792303aeb2c00d856316b93ccbbe65f51def6ae661b
 TARGET_CONTROL_WORD = 0x027F
 X87_TOP_MASK = 0x3800
 X87_INVALID_MASK = 0x0001
+INTEGER_INDEFINITE = 0x8000000000000000
 ECL_VAR_ID_MIN = -10025
 ECL_VAR_ID_MAX = -10001
 
@@ -287,6 +288,7 @@ def main() -> int:
 
     matched_ecl_variables = 0
     classifier_invalid = 0
+    classifier_invalid_indefinite = 0
     classifier_offset = len(in_domain_inputs)
     for classifier_index, value in enumerate(classifier_inputs):
         output_offset = (classifier_offset + classifier_index) * 10
@@ -304,6 +306,15 @@ def main() -> int:
                 f"input={sign_exp:04x}:{significand:016x} result={result_bits:016x} "
                 f"actual={actual_var_id} expected={expected_var_id} status={status:04x}"
             )
+        if status & X87_INVALID_MASK:
+            if result_bits != INTEGER_INDEFINITE:
+                significand, sign_exp = struct.unpack("<QH", value)
+                raise ProbeError(
+                    f"invalid conversion did not return integer-indefinite at case "
+                    f"{classifier_index}: input={sign_exp:04x}:{significand:016x} "
+                    f"result={result_bits:016x} status={status:04x}"
+                )
+            classifier_invalid_indefinite += 1
         matched_ecl_variables += expected_var_id is not None
         classifier_invalid += bool(status & X87_INVALID_MASK)
 
@@ -319,7 +330,8 @@ def main() -> int:
     print(
         f"matched {len(classifier_inputs)} focused/exceptional ECL sentinel classifications; "
         f"recognized {matched_ecl_variables} variable operands and observed invalid in "
-        f"{classifier_invalid} cases"
+        f"{classifier_invalid} cases; all {classifier_invalid_indefinite} invalid results were "
+        "integer-indefinite"
     )
     return 0
 

@@ -204,6 +204,7 @@ def build_document(
     mapping_path: Path,
     base_ledger: dict[str, Any],
     source_ledger: dict[str, Any],
+    helper_audit: dict[str, Any],
     objdump: str,
     tool_path: Path,
 ) -> dict[str, Any]:
@@ -220,6 +221,14 @@ def build_document(
         raise ValueError("base ledger is bound to a different mapping")
     if source_ledger.get("base_ledger_artifact_sha256") != base_ledger["artifact_sha256"]:
         raise ValueError("source-candidate ledger is not derived from the selected base ledger")
+    if helper_audit.get("kind") != "zkth06.ftol2-helper-audit":
+        raise ValueError("selected helper artifact has the wrong kind")
+    if helper_audit.get("inputs", {}).get("base_ledger_artifact_sha256") != base_ledger["artifact_sha256"]:
+        raise ValueError("helper audit is not derived from the selected base ledger")
+    if helper_audit.get("helper", {}).get("sha256") != run_ftol2_probe.HELPER_SHA256:
+        raise ValueError("helper audit is bound to a different __ftol2 body")
+    if helper_audit.get("masked_invalid_path", {}).get("eax") != "0x00000000":
+        raise ValueError("helper audit does not expose the required invalid low-EAX quotient")
 
     function = verify_function_mapping(x87_audit.load_mapping(mapping_path))
     disassembler, disassembly = x87_audit.run_objdump(executable, objdump)
@@ -282,6 +291,7 @@ def build_document(
             "mapping_sha256": mapping_hash,
             "base_ledger_artifact_sha256": base_ledger["artifact_sha256"],
             "source_candidate_artifact_sha256": source_ledger["artifact_sha256"],
+            "ftol2_helper_artifact_sha256": helper_audit["artifact_sha256"],
         },
         "generator": {
             "path": "tools/item_score_audit.py",
@@ -327,22 +337,30 @@ def build_document(
             "bounded_score": "ZkTH06.ItemPointScore.bounded_score_range",
             "signed_i32_safety": "ZkTH06.ItemPointScore.bounded_score_fits_signed_i32",
             "u32_score_addition": "ZkTH06.ItemPointScore.bounded_gameplay_score_addition",
+            "total_coordinate_score": (
+                "ZkTH06.ItemPointScore.collected_score_range_without_item_finiteness"
+            ),
+            "total_coordinate_u32_addition": (
+                "ZkTH06.ItemPointScore."
+                "collected_gameplay_score_addition_without_item_finiteness"
+            ),
         },
         "evidence_status": (
             "static decode and derived difficulty/score facts; not a decoder proof, "
-            "source correspondence theorem, reachable finite-position invariant, "
+            "source correspondence theorem, reachable finite-player invariant, "
             "helper refinement, or guest binding"
         ),
         "critical_nan_note": (
             "AABB separation comparisons are unordered-false on NaN, so collision success "
-            "alone cannot establish a finite item y; non-NaN reachability must be proved first."
+            "does not establish a finite item y. The total model instead requires the exact "
+            "masked-invalid helper path, whose low-EAX observation is zero."
         ),
         "open_obligations": [
             "Prove or translation-validate the checked score blocks and difficulty table.",
             "Prove every reachable scoring difficulty is in the decoded 0..4 interval.",
-            "Prove every score-reaching item y and player grab box is finite/non-NaN.",
-            "Bind ordered AABB overlap and player bounds to the -4..452 collected-item interval.",
-            "Prove the two exact __ftol2 calls return the modeled signed value on that interval.",
+            "Prove the player center/grab box is finite with player y in 16..432.",
+            "Bind x87 AABB comparisons to the finite/infinity/NaN coordinate model.",
+            "Prove both exact __ftol2 calls implement bounded truncation or invalid low-EAX zero.",
             "Prove the pre-update gameplay score satisfies the modeled 0..999999999 bound.",
             "Prove the guest score update refines the address-bound 32-bit score contract.",
         ],
@@ -366,6 +384,11 @@ def main() -> int:
         type=Path,
         default=Path("arithmetic/ftol2-source-candidates-v1.json"),
     )
+    parser.add_argument(
+        "--helper-audit",
+        type=Path,
+        default=Path("arithmetic/ftol2-helper-v1.json"),
+    )
     parser.add_argument("--objdump", default="objdump")
     destination = parser.add_mutually_exclusive_group()
     destination.add_argument("--output", type=Path)
@@ -377,6 +400,7 @@ def main() -> int:
         args.mapping,
         load_sealed(args.ledger, "base arithmetic ledger"),
         load_sealed(args.source_ledger, "source-candidate ledger"),
+        load_sealed(args.helper_audit, "__ftol2 helper audit"),
         args.objdump,
         Path(__file__).resolve(),
     )

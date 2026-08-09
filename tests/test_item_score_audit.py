@@ -19,7 +19,8 @@ import item_score_audit as audit  # noqa: E402
 ARTIFACT = ROOT / "arithmetic" / "item-score-v1.json"
 BASE_LEDGER = ROOT / "arithmetic" / "obligations-v1.json"
 SOURCE_LEDGER = ROOT / "arithmetic" / "ftol2-source-candidates-v1.json"
-EXPECTED_ARTIFACT_SHA256 = "b1586c1d9f6f3ce7b606e0f2f344005fb8324fe8f29d64bfee756d49383734f4"
+HELPER_AUDIT = ROOT / "arithmetic" / "ftol2-helper-v1.json"
+EXPECTED_ARTIFACT_SHA256 = "25319fc8d8a188103111b64426844dfb0c4399dfc7f6849ac1f48bf45dc8d138"
 
 
 def reject_disassembly_operands(value: Any) -> None:
@@ -39,6 +40,7 @@ def main() -> int:
     document = json.loads(artifact_text)
     base_ledger = json.loads(BASE_LEDGER.read_text())
     source_ledger = json.loads(SOURCE_LEDGER.read_text())
+    helper_audit = json.loads(HELPER_AUDIT.read_text())
 
     assert document["schema_version"] == audit.SCHEMA_VERSION
     assert document["kind"] == audit.KIND
@@ -49,6 +51,7 @@ def main() -> int:
         "mapping_sha256": arithmetic_obligations.PINNED_MAPPING_SHA256,
         "base_ledger_artifact_sha256": base_ledger["artifact_sha256"],
         "source_candidate_artifact_sha256": source_ledger["artifact_sha256"],
+        "ftol2_helper_artifact_sha256": helper_audit["artifact_sha256"],
     }
     assert document["generator"]["sha256"] == arithmetic_obligations.sha256_file(
         ROOT / "tools" / "item_score_audit.py"
@@ -131,9 +134,13 @@ def main() -> int:
         "checked_instruction_roles": 77,
     }
     assert "unordered-false on NaN" in document["critical_nan_note"]
+    assert "low-EAX observation is zero" in document["critical_nan_note"]
     assert len(document["open_obligations"]) == 7
     assert document["model_contracts"]["bounded_score"] == (
         "ZkTH06.ItemPointScore.bounded_score_range"
+    )
+    assert document["model_contracts"]["total_coordinate_score"] == (
+        "ZkTH06.ItemPointScore.collected_score_range_without_item_finiteness"
     )
     reject_disassembly_operands(document)
     print("validated four point-item score profiles, eight helper calls, and 77 instruction roles")

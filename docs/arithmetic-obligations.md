@@ -148,8 +148,25 @@ This is a reduction in proof surface, not a completed proof. Static decoding is
 still performed by unverified `objdump`; table targets are not yet bound to the
 modeled variable values; the helper/classifier agreement has only finite
 boundary and exceptional-input testing; and no guest resolver is connected to
-the Lean model. The other eight retained calls require the finite/non-NaN,
-ordered-collision, helper-refinement, and score-state premises decomposed below.
+the Lean model. The other eight retained calls use a second observation quotient
+that handles exceptional item coordinates without assuming them unreachable.
+
+## Helper masked-invalid quotient
+
+[`arithmetic/ftol2-helper-v1.json`](../arithmetic/ftol2-helper-v1.json) checks
+all 37 instruction signatures in the pinned 117-byte helper. Under the
+architectural premise that masked-invalid `fistp m64int` stores integer-
+indefinite `0x8000000000000000`, the checked path loads EAX zero and EDX
+`0x80000000`, takes the zero-low-half branch, bypasses correction, pops both x87
+values, and returns unchanged. `ZkTH06.X87Ftol2` proves the constant split and
+low-EAX projection. The artifact digest is
+`46c87767f9d864ebbb2eca60d698fdaa6f355674c51d231f510e369f77427153`.
+
+This is still conditional evidence. The static decode, masked-invalid x87
+semantics, entry stack/tags/control word, branch refinement, caller connection,
+and guest implementation all remain open. The exact-byte probe found the same
+integer-indefinite result in nine exceptional cases, but finite testing is not
+the missing universal theorem.
 
 ## Point-item score contract and the NaN trap
 
@@ -160,30 +177,38 @@ five-entry Easy/Normal/Hard/Lunatic/Extra table, two loads from the same
 binary32 `Item.currentPosition.y` field per profile, both helper calls, signed
 comparison with 128, profile constants, 32-bit penalty arithmetic, and the
 final addition to gameplay score. Its artifact digest is
-`b1586c1d9f6f3ce7b606e0f2f344005fb8324fe8f29d64bfee756d49383734f4`.
+`25319fc8d8a188103111b64426844dfb0c4399dfc7f6849ac1f48bf45dc8d138`.
 
-The intended range argument has three separate premises:
+The total range argument has four separate bindings:
 
-1. every score-reaching item position and player grab box is finite/non-NaN;
-2. the player center stays in `16..432` and the ordered AABB test uses player
-   radius 12 and item half-size 8; and
-3. the two exact helper invocations on the same binary32 field refine to the
-   same truncation-toward-zero integer.
+1. the player center/grab box is finite and its center stays in `16..432`;
+2. the AABB test uses ordered x87 comparisons, player radius 12, and item
+   half-size 8;
+3. finite binary32 values enter the exact rational/truncation model, infinities
+   are separated, and NaN is unordered; and
+4. the exact helper returns truncation on the bounded finite branch and low EAX
+   zero on masked invalid.
 
-Premise 1 cannot be inferred from successful collision. The source test rejects
-separated boxes using ordered comparisons; a NaN coordinate makes those
-comparisons false and can therefore fall through to the collision-success
-path. Treating collision as a finiteness witness would be unsound.
+Item finiteness cannot be inferred from successful collision. The source test
+rejects separated boxes using ordered comparisons; a NaN coordinate makes
+those comparisons false and can therefore fall through to collision success.
+The proof therefore handles NaN rather than assuming it away. With a finite
+player box, positive and negative infinity are separated. NaN can collide, but
+its modeled integer-indefinite result has EAX zero and selects the bounded top-
+score branch.
 
-Under premises 1 and 2, the integer abstraction in
-`ZkTH06.ItemPointScore.ordered_collection_bounds_item_y` derives the candidate
-item interval `-4..452`. The score model then proves a result interval
+For the finite branch, player center in `16..432`, player radius 12, and item
+half-size 8 imply ordered overlap within a narrow interval.
+`ZkTH06.ItemPointScore.finite_collection_bounds_item_y` derives the exact
+rational item interval `-4..452`, and truncation toward zero preserves it.
+`collected_score_range_without_item_finiteness` then covers the finite,
+infinity, and NaN classes and proves a result interval
 `27600..300000`, signed-i32 safety, and a maximum lower-branch position penalty
 of 129600. Given a pre-update score in `0..999999999`, it also proves that one
 item award cannot wrap u32. Reachable difficulty must separately stay in the
 decoded `0..4` interval; the invalid binary path skips profile assignment.
-These are checked mathematical consequences of the stated integer
-premises, not a binary32 or reachability theorem.
+These are checked mathematical consequences of the stated total model, not
+binary/x87/caller/guest correspondence theorems.
 
 [`arithmetic/item-score-corpus-v1.json`](../arithmetic/item-score-corpus-v1.json)
 records a separate Linux reconstruction experiment. GDB breakpoints captured
@@ -192,9 +217,9 @@ the four pinned replays were finite, none left `-4..452`, the measured range was
 approximately `11.879809..442.976013`, and truncated values ranged from 11 to
 442. Of these, 1,413 took the top branch and 668 the position branch. The report
 is sealed and binds its probe, debug runner, source, replay, and data-manifest
-hashes. It is counterexample search only: it neither establishes the invariant
-for unmeasured executions nor transfers reconstruction observations to the
-retail executable.
+hashes. It is counterexample search only and does not transfer reconstruction
+observations to the retail executable. The total theorem no longer needs its
+observed absence of exceptional item values as a premise.
 
 ## Discharge discipline
 

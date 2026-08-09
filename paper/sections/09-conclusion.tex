@@ -36,10 +36,14 @@ candidates.  For the ECL call, a pinned 25-way dispatch audit and Lean theorem
 replace a blanket range goal with exact helper-to-classifier refinement.  This
 same observation-driven analysis binds the eight point-item calls to four
 score profiles and exposes why collision success cannot prove finiteness in
-the presence of NaN.  Lean conditionally proves the resulting collection and
-score bounds; 2,081 Linux collections supply counterexample-search evidence.
-This remains conservative bookkeeping: startup state, load/remainder behavior,
-noninterference, finite/non-NaN reachability, verified code correspondence, and
+the presence of NaN.  A 37-instruction helper audit and Lean low-EAX theorem
+instead support a total finite/infinity/NaN score model: exceptional invalid
+conversion selects the bounded top branch, while finite collection gives the
+geometric interval.  The model conditionally proves the resulting score
+bounds; 2,081 Linux collections supply counterexample-search evidence for its
+finite branch.  This remains conservative bookkeeping: startup state,
+load/remainder behavior, noninterference, the finite bounded player invariant,
+architectural helper semantics, verified code correspondence, and
 transcendental microarchitecture are not yet proved.  The
 fidelity design therefore binds operations to original addresses and actual
 observations instead of assuming source-level host arithmetic is exact.

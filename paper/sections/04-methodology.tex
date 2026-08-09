@@ -161,14 +161,17 @@ meanings, reachability, and guest implementation.
 The eight retained point-item calls are handled as a range-proof pipeline.
 First, a static artifact verifies the four difficulty blocks, their repeated
 binary32 field loads, helper calls, signed threshold, integer constants, and
-gameplay-score sink.  Second, a finite/non-NaN invariant must be proved from
-initialization and every item/player update.  This premise is separate because
-unordered NaN comparisons make all source AABB separation tests false and can
-therefore produce an apparent collision.  Third, ordered overlap and bounded
-player position imply a narrow collected-item interval.  A Lean integer model
-checks the geometry and score bounds, while debug-runner breakpoints search the
-replay corpus for counterexamples.  Neither the integer theorem nor corpus
-measurements establish the missing binary32 reachability and code binding.
+gameplay-score sink.  Second, a helper artifact checks the 37-instruction
+masked-invalid path and isolates its low-EAX observation.  Third, a total
+coordinate split handles finite dyadic values, both infinities, and NaN.
+Unordered NaN comparisons can produce an apparent collision, so finiteness
+cannot be inferred; instead, masked-invalid conversion returns modeled low EAX
+zero and selects the top-score branch.  Infinities are separated by a finite
+player box, while finite overlap implies a narrow item interval.  A Lean exact-
+rational model checks this case split, truncation, and score bounds, while
+debug-runner breakpoints search the replay corpus for counterexamples.  Neither
+the model theorem nor corpus measurements establish the missing x87,
+architectural, reachability, and code bindings.
 Reachable difficulty $0..4$ and the pre-item global-score cap are recorded as
 separate control invariants rather than assumed from the selected profile.
 

@@ -161,7 +161,23 @@ constants are now address-bound, while Lean checks the latter two mathematical
 steps conditional on integer inputs.  A four-replay debug probe found 2,081
 finite collected values inside the proposed interval and no counterexample;
 this guides the invariant but deliberately does not promote corpus absence of
-NaN into a universal premise.
+NaN into a universal premise.  This phase exposed the problem but its initial
+finite-item premise is superseded by the next phase.
+
+\paragraph{Phase Q: quotient exceptional score inputs by the caller's view.}
+Auditing all 37 helper instructions exposed a smaller total proof than the
+finite-item reachability goal.  With masked invalid conversion, NaN produces
+integer-indefinite \code{0x8000000000000000}; every retained scoring caller
+observes its zero low EAX half.  The helper's correction path is bypassed, and
+zero selects the bounded top-score branch.  At the same time, either infinity
+is separated by the ordered vertical comparisons against a finite player box,
+whereas a finite overlapping value admits the exact rational interval proof.
+The Lean model now performs this finite/infinity/NaN case split and no longer
+assumes item finiteness.  This change preserves the exceptional behavior
+rather than excluding it.  It shifts the remaining universal obligations to a
+finite bounded player-box invariant and exact bindings for binary32 load and
+x87 comparison semantics, masked-invalid helper control flow, each scoring
+caller, and the zkVM guest.
 
 Future changes to the central claim or state boundary should be appended here
 with the evidence that motivated them.

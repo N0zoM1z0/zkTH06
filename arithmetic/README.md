@@ -197,8 +197,10 @@ exact quarter-step boundaries around `-10025..-10001`, random PC53 values
 densely covering that interval, infinities, both NaN classes, very large finite
 values, a pseudo-denormal, and an unnormal. All 1,000,154 classifications
 matched: 3,084 inputs selected one of the 25 variable IDs, and nine exceptional
-inputs raised invalid without spuriously selecting an ID. The combined run
-executed the exact helper 2,000,168 times with no mismatch.
+inputs raised invalid without spuriously selecting an ID. All nine invalid
+executions returned the x87 integer-indefinite value
+`0x8000000000000000`, whose low EAX half is zero. The combined run executed
+the exact helper 2,000,168 times with no mismatch.
 
 The first campaign closes neither the out-of-range/NaN helper semantics nor a
 call-site range proof, and the second remains finite counterexample search.
@@ -254,6 +256,11 @@ its conservative base status:
   used by `GetVar`/`GetVarFloat`. It contains no executable bytes or complete
   operand strings. Its static decode is not yet a verified decoder,
   reachability, helper-refinement, or guest-binding theorem.
+- [`ftol2-helper-v1.json`](ftol2-helper-v1.json) checks all 37 instructions in
+  the 117-byte helper and records its masked-invalid path. Under the still-open
+  architectural premise that masked-invalid `fistp m64int` stores integer-
+  indefinite, the path returns EDX:EAX `0x80000000:00000000`; Lean checks the
+  low-EAX projection, but not the decoder, x87 premise, or code binding.
 - [`item-score-v1.json`](item-score-v1.json) checks 77 instruction signatures
   across the four difficulty profiles, the five-entry difficulty table, all
   eight retained score conversions, their repeated binary32 field loads, and
@@ -275,6 +282,9 @@ python3 tools/ecl_var_dispatch_audit.py \
   local/original-th06/東方紅魔郷.exe \
   --mapping repos/th06/config/mapping.csv \
   --check arithmetic/ecl-var-dispatch-v1.json
+python3 tools/ftol2_helper_audit.py \
+  local/original-th06/東方紅魔郷.exe \
+  --check arithmetic/ftol2-helper-v1.json
 python3 tools/item_score_audit.py \
   local/original-th06/東方紅魔郷.exe \
   --mapping repos/th06/config/mapping.csv \
@@ -328,9 +338,9 @@ the arithmetic proof. In particular:
 The address binding work queue is now explicit, but none of its entries is
 discharged. Source/sink candidates narrow it to nine retained calls and 68
 potential omissions; every omission still needs noninterference. The immediate
-arithmetic goals are an exact ECL helper-to-classifier theorem, the collected
-item-y finite/non-NaN and collection-range invariant for eight score calls,
-complete result-use evidence,
-load/remainder semantics, and an exact transcendental profile. The exact
-implementation remains the fallback whenever a refinement theorem cannot be
-proved.
+arithmetic goals are an exact ECL helper-to-classifier theorem, the point-item
+finite-player/collision/helper quotient for eight score calls, complete result-
+use evidence, load/remainder semantics, and an exact transcendental profile.
+The total score model no longer assumes finite item coordinates, but its
+architectural and address bindings remain open. The exact implementation
+remains the fallback whenever a refinement theorem cannot be proved.
