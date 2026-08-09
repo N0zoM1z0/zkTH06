@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "target": "Touhou Koumakyou 1.02h Japanese",
+  "source_archive": {
+    "filename": "[th06] 东方红魔乡 (日文版).rar",
+    "sha256": "6b013b24c101ae846b97a2778abf461d537640611a835824a42533c692be55d6"
+  },
+  "required_files": [
+    {
+      "filename": "東方紅魔郷.exe",
+      "role": "original comparison executable",
+      "sha256": "9f76483c46256804792399296619c1274363c31cd8f1775fafb55106fb852245"
+    },
+    {
+      "filename": "紅魔郷CM.DAT",
+      "role": "game data",
+      "sha256": "a899853d04e214ae4df8090bad7fd42698527027aa9dfccb4650fbb1d7828a0a"
+    },
+    {
+      "filename": "紅魔郷ED.DAT",
+      "role": "game data",
+      "sha256": "3fbb51f00785c98d6b4141a7a5a303f5955df3d181d2f220c2c6e81d717e9fee"
+    },
+    {
+      "filename": "紅魔郷IN.DAT",
+      "role": "game data",
+      "sha256": "65d7ee9c4303bcb39f5f08a0ceaf7004e47fccc8242fd73db54b31a911f41af0"
+    },
+    {
+      "filename": "紅魔郷MD.DAT",
+      "role": "game data",
+      "sha256": "8f8db1918842857a63eb7c76e7f971fb931203a6239c26828304fa3ce12da911"
+    },
+    {
+      "filename": "紅魔郷ST.DAT",
+      "role": "game data",
+      "sha256": "0f834a35aef2d73b05cffecc830c017dacbcc6f11b9a0611a9da2f3970a112e7"
+    },
+    {
+      "filename": "紅魔郷TL.DAT",
+      "role": "game data",
+      "sha256": "c05f4fa755602f9369d7cebd5689cf3655ec81bb746f5b269ee0faf3d5f0a020"
+    }
+  ]
+}

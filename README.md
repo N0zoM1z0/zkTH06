@@ -2,23 +2,34 @@
 
 Replay-verified Touhou 6 gameplay semantics for zero-knowledge execution.
 
-The long-term goal is to prove that a private frame-input stream advances a
-committed reconstruction of Touhou Koumakyou 1.02h from its canonical initial
-state to an accepted gameplay result.  The current milestone is deliberately
-earlier: build an exact replay runner and find the first state divergence from
-the shipped 32-bit Windows executable before freezing any zkVM semantics.
+The goal is to prove that a private frame-input stream advances a committed
+Touhou Koumakyou v1.02h gameplay state machine from a canonical initial state to
+an accepted result. Before freezing a zkVM guest, the project must first make
+that state machine agree frame-for-frame with the shipped 32-bit Windows game.
 
-This repository starts from
-[`N0zoM1z0/th06-headless`](https://github.com/N0zoM1z0/th06-headless), itself a
-portable/headless fork of
-[`GensokyoClub/th06`](https://github.com/GensokyoClub/th06).  It contains no
-original game executable, DAT archive, music, replay corpus, or other
-proprietary game asset.
+> **Evidence boundary:** deterministic Linux replay execution is working, but
+> equivalence with the shipped executable has not yet been established. The
+> current runner is an instrumented reference harness, not final proof
+> semantics.
 
-> **Evidence boundary:** same-host deterministic Linux execution is working.
-> Bit-for-bit gameplay equivalence with the shipped executable has not yet been
-> established.  Until the differential gate passes, this code is an
-> instrumentation and acceleration harness, not the final proof semantics.
+## Repository boundary
+
+The zkTH06 work lives at the repository root. The reconstructed game engine is
+kept as a supporting snapshot rather than as this repository's history:
+
+- `zkvm/` defines the future guest/public-input boundary;
+- `docs/` records the differential methodology and milestone evidence;
+- `tools/` contains format and comparison tooling owned by zkTH06;
+- `replays/` contains redistributable fixtures and provenance for local-only
+  inputs;
+- `reference/` contains the adapted TH06 engine and compatibility runner.
+
+The `reference/` snapshot has no imported Git ancestry. Its exact upstream
+revisions, modifications, licenses and limitations are recorded in
+[`reference/PROVENANCE.md`](reference/PROVENANCE.md).
+
+This repository contains no original game executable, DAT archive, music,
+third-party replay file, or other proprietary game asset.
 
 ## Proof statement under development
 
@@ -29,11 +40,11 @@ Given public commitments to:
 - a private replay or equivalent frame-input stream;
 
 prove that one canonical state machine applies every input in authentic frame
-order and reaches an accepted terminal state.  Stage transitions, resources,
+order and reaches an accepted terminal state. Stage transitions, resources,
 score, rank, RNG and retry state must be derived from live state rather than
 trusted from replay checkpoints.
 
-This proves valid execution of an input sequence.  It does not prove that the
+This proves valid execution of an input sequence. It does not prove that the
 inputs were produced by a human or without external tools.
 
 ## Roadmap
@@ -64,56 +75,44 @@ inputs were produced by a human or without external tools.
 - Chunk or recursively aggregate a full six-stage run only after the smaller
   statements pass differential tests.
 
-The source audit and concrete compatibility risks are recorded in
-[`docs/initial-analysis.md`](docs/initial-analysis.md).  Replay fixture sources
-and hashes are recorded in [`replays/README.md`](replays/README.md); downloaded
-replays are intentionally excluded from Git. Current corpus results and open
-gates are tracked in [`docs/m0-progress.md`](docs/m0-progress.md).
+The source audit and compatibility risks are in
+[`docs/initial-analysis.md`](docs/initial-analysis.md). Current corpus results
+and open gates are in [`docs/m0-progress.md`](docs/m0-progress.md). Replay
+fixture sources, redistribution status and hashes are in
+[`replays/README.md`](replays/README.md). The required retail-data identity and
+local import procedure are in [`data/README.md`](data/README.md).
 
-## Current headless harness
+## Reference runner
 
-The inherited harness can start Practice Stage 1–6 directly, accept fixed-seed
-movement actions, run without frame pacing/rendering and write JSONL traces.
-See [`HEADLESS.md`](HEADLESS.md) for its current protocol and limitations.
-
-Validate a v1.02h replay without loading proprietary game data:
-
-```sh
-./th06 --replay-info /path/to/th6_*.rpy
-```
-
-The C++ validator checks the byte transform, checksum, version, character and
-difficulty bounds, monotonic stage offsets, block sizes, complete input masks,
-frame ordering and a bounded playback sentinel for every populated stage.
-
-Run compatibility playback from the first populated stage:
-
-```sh
-./th06 --headless --replay /path/to/th6_ud0001.rpy \
-  --max-ticks 200000 --trace trace.jsonl
-```
-
-This path uses the original replay callback ordering and complete Shoot, Bomb,
-Focus, Skip and direction masks.  It intentionally reproduces the shipped
-playback behavior by restoring per-stage snapshots.  Those snapshots remain
-untrusted in the future canonical-proof mode.
-
-Build on Debian or Ubuntu:
+Build the adapted engine on Debian or Ubuntu:
 
 ```sh
 sudo apt install build-essential libsdl2-dev libsdl2-image-dev libsdl2-ttf-dev
+cd reference
 premake5 gmake --no-asoundlib
 make -C build config=release -j4
 ```
 
-Run the current deterministic smoke case from a user-supplied Japanese data
-directory:
+Validate a v1.02h replay without proprietary game data:
 
 ```sh
-./th06-headless --headless --seed 7 --max-ticks 600 \
-  --practice-stage 6 --difficulty 3 --character 0 --shot-type 0 \
-  --trace trace.jsonl --auto-shoot
+reference/th06 --replay-info /path/to/th6_*.rpy
 ```
+
+Compatibility playback must be launched with a user-supplied Japanese game
+data directory as its working directory:
+
+```sh
+/path/to/zkTH06/reference/th06 --headless \
+  --replay /path/to/th6_ud0001.rpy --max-ticks 200000 \
+  --trace trace.jsonl
+```
+
+The C++ validator checks the byte transform, checksum, version, metadata,
+stage bounds, full input masks, frame ordering and playback sentinels. Playback
+uses the original callback order, but still restores untrusted per-stage replay
+snapshots in compatibility mode. See [`reference/README.md`](reference/README.md)
+for the full protocol.
 
 The target executable is Japanese TH06 v1.02h with SHA-256:
 
@@ -124,8 +123,8 @@ The target executable is Japanese TH06 v1.02h with SHA-256:
 Never commit or redistribute the supplied game directory, generated traces, or
 third-party replay corpus.
 
-## License and attribution
+## License
 
-This repository retains the GPL-3.0 license and history of the portable/headless
-fork.  The underlying reconstruction work comes from GensokyoClub and its
-contributors; see Git history and [`LICENSE`](LICENSE).
+Distributed under GPL-3.0. The imported reference snapshot also contains work
+derived from the CC0 reconstruction; see
+[`reference/PROVENANCE.md`](reference/PROVENANCE.md) and [`LICENSE`](LICENSE).

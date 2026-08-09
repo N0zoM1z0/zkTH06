@@ -1,7 +1,11 @@
-# Headless logic-mode spike
+# Adapted TH06 reference runner
 
-This branch contains a Linux headless mode intended for deterministic
-simulation experiments:
+This directory is a source snapshot used to develop and test zkTH06 semantics.
+It is supporting reference code, not the zkVM guest. See
+[`PROVENANCE.md`](PROVENANCE.md) for its pinned sources and local changes.
+
+Run build commands from this directory. The Linux headless mode supports
+deterministic simulation experiments:
 
 ```sh
 ./th06 --headless --seed 7 --max-ticks 3600 \
