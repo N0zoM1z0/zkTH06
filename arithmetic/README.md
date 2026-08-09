@@ -190,13 +190,26 @@ the signed-i64 representable domain and combine exact binary32-derived values,
 canonical PC53 extended values, signed/subnormal/integer boundaries, and the
 exact `-2^63` endpoint. On the initial host, all 1,000,014 complete EDX:EAX
 results matched and every call returned the x87 stack to empty; 908,273 runs
-left the inexact status bit set. The experiment took 3.5 seconds.
+left the inexact status bit set.
 
-This closes neither the out-of-range/NaN helper semantics nor the call-site
-range proof. Because mapped consumers observe only EAX/AL, the intended slice
-requires a reachable-state invariant that every call input lies in the signed
-32-bit result domain. Until that invariant and the code-to-model binding are
-proved, the exact extracted helper remains the oracle.
+A second campaign exercised the observation made by ECL variable dispatch:
+exact quarter-step boundaries around `-10025..-10001`, random PC53 values
+densely covering that interval, infinities, both NaN classes, very large finite
+values, a pseudo-denormal, and an unnormal. All 1,000,154 classifications
+matched: 3,084 inputs selected one of the 25 variable IDs, and nine exceptional
+inputs raised invalid without spuriously selecting an ID. The combined run
+executed the exact helper 2,000,168 times with no mismatch.
+
+The first campaign closes neither the out-of-range/NaN helper semantics nor a
+call-site range proof, and the second remains finite counterexample search.
+However, the ECL caller does not observe an arbitrary integer: it observes only
+which, if any, of 25 sentinel IDs was selected. A replacement for that site can
+therefore prove exact classifier agreement without first imposing a global
+signed-32-bit range on every non-sentinel input. That narrower theorem still
+needs raw-ext80/helper semantics and code binding. Other retained arithmetic
+consumers may continue to require conventional range invariants. Until their
+site-specific premises are proved, the exact extracted helper remains the
+oracle.
 
 ## Address-level obligation ledger
 
@@ -227,6 +240,34 @@ ledger makes no reachability or refinement claim: every site is still marked
 discharge discipline, and corrected two-site AL result are detailed in
 [`docs/arithmetic-obligations.md`](../docs/arithmetic-obligations.md).
 
+Two derived version-1 artifacts begin classifying that queue without modifying
+its conservative base status:
+
+- [`ftol2-source-candidates-v1.json`](ftol2-source-candidates-v1.json) assigns
+  all 77 calls a source-expression candidate and semantic sink at authoritative
+  source revision `cc475a0bc3fef38683b0f02224c87ddba0a021d9`. It identifies
+  68 presentation/audio calls as candidates for omission after
+  noninterference, and nine gameplay calls as retain candidates. These are
+  manual disassembly/source alignments, not debug-line or compiler proofs.
+- [`ecl-var-dispatch-v1.json`](ecl-var-dispatch-v1.json) verifies 17 critical
+  instruction signatures and extracts the 25 unique in-function jump targets
+  used by `GetVar`/`GetVarFloat`. It contains no executable bytes or complete
+  operand strings. Its static decode is not yet a verified decoder,
+  reachability, helper-refinement, or guest-binding theorem.
+
+Both artifacts have proprietary-input-free structural tests in lightweight
+CI. Local owners can reproduce them with:
+
+```sh
+python3 tools/ftol2_source_candidates.py \
+  --source-root repos/th06 \
+  --check arithmetic/ftol2-source-candidates-v1.json
+python3 tools/ecl_var_dispatch_audit.py \
+  local/original-th06/東方紅魔郷.exe \
+  --mapping repos/th06/config/mapping.csv \
+  --check arithmetic/ecl-var-dispatch-v1.json
+```
+
 ## Soundness boundary
 
 The experiment supports a candidate implementation choice; it does not close
@@ -243,8 +284,9 @@ the arithmetic proof. In particular:
   `fld m32fp` denormal-operand event;
 - remainder and `fisttp` remain unmodeled; the extracted `__ftol2` experiment
   covers its complete register result and stack balance only for canonical
-  finite, signed-i64-representable PC53 inputs, not exceptional inputs or a
-  proved reachable signed-i32 range;
+  finite, signed-i64-representable PC53 inputs; a second experiment tests only
+  ECL sentinel classification on focused exceptional and boundary inputs, not
+  universal exceptional semantics or a reachable-state theorem;
 - x87 transcendental instructions are outside SoftFloat's operation set and
   still require a pinned processor/emulator profile or a separate equivalence
   proof;
@@ -253,8 +295,10 @@ the arithmetic proof. In particular:
   future Lean definition and zkVM guest.
 
 The address binding work queue is now explicit, but none of its entries is
-discharged. The intended next step is to classify retained versus sliced sites,
-prove the `__ftol2` call-site range and full-control-flow result-use invariants,
-cover load/remainder semantics, and choose an exact transcendental profile.
-The exact implementation remains the fallback whenever a fixed-point
-refinement theorem cannot be proved.
+discharged. Source/sink candidates narrow it to nine retained calls and 68
+potential omissions; every omission still needs noninterference. The immediate
+arithmetic goals are an exact ECL helper-to-classifier theorem, the collected
+item-y range invariant for eight score calls, complete result-use evidence,
+load/remainder semantics, and an exact transcendental profile. The exact
+implementation remains the fallback whenever a refinement theorem cannot be
+proved.

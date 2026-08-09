@@ -17,12 +17,19 @@
   includes C0--C3 and selected NaNs, while a separate exact-byte
   \code{\_\_ftol2} probe covers full register results only for canonical finite
   signed-i64 inputs.  Load exceptions, arbitrary/noncanonical NaNs, remainder,
-  exceptional helper inputs, the helper's reachable signed-i32 range, address
-  binding, and transcendental behavior remain open.  A hash-bound ledger now
-  indexes 321 comparison/helper addresses, but every slice disposition and
-  helper range is still open; its bounded scan also leaves EDX live at 42
-  stopping points.  The complete address-indexed semantics, code binding, and
-  any fixed-point refinement have not yet been implemented or proved.
+  exceptional helper inputs, site-specific reachable ranges/observations,
+  address binding, and transcendental behavior remain open.  A focused ECL
+  campaign tests exceptional/default classification but is not universal
+  semantics.  A hash-bound ledger indexes 321 comparison/helper addresses; a
+  derived manual
+  source ledger proposes 68 omissions and nine retained calls, but every
+  correspondence, slice disposition, and helper refinement is still open.  Its
+  bounded scan also leaves EDX live at 42 stopping points.  The ECL quotient
+  still lacks verified decoding, universal helper/classifier agreement,
+  jump-target binding, and guest refinement; the eight point-score calls lack
+  a reachable position bound.  The complete address-indexed semantics, code
+  binding, and any fixed-point refinement have not yet been implemented or
+  proved.
   \item \textbf{Draw-chain effects.}  Headless mode skips drawing, but some draw
   callbacks write flags, ANM fields, laser positions, or other state that may be
   read later.  Each removal needs dependency analysis and corpus validation.

@@ -34,6 +34,10 @@ Last updated: 2026-08-09
 - An exact-byte, temporary i386 harness for the pinned `__ftol2` body, an
   independent dyadic truncation model, and Lean checks of its correction and
   EDX:EAX projection logic.
+- A source/sink candidate ledger for all 77 helper calls, a pinned 25-way ECL
+  dispatch audit, and a Lean bit-vector theorem for its wrapping-add/unsigned-
+  compare classifier. Every correspondence and omission remains explicitly
+  unproved.
 
 Compatibility playback intentionally restores every per-stage replay snapshot,
 matching shipped playback. It is an oracle-development mode, not the future
@@ -116,16 +120,24 @@ found and rejected a naive denormal-operand rule before the instruction-specific
 model passed. An additional 4,000,220 DWORD/QWORD comparison tuples matched,
 including fixed ordered/unordered and exception-priority cases. Separately,
 1,000,014 executions of the exact extracted `__ftol2` body matched signed-i64
-dyadic truncation and returned an empty x87 stack. These remain host-specific
-counterexample searches: load exceptions, out-of-range helper inputs,
-transcendentals, address binding, reachable-range invariants, and a
-model-to-code proof remain open. The reproduction and claim boundary are in
+dyadic truncation and returned an empty x87 stack. A focused second campaign
+matched 1,000,154 ECL sentinel classifications, including 3,084 recognized
+variable operands and nine invalid exceptional cases, for 2,000,168 exact
+helper executions in total. These remain host-specific counterexample searches:
+load exceptions, universal exceptional helper semantics, transcendentals,
+verified address decoding, reachability, and model-to-code proof remain open.
+The reproduction and claim boundary are in
 [`../arithmetic/README.md`](../arithmetic/README.md).
 The corresponding 321 original addresses are now frozen in
 [`../arithmetic/obligations-v1.json`](../arithmetic/obligations-v1.json), with
 every slice disposition and every conversion range explicitly unproved; the
 discharge protocol is in
 [`arithmetic-obligations.md`](arithmetic-obligations.md).
+The derived source ledger classifies 68 calls as omission candidates and nine
+as retain candidates, but leaves every proof status open. The retained ECL call
+observes only membership in `-10025..-10001`; the other eight retained calls
+are point-item scoring conversions whose collected-item `y` bound remains to
+be proved.
 
 ## Remaining M0 gates
 
@@ -138,8 +150,8 @@ discharge protocol is in
    build and identify the first differing field.
 4. Record the entry x87/CPU profile, instrument reached arithmetic sites,
    cover load/remainder and exceptional helper behavior where reachable, prove
-   the `__ftol2` signed-i32 input invariant, and replace host-libm behavior with
-   an exact, address-bound arithmetic baseline; prove skipped-draw arithmetic
-   noninterference before removing it.
+   ECL helper-to-classifier refinement and the point-item `y` range invariant,
+   and replace host-libm behavior with an exact, address-bound arithmetic
+   baseline; prove skipped-draw arithmetic noninterference before removing it.
 5. Add canonical-proof playback that derives stage transitions and rejects a
    replay whose stage snapshots do not match live state.

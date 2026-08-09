@@ -1,0 +1,266 @@
+{
+  "schema_version": 1,
+  "kind": "zkth06.ecl-var-dispatch-audit",
+  "inputs": {
+    "executable_sha256": "9f76483c46256804792399296619c1274363c31cd8f1775fafb55106fb852245",
+    "mapping_sha256": "0f20300d5b107b36c933a7f7dc448407ee5f01c5cd7faad132d406c023163191",
+    "base_ledger_artifact_sha256": "1c4c128284bf5ab4aa36e636cd5ed15f0300e5295e7fb29f12c0cb2f897f65af"
+  },
+  "generator": {
+    "path": "tools/ecl_var_dispatch_audit.py",
+    "sha256": "39d6f0914385e52325a962c1c6daebb7f0327d2e1ea7b32361253b47688d6232",
+    "x87_audit_sha256": "93c6aee778f489c92788dc7dfc6c51749fa5f20d075305a4190616d9b5d46290",
+    "disassembler": "GNU objdump (GNU Binutils for Ubuntu) 2.38"
+  },
+  "mapped_functions": [
+    {
+      "name": "th06::EnemyEclInstr::GetVar",
+      "start": "0x0040afb0",
+      "size": 876
+    },
+    {
+      "name": "th06::EnemyEclInstr::GetVarFloat",
+      "start": "0x0040b380",
+      "size": 64
+    }
+  ],
+  "critical_ftol2_obligation_id": "ftol2-0040b38b",
+  "dispatch_contract": {
+    "normalization_addend": 10025,
+    "maximum_unsigned_index": 24,
+    "first_variable_id": -10025,
+    "last_variable_id": -10001,
+    "jump_table_address": "0x0040b31c",
+    "jump_table": [
+      {
+        "normalized_index": 0,
+        "variable_id": -10025,
+        "target": "0x0040b2e7"
+      },
+      {
+        "normalized_index": 1,
+        "variable_id": -10024,
+        "target": "0x0040b2ce"
+      },
+      {
+        "normalized_index": 2,
+        "variable_id": -10023,
+        "target": "0x0040b25c"
+      },
+      {
+        "normalized_index": 3,
+        "variable_id": -10022,
+        "target": "0x0040b240"
+      },
+      {
+        "normalized_index": 4,
+        "variable_id": -10021,
+        "target": "0x0040b20d"
+      },
+      {
+        "normalized_index": 5,
+        "variable_id": -10020,
+        "target": "0x0040b1f4"
+      },
+      {
+        "normalized_index": 6,
+        "variable_id": -10019,
+        "target": "0x0040b1db"
+      },
+      {
+        "normalized_index": 7,
+        "variable_id": -10018,
+        "target": "0x0040b1c2"
+      },
+      {
+        "normalized_index": 8,
+        "variable_id": -10017,
+        "target": "0x0040b1a6"
+      },
+      {
+        "normalized_index": 9,
+        "variable_id": -10016,
+        "target": "0x0040b18a"
+      },
+      {
+        "normalized_index": 10,
+        "variable_id": -10015,
+        "target": "0x0040b16e"
+      },
+      {
+        "normalized_index": 11,
+        "variable_id": -10014,
+        "target": "0x0040b155"
+      },
+      {
+        "normalized_index": 12,
+        "variable_id": -10013,
+        "target": "0x0040b13c"
+      },
+      {
+        "normalized_index": 13,
+        "variable_id": -10012,
+        "target": "0x0040b120"
+      },
+      {
+        "normalized_index": 14,
+        "variable_id": -10011,
+        "target": "0x0040b104"
+      },
+      {
+        "normalized_index": 15,
+        "variable_id": -10010,
+        "target": "0x0040b0e8"
+      },
+      {
+        "normalized_index": 16,
+        "variable_id": -10009,
+        "target": "0x0040b0cc"
+      },
+      {
+        "normalized_index": 17,
+        "variable_id": -10008,
+        "target": "0x0040b0b0"
+      },
+      {
+        "normalized_index": 18,
+        "variable_id": -10007,
+        "target": "0x0040b094"
+      },
+      {
+        "normalized_index": 19,
+        "variable_id": -10006,
+        "target": "0x0040b078"
+      },
+      {
+        "normalized_index": 20,
+        "variable_id": -10005,
+        "target": "0x0040b05c"
+      },
+      {
+        "normalized_index": 21,
+        "variable_id": -10004,
+        "target": "0x0040b040"
+      },
+      {
+        "normalized_index": 22,
+        "variable_id": -10003,
+        "target": "0x0040b024"
+      },
+      {
+        "normalized_index": 23,
+        "variable_id": -10002,
+        "target": "0x0040b008"
+      },
+      {
+        "normalized_index": 24,
+        "variable_id": -10001,
+        "target": "0x0040afec"
+      }
+    ],
+    "default_behavior": "GetVar returns its input integer pointer; GetVarFloat detects that identity and returns the original float pointer.",
+    "observable_conversion_result": "which, if any, of the 25 contiguous variable IDs is selected"
+  },
+  "checked_instruction_roles": [
+    {
+      "address": "0x0040afc8",
+      "mnemonic": "mov",
+      "role": "load candidate integer"
+    },
+    {
+      "address": "0x0040afd0",
+      "mnemonic": "add",
+      "role": "normalize -10025 to table index zero"
+    },
+    {
+      "address": "0x0040afd8",
+      "mnemonic": "cmp",
+      "role": "compare index with 24"
+    },
+    {
+      "address": "0x0040afdc",
+      "mnemonic": "ja",
+      "role": "unsigned out-of-range branch"
+    },
+    {
+      "address": "0x0040afe5",
+      "mnemonic": "jmp",
+      "role": "dispatch through 25-entry table"
+    },
+    {
+      "address": "0x0040b315",
+      "mnemonic": "mov",
+      "role": "default returns input integer pointer"
+    },
+    {
+      "address": "0x0040b389",
+      "mnemonic": "fld",
+      "role": "load float operand"
+    },
+    {
+      "address": "0x0040b38b",
+      "mnemonic": "call",
+      "role": "call pinned __ftol2"
+    },
+    {
+      "address": "0x0040b390",
+      "mnemonic": "mov",
+      "role": "store low conversion result"
+    },
+    {
+      "address": "0x0040b397",
+      "mnemonic": "lea",
+      "role": "take local integer address"
+    },
+    {
+      "address": "0x0040b39f",
+      "mnemonic": "call",
+      "role": "resolve integer through GetVar"
+    },
+    {
+      "address": "0x0040b3a7",
+      "mnemonic": "mov",
+      "role": "store resolved pointer"
+    },
+    {
+      "address": "0x0040b3ad",
+      "mnemonic": "lea",
+      "role": "recover local integer address"
+    },
+    {
+      "address": "0x0040b3b0",
+      "mnemonic": "cmp",
+      "role": "test whether GetVar took default"
+    },
+    {
+      "address": "0x0040b3b2",
+      "mnemonic": "jne",
+      "role": "return resolved variable pointer"
+    },
+    {
+      "address": "0x0040b3b4",
+      "mnemonic": "mov",
+      "role": "default returns original float pointer"
+    },
+    {
+      "address": "0x0040b3b9",
+      "mnemonic": "mov",
+      "role": "select resolved pointer"
+    }
+  ],
+  "model_contracts": {
+    "classifier": "ZkTH06.EclVarId.isVariableId",
+    "decoder": "ZkTH06.EclVarId.decodeVariableId",
+    "machine_classifier": "ZkTH06.EclVarId.machineIsVariableId",
+    "machine_interval_theorem": "ZkTH06.EclVarId.machine_classifier_matches_signed_interval",
+    "default_irrelevance_theorem": "ZkTH06.EclVarId.nonvariable_integer_value_is_irrelevant"
+  },
+  "evidence_status": "static decode and derived jump-table facts; not a decoder proof, reachability proof, helper/classifier refinement, or guest binding",
+  "open_obligations": [
+    "Prove or translation-validate the checked instruction sequence and jump-table decode.",
+    "Prove exact __ftol2-to-classifier agreement for every reachable raw operand.",
+    "Bind the 25 table targets to the modeled variable identities and value types.",
+    "Prove the guest ECL resolver refines the address-bound dispatch contract."
+  ],
+  "artifact_sha256": "4f30ab443aa0a557ed7d39c2389a8be329601eba956aed073f05bad51b46e4cc"
+}

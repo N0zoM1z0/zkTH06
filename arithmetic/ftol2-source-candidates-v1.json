@@ -1,0 +1,1229 @@
+{
+  "schema_version": 1,
+  "kind": "zkth06.ftol2-source-candidates",
+  "base_ledger_artifact_sha256": "1c4c128284bf5ab4aa36e636cd5ed15f0300e5295e7fb29f12c0cb2f897f65af",
+  "generator": {
+    "path": "tools/ftol2_source_candidates.py",
+    "sha256": "cd9dbd353052d2b00ffc85e5c67ad60d63a7b2563c79f6b120886fd46f057c32"
+  },
+  "upstream": {
+    "url": "https://github.com/GensokyoClub/th06",
+    "revision": "cc475a0bc3fef38683b0f02224c87ddba0a021d9",
+    "source_files": {
+      "src/AnmManager.cpp": "fcb3f0b5ef2098d285853c58c2fdf9d369edb231fdf7f551b16e25bfdfac3c82",
+      "src/AsciiManager.cpp": "31c50d9b5e55f57bae9c1d1b5f2e06627668ad55c3a86889e82a9ab7bb089aa2",
+      "src/BombData.cpp": "2a5e19df3f1ac5ebaa1ba5dcdacc5c233f56919b3822ab9d865be166415ae5fd",
+      "src/BulletManager.cpp": "86437f40c7c5ac2c6e548b3003f450d3824d22c2c7a52a7ffbafa3e8f8aad28b",
+      "src/EffectManager.cpp": "937e51e21f7de564d72f63a0ad5fae85a67201abe0c61e604177b5e172f2bea0",
+      "src/Ending.cpp": "60272ef1ccfc8069f07a8a3aa400fb9e603f8ed06c4f0c68f14804d0d582906b",
+      "src/EnemyEclInstr.cpp": "7aa69c652861d37df44edf5e65dc137f4d6e1af8d1985c96c0c6234f8ffbc334",
+      "src/GameManager.cpp": "45736f6c282c1700d64267d02809ab36ec1ae536e4ff75de3bb84388dcccdcd9",
+      "src/Gui.cpp": "fff72fc7b8af84d909f9977fa20db750983da3becd85d8d22d30b1aef56f2fd1",
+      "src/ItemManager.cpp": "60464c391e70c17744aedad587140b82265db35b9b6e86f323b5af641cf772e5",
+      "src/MidiOutput.cpp": "96b91a4535fd922a8ed02846a3f434c2f89b4f9fa77b30f62f9eed7573ef80eb",
+      "src/Player.cpp": "5e3e81cff72796c98b9b87dc65d447333444917b63d9e4d493572f23145c26b5",
+      "src/ScreenEffect.cpp": "9f101136f823f1a3ec337b0a30044d27cd94219882d2b516e83c41f2a9636d8a",
+      "src/SoundPlayer.hpp": "69635298ae1bfd2f8d16df4125f7ae78bfd5fc7d6f2d906a5d16ccb8e1fd5124",
+      "src/Stage.cpp": "678f8cfdd8b0aac0b058eb740dd8c6c2c695fb418d4285b4984d99af80d3d184",
+      "src/Supervisor.cpp": "23ebefcc9a89282394224c5d806223daec9387740af2643eb926d5f79f73bd5a"
+    }
+  },
+  "method": {
+    "status": "manual-disassembly-source-alignment-unproved",
+    "claim": "Candidates align mapped function ownership, call-site disassembly data flow, source order, and pinned source anchors. They are not debug-line evidence, a compiler-correctness theorem, or a slicing proof.",
+    "disposition_rule": "retain means the operation currently affects the gameplay projection; omit-after-noninterference remains retained until a transitive projection noninterference theorem is attached."
+  },
+  "counts": {
+    "sites": 77,
+    "candidate_dispositions": {
+      "omit-after-noninterference": 68,
+      "retain": 9
+    },
+    "semantic_sinks": {
+      "audio-fade-duration": 2,
+      "audio-volume": 4,
+      "bullet-render-selection": 1,
+      "d3d-viewport": 28,
+      "ecl-variable-dispatch": 1,
+      "ending-draw-rectangle": 2,
+      "point-item-score": 8,
+      "presentation-alpha": 9,
+      "presentation-color": 2,
+      "text-raster-coordinate": 20
+    }
+  },
+  "sites": [
+    {
+      "call_address": "0x00401791",
+      "function": "th06::AsciiManager::DrawStrings",
+      "source_candidate": {
+        "file": "src/AsciiManager.cpp",
+        "line": 239,
+        "line_anchor": "viewport.X"
+      },
+      "semantic_sink": "d3d-viewport",
+      "candidate_disposition": "omit-after-noninterference",
+      "range_strategy_candidate": "eliminate-with-render-path",
+      "correspondence_status": "manual-disassembly-source-alignment-unproved",
+      "proof_status": "unproved",
+      "base_obligation_id": "ftol2-00401791"
+    },
+    {
+      "call_address": "0x004017a1",
+      "function": "th06::AsciiManager::DrawStrings",
+      "source_candidate": {
+        "file": "src/AsciiManager.cpp",
+        "line": 240,
+        "line_anchor": "viewport.Y"
+      },
+      "semantic_sink": "d3d-viewport",
+      "candidate_disposition": "omit-after-noninterference",
+      "range_strategy_candidate": "eliminate-with-render-path",
+      "correspondence_status": "manual-disassembly-source-alignment-unproved",
+      "proof_status": "unproved",
+      "base_obligation_id": "ftol2-004017a1"
+    },
+    {
+      "call_address": "0x004017b1",
+      "function": "th06::AsciiManager::DrawStrings",
+      "source_candidate": {
+        "file": "src/AsciiManager.cpp",
+        "line": 241,
+        "line_anchor": "viewport.Width"
+      },
+      "semantic_sink": "d3d-viewport",
+      "candidate_disposition": "omit-after-noninterference",
+      "range_strategy_candidate": "eliminate-with-render-path",
+      "correspondence_status": "manual-disassembly-source-alignment-unproved",
+      "proof_status": "unproved",
+      "base_obligation_id": "ftol2-004017b1"
+    },
+    {
+      "call_address": "0x004017c1",
+      "function": "th06::AsciiManager::DrawStrings",
+      "source_candidate": {
+        "file": "src/AsciiManager.cpp",
+        "line": 242,
+        "line_anchor": "viewport.Height"
+      },
+      "semantic_sink": "d3d-viewport",
+      "candidate_disposition": "omit-after-noninterference",
+      "range_strategy_candidate": "eliminate-with-render-path",
+      "correspondence_status": "manual-disassembly-source-alignment-unproved",
+      "proof_status": "unproved",
+      "base_obligation_id": "ftol2-004017c1"
+    },
+    {
+      "call_address": "0x00402766",
+      "function": "th06::StageMenu::OnDrawGameMenu",
+      "source_candidate": {
+        "file": "src/AsciiManager.cpp",
+        "line": 597,
+        "line_anchor": "viewport.X"
+      },
+      "semantic_sink": "d3d-viewport",
+      "candidate_disposition": "omit-after-noninterference",
+      "range_strategy_candidate": "eliminate-with-render-path",
+      "correspondence_status": "manual-disassembly-source-alignment-unproved",
+      "proof_status": "unproved",
+      "base_obligation_id": "ftol2-00402766"
+    },
+    {
+      "call_address": "0x00402776",
+      "function": "th06::StageMenu::OnDrawGameMenu",
+      "source_candidate": {
+        "file": "src/AsciiManager.cpp",
+        "line": 598,
+        "line_anchor": "viewport.Y"
+      },
+      "semantic_sink": "d3d-viewport",
+      "candidate_disposition": "omit-after-noninterference",
+      "range_strategy_candidate": "eliminate-with-render-path",
+      "correspondence_status": "manual-disassembly-source-alignment-unproved",
+      "proof_status": "unproved",
+      "base_obligation_id": "ftol2-00402776"
+    },
+    {
+      "call_address": "0x00402786",
+      "function": "th06::StageMenu::OnDrawGameMenu",
+      "source_candidate": {
+        "file": "src/AsciiManager.cpp",
+        "line": 599,
+        "line_anchor": "viewport.Width"
+      },
+      "semantic_sink": "d3d-viewport",
+      "candidate_disposition": "omit-after-noninterference",
+      "range_strategy_candidate": "eliminate-with-render-path",
+      "correspondence_status": "manual-disassembly-source-alignment-unproved",
+      "proof_status": "unproved",
+      "base_obligation_id": "ftol2-00402786"
+    },
+    {
+      "call_address": "0x00402796",
+      "function": "th06::StageMenu::OnDrawGameMenu",
+      "source_candidate": {
+        "file": "src/AsciiManager.cpp",
+        "line": 600,
+        "line_anchor": "viewport.Height"
+      },
+      "semantic_sink": "d3d-viewport",
+      "candidate_disposition": "omit-after-noninterference",
+      "range_strategy_candidate": "eliminate-with-render-path",
+      "correspondence_status": "manual-disassembly-source-alignment-unproved",
+      "proof_status": "unproved",
+      "base_obligation_id": "ftol2-00402796"
+    },
+    {
+      "call_address": "0x00403080",
+      "function": "th06::StageMenu::OnDrawRetryMenu",
+      "source_candidate": {
+        "file": "src/AsciiManager.cpp",
+        "line": 808,
+        "line_anchor": "viewport.X"
+      },
+      "semantic_sink": "d3d-viewport",
+      "candidate_disposition": "omit-after-noninterference",
+      "range_strategy_candidate": "eliminate-with-render-path",
+      "correspondence_status": "manual-disassembly-source-alignment-unproved",
+      "proof_status": "unproved",
+      "base_obligation_id": "ftol2-00403080"
+    },
+    {
+      "call_address": "0x00403090",
+      "function": "th06::StageMenu::OnDrawRetryMenu",
+      "source_candidate": {
+        "file": "src/AsciiManager.cpp",
+        "line": 809,
+        "line_anchor": "viewport.Y"
+      },
+      "semantic_sink": "d3d-viewport",
+      "candidate_disposition": "omit-after-noninterference",
+      "range_strategy_candidate": "eliminate-with-render-path",
+      "correspondence_status": "manual-disassembly-source-alignment-unproved",
+      "proof_status": "unproved",
+      "base_obligation_id": "ftol2-00403090"
+    },
+    {
+      "call_address": "0x004030a0",
+      "function": "th06::StageMenu::OnDrawRetryMenu",
+      "source_candidate": {
+        "file": "src/AsciiManager.cpp",
+        "line": 810,
+        "line_anchor": "viewport.Width"
+      },
+      "semantic_sink": "d3d-viewport",
+      "candidate_disposition": "omit-after-noninterference",
+      "range_strategy_candidate": "eliminate-with-render-path",
+      "correspondence_status": "manual-disassembly-source-alignment-unproved",
+      "proof_status": "unproved",
+      "base_obligation_id": "ftol2-004030a0"
+    },
+    {
+      "call_address": "0x004030b0",
+      "function": "th06::StageMenu::OnDrawRetryMenu",
+      "source_candidate": {
+        "file": "src/AsciiManager.cpp",
+        "line": 811,
+        "line_anchor": "viewport.Height"
+      },
+      "semantic_sink": "d3d-viewport",
+      "candidate_disposition": "omit-after-noninterference",
+      "range_strategy_candidate": "eliminate-with-render-path",
+      "correspondence_status": "manual-disassembly-source-alignment-unproved",
+      "proof_status": "unproved",
+      "base_obligation_id": "ftol2-004030b0"
+    },
+    {
+      "call_address": "0x004031fa",
+      "function": "th06::AsciiManager::DrawPopupsWithHwVertexProcessing",
+      "source_candidate": {
+        "file": "src/AsciiManager.cpp",
+        "line": 847,
+        "line_anchor": "viewport.X"
+      },
+      "semantic_sink": "d3d-viewport",
+      "candidate_disposition": "omit-after-noninterference",
+      "range_strategy_candidate": "eliminate-with-render-path",
+      "correspondence_status": "manual-disassembly-source-alignment-unproved",
+      "proof_status": "unproved",
+      "base_obligation_id": "ftol2-004031fa"
+    },
+    {
+      "call_address": "0x0040320a",
+      "function": "th06::AsciiManager::DrawPopupsWithHwVertexProcessing",
+      "source_candidate": {
+        "file": "src/AsciiManager.cpp",
+        "line": 848,
+        "line_anchor": "viewport.Y"
+      },
+      "semantic_sink": "d3d-viewport",
+      "candidate_disposition": "omit-after-noninterference",
+      "range_strategy_candidate": "eliminate-with-render-path",
+      "correspondence_status": "manual-disassembly-source-alignment-unproved",
+      "proof_status": "unproved",
+      "base_obligation_id": "ftol2-0040320a"
+    },
+    {
+      "call_address": "0x0040321a",
+      "function": "th06::AsciiManager::DrawPopupsWithHwVertexProcessing",
+      "source_candidate": {
+        "file": "src/AsciiManager.cpp",
+        "line": 849,
+        "line_anchor": "viewport.Width"
+      },
+      "semantic_sink": "d3d-viewport",
+      "candidate_disposition": "omit-after-noninterference",
+      "range_strategy_candidate": "eliminate-with-render-path",
+      "correspondence_status": "manual-disassembly-source-alignment-unproved",
+      "proof_status": "unproved",
+      "base_obligation_id": "ftol2-0040321a"
+    },
+    {
+      "call_address": "0x0040322a",
+      "function": "th06::AsciiManager::DrawPopupsWithHwVertexProcessing",
+      "source_candidate": {
+        "file": "src/AsciiManager.cpp",
+        "line": 850,
+        "line_anchor": "viewport.Height"
+      },
+      "semantic_sink": "d3d-viewport",
+      "candidate_disposition": "omit-after-noninterference",
+      "range_strategy_candidate": "eliminate-with-render-path",
+      "correspondence_status": "manual-disassembly-source-alignment-unproved",
+      "proof_status": "unproved",
+      "base_obligation_id": "ftol2-0040322a"
+    },
+    {
+      "call_address": "0x004033ca",
+      "function": "th06::AsciiManager::DrawPopupsWithoutHwVertexProcessing",
+      "source_candidate": {
+        "file": "src/AsciiManager.cpp",
+        "line": 899,
+        "line_anchor": "viewport.X"
+      },
+      "semantic_sink": "d3d-viewport",
+      "candidate_disposition": "omit-after-noninterference",
+      "range_strategy_candidate": "eliminate-with-render-path",
+      "correspondence_status": "manual-disassembly-source-alignment-unproved",
+      "proof_status": "unproved",
+      "base_obligation_id": "ftol2-004033ca"
+    },
+    {
+      "call_address": "0x004033da",
+      "function": "th06::AsciiManager::DrawPopupsWithoutHwVertexProcessing",
+      "source_candidate": {
+        "file": "src/AsciiManager.cpp",
+        "line": 900,
+        "line_anchor": "viewport.Y"
+      },
+      "semantic_sink": "d3d-viewport",
+      "candidate_disposition": "omit-after-noninterference",
+      "range_strategy_candidate": "eliminate-with-render-path",
+      "correspondence_status": "manual-disassembly-source-alignment-unproved",
+      "proof_status": "unproved",
+      "base_obligation_id": "ftol2-004033da"
+    },
+    {
+      "call_address": "0x004033ea",
+      "function": "th06::AsciiManager::DrawPopupsWithoutHwVertexProcessing",
+      "source_candidate": {
+        "file": "src/AsciiManager.cpp",
+        "line": 901,
+        "line_anchor": "viewport.Width"
+      },
+      "semantic_sink": "d3d-viewport",
+      "candidate_disposition": "omit-after-noninterference",
+      "range_strategy_candidate": "eliminate-with-render-path",
+      "correspondence_status": "manual-disassembly-source-alignment-unproved",
+      "proof_status": "unproved",
+      "base_obligation_id": "ftol2-004033ea"
+    },
+    {
+      "call_address": "0x004033fa",
+      "function": "th06::AsciiManager::DrawPopupsWithoutHwVertexProcessing",
+      "source_candidate": {
+        "file": "src/AsciiManager.cpp",
+        "line": 902,
+        "line_anchor": "viewport.Height"
+      },
+      "semantic_sink": "d3d-viewport",
+      "candidate_disposition": "omit-after-noninterference",
+      "range_strategy_candidate": "eliminate-with-render-path",
+      "correspondence_status": "manual-disassembly-source-alignment-unproved",
+      "proof_status": "unproved",
+      "base_obligation_id": "ftol2-004033fa"
+    },
+    {
+      "call_address": "0x00403f4c",
+      "function": "th06::Stage::OnUpdate",
+      "source_candidate": {
+        "file": "src/Stage.cpp",
+        "line": 186,
+        "line_anchor": "COLOR_SET_COMPONENT(stage->skyFog.color"
+      },
+      "semantic_sink": "presentation-color",
+      "candidate_disposition": "omit-after-noninterference",
+      "range_strategy_candidate": "eliminate-with-stage-fog-state",
+      "correspondence_status": "manual-disassembly-source-alignment-unproved",
+      "proof_status": "unproved",
+      "base_obligation_id": "ftol2-00403f4c"
+    },
+    {
+      "call_address": "0x004060a0",
+      "function": "th06::BombData::DarkenViewport",
+      "source_candidate": {
+        "file": "src/BombData.cpp",
+        "line": 238,
+        "line_anchor": "(i32)darkeningTimeLeft"
+      },
+      "semantic_sink": "presentation-alpha",
+      "candidate_disposition": "omit-after-noninterference",
+      "range_strategy_candidate": "eliminate-with-bomb-darkening-draw",
+      "correspondence_status": "manual-disassembly-source-alignment-unproved",
+      "proof_status": "unproved",
+      "base_obligation_id": "ftol2-004060a0"
+    },
+    {
+      "call_address": "0x00406129",
+      "function": "th06::BombData::DarkenViewport",
+      "source_candidate": {
+        "file": "src/BombData.cpp",
+        "line": 243,
+        "line_anchor": "(i32)darkeningTimeLeft"
+      },
+      "semantic_sink": "presentation-alpha",
+      "candidate_disposition": "omit-after-noninterference",
+      "range_strategy_candidate": "eliminate-with-bomb-darkening-draw",
+      "correspondence_status": "manual-disassembly-source-alignment-unproved",
+      "proof_status": "unproved",
+      "base_obligation_id": "ftol2-00406129"
+    },
+    {
+      "call_address": "0x0040b38b",
+      "function": "th06::EnemyEclInstr::GetVarFloat",
+      "source_candidate": {
+        "file": "src/EnemyEclInstr.cpp",
+        "line": 240,
+        "line_anchor": "i32 varId = *eclVarId"
+      },
+      "semantic_sink": "ecl-variable-dispatch",
+      "candidate_disposition": "retain",
+      "range_strategy_candidate": "prove-truncation-sentinel-classifier--10025-through--10001",
+      "correspondence_status": "manual-disassembly-source-alignment-unproved",
+      "proof_status": "unproved",
+      "base_obligation_id": "ftol2-0040b38b"
+    },
+    {
+      "call_address": "0x0040ebcc",
+      "function": "th06::EffectManager::EffectUpdateCallback4",
+      "source_candidate": {
+        "file": "src/EffectManager.cpp",
+        "line": 143,
+        "line_anchor": "(i32)(alpha * 255.0f)"
+      },
+      "semantic_sink": "presentation-alpha",
+      "candidate_disposition": "omit-after-noninterference",
+      "range_strategy_candidate": "eliminate-with-effect-color-or-prove-alpha-0-255",
+      "correspondence_status": "manual-disassembly-source-alignment-unproved",
+      "proof_status": "unproved",
+      "base_obligation_id": "ftol2-0040ebcc"
+    },
+    {
+      "call_address": "0x00410a84",
+      "function": "th06::Ending::OnDraw",
+      "source_candidate": {
+        "file": "src/Ending.cpp",
+        "line": 508,
+        "line_anchor": "ending->backgroundPos.y"
+      },
+      "semantic_sink": "ending-draw-rectangle",
+      "candidate_disposition": "omit-after-noninterference",
+      "range_strategy_candidate": "eliminate-with-ending-draw",
+      "correspondence_status": "manual-disassembly-source-alignment-unproved",
+      "proof_status": "unproved",
+      "base_obligation_id": "ftol2-00410a84"
+    },
+    {
+      "call_address": "0x00410a90",
+      "function": "th06::Ending::OnDraw",
+      "source_candidate": {
+        "file": "src/Ending.cpp",
+        "line": 508,
+        "line_anchor": "ending->backgroundPos.x"
+      },
+      "semantic_sink": "ending-draw-rectangle",
+      "candidate_disposition": "omit-after-noninterference",
+      "range_strategy_candidate": "eliminate-with-ending-draw",
+      "correspondence_status": "manual-disassembly-source-alignment-unproved",
+      "proof_status": "unproved",
+      "base_obligation_id": "ftol2-00410a90"
+    },
+    {
+      "call_address": "0x00416003",
+      "function": "th06::BulletManager::OnUpdate",
+      "source_candidate": {
+        "file": "src/BulletManager.cpp",
+        "line": 993,
+        "line_anchor": "laserColor = curLaser->timer.AsFramesFloat()"
+      },
+      "semantic_sink": "presentation-alpha",
+      "candidate_disposition": "omit-after-noninterference",
+      "range_strategy_candidate": "eliminate-laser-color-while-retaining-collision-timing",
+      "correspondence_status": "manual-disassembly-source-alignment-unproved",
+      "proof_status": "unproved",
+      "base_obligation_id": "ftol2-00416003"
+    },
+    {
+      "call_address": "0x004162eb",
+      "function": "th06::BulletManager::OnUpdate",
+      "source_candidate": {
+        "file": "src/BulletManager.cpp",
+        "line": 1054,
+        "line_anchor": "laserColor = curLaser->timer.AsFramesFloat()"
+      },
+      "semantic_sink": "presentation-alpha",
+      "candidate_disposition": "omit-after-noninterference",
+      "range_strategy_candidate": "eliminate-laser-color-while-retaining-collision-timing",
+      "correspondence_status": "manual-disassembly-source-alignment-unproved",
+      "proof_status": "unproved",
+      "base_obligation_id": "ftol2-004162eb"
+    },
+    {
+      "call_address": "0x00416fbc",
+      "function": "th06::BulletManager::AddedCallback",
+      "source_candidate": {
+        "file": "src/BulletManager.cpp",
+        "line": 1381,
+        "line_anchor": "bulletHeight ="
+      },
+      "semantic_sink": "bullet-render-selection",
+      "candidate_disposition": "omit-after-noninterference",
+      "range_strategy_candidate": "prove-bulletHeight-only-selects-draw-path",
+      "correspondence_status": "manual-disassembly-source-alignment-unproved",
+      "proof_status": "unproved",
+      "base_obligation_id": "ftol2-00416fbc"
+    },
+    {
+      "call_address": "0x0041b137",
+      "function": "th06::Gui::DrawStageElements",
+      "source_candidate": {
+        "file": "src/Gui.cpp",
+        "line": 1325,
+        "line_anchor": "viewport.X"
+      },
+      "semantic_sink": "d3d-viewport",
+      "candidate_disposition": "omit-after-noninterference",
+      "range_strategy_candidate": "eliminate-with-render-path",
+      "correspondence_status": "manual-disassembly-source-alignment-unproved",
+      "proof_status": "unproved",
+      "base_obligation_id": "ftol2-0041b137"
+    },
+    {
+      "call_address": "0x0041b147",
+      "function": "th06::Gui::DrawStageElements",
+      "source_candidate": {
+        "file": "src/Gui.cpp",
+        "line": 1326,
+        "line_anchor": "viewport.Y"
+      },
+      "semantic_sink": "d3d-viewport",
+      "candidate_disposition": "omit-after-noninterference",
+      "range_strategy_candidate": "eliminate-with-render-path",
+      "correspondence_status": "manual-disassembly-source-alignment-unproved",
+      "proof_status": "unproved",
+      "base_obligation_id": "ftol2-0041b147"
+    },
+    {
+      "call_address": "0x0041b157",
+      "function": "th06::Gui::DrawStageElements",
+      "source_candidate": {
+        "file": "src/Gui.cpp",
+        "line": 1328,
+        "line_anchor": "viewport.Width"
+      },
+      "semantic_sink": "d3d-viewport",
+      "candidate_disposition": "omit-after-noninterference",
+      "range_strategy_candidate": "eliminate-with-render-path",
+      "correspondence_status": "manual-disassembly-source-alignment-unproved",
+      "proof_status": "unproved",
+      "base_obligation_id": "ftol2-0041b157"
+    },
+    {
+      "call_address": "0x0041b167",
+      "function": "th06::Gui::DrawStageElements",
+      "source_candidate": {
+        "file": "src/Gui.cpp",
+        "line": 1329,
+        "line_anchor": "viewport.Height"
+      },
+      "semantic_sink": "d3d-viewport",
+      "candidate_disposition": "omit-after-noninterference",
+      "range_strategy_candidate": "eliminate-with-render-path",
+      "correspondence_status": "manual-disassembly-source-alignment-unproved",
+      "proof_status": "unproved",
+      "base_obligation_id": "ftol2-0041b167"
+    },
+    {
+      "call_address": "0x0041b7d4",
+      "function": "th06::GameManager::OnUpdate",
+      "source_candidate": {
+        "file": "src/GameManager.cpp",
+        "line": 160,
+        "line_anchor": "viewport.X"
+      },
+      "semantic_sink": "d3d-viewport",
+      "candidate_disposition": "omit-after-noninterference",
+      "range_strategy_candidate": "eliminate-with-render-path",
+      "correspondence_status": "manual-disassembly-source-alignment-unproved",
+      "proof_status": "unproved",
+      "base_obligation_id": "ftol2-0041b7d4"
+    },
+    {
+      "call_address": "0x0041b7e7",
+      "function": "th06::GameManager::OnUpdate",
+      "source_candidate": {
+        "file": "src/GameManager.cpp",
+        "line": 161,
+        "line_anchor": "viewport.Y"
+      },
+      "semantic_sink": "d3d-viewport",
+      "candidate_disposition": "omit-after-noninterference",
+      "range_strategy_candidate": "eliminate-with-render-path",
+      "correspondence_status": "manual-disassembly-source-alignment-unproved",
+      "proof_status": "unproved",
+      "base_obligation_id": "ftol2-0041b7e7"
+    },
+    {
+      "call_address": "0x0041b7fa",
+      "function": "th06::GameManager::OnUpdate",
+      "source_candidate": {
+        "file": "src/GameManager.cpp",
+        "line": 162,
+        "line_anchor": "viewport.Width"
+      },
+      "semantic_sink": "d3d-viewport",
+      "candidate_disposition": "omit-after-noninterference",
+      "range_strategy_candidate": "eliminate-with-render-path",
+      "correspondence_status": "manual-disassembly-source-alignment-unproved",
+      "proof_status": "unproved",
+      "base_obligation_id": "ftol2-0041b7fa"
+    },
+    {
+      "call_address": "0x0041b80d",
+      "function": "th06::GameManager::OnUpdate",
+      "source_candidate": {
+        "file": "src/GameManager.cpp",
+        "line": 163,
+        "line_anchor": "viewport.Height"
+      },
+      "semantic_sink": "d3d-viewport",
+      "candidate_disposition": "omit-after-noninterference",
+      "range_strategy_candidate": "eliminate-with-render-path",
+      "correspondence_status": "manual-disassembly-source-alignment-unproved",
+      "proof_status": "unproved",
+      "base_obligation_id": "ftol2-0041b80d"
+    },
+    {
+      "call_address": "0x0041fb14",
+      "function": "th06::ItemManager::OnUpdate",
+      "source_candidate": {
+        "file": "src/ItemManager.cpp",
+        "line": 80,
+        "line_anchor": "(i32)curItem->currentPosition.y < 128",
+        "inlined_at_line": 212,
+        "inlined_at_anchor": "calculatePointScore(curItem"
+      },
+      "semantic_sink": "point-item-score",
+      "candidate_disposition": "retain",
+      "range_strategy_candidate": "prove-collected-item-y-finite-and-signed-i32",
+      "correspondence_status": "manual-disassembly-source-alignment-unproved",
+      "proof_status": "unproved",
+      "base_obligation_id": "ftol2-0041fb14"
+    },
+    {
+      "call_address": "0x0041fb35",
+      "function": "th06::ItemManager::OnUpdate",
+      "source_candidate": {
+        "file": "src/ItemManager.cpp",
+        "line": 82,
+        "line_anchor": "(i32)curItem->currentPosition.y - 128",
+        "inlined_at_line": 212,
+        "inlined_at_anchor": "calculatePointScore(curItem"
+      },
+      "semantic_sink": "point-item-score",
+      "candidate_disposition": "retain",
+      "range_strategy_candidate": "prove-collected-item-y-finite-and-signed-i32",
+      "correspondence_status": "manual-disassembly-source-alignment-unproved",
+      "proof_status": "unproved",
+      "base_obligation_id": "ftol2-0041fb35"
+    },
+    {
+      "call_address": "0x0041fb91",
+      "function": "th06::ItemManager::OnUpdate",
+      "source_candidate": {
+        "file": "src/ItemManager.cpp",
+        "line": 80,
+        "line_anchor": "(i32)curItem->currentPosition.y < 128",
+        "inlined_at_line": 216,
+        "inlined_at_anchor": "calculatePointScore(curItem"
+      },
+      "semantic_sink": "point-item-score",
+      "candidate_disposition": "retain",
+      "range_strategy_candidate": "prove-collected-item-y-finite-and-signed-i32",
+      "correspondence_status": "manual-disassembly-source-alignment-unproved",
+      "proof_status": "unproved",
+      "base_obligation_id": "ftol2-0041fb91"
+    },
+    {
+      "call_address": "0x0041fbb2",
+      "function": "th06::ItemManager::OnUpdate",
+      "source_candidate": {
+        "file": "src/ItemManager.cpp",
+        "line": 82,
+        "line_anchor": "(i32)curItem->currentPosition.y - 128",
+        "inlined_at_line": 216,
+        "inlined_at_anchor": "calculatePointScore(curItem"
+      },
+      "semantic_sink": "point-item-score",
+      "candidate_disposition": "retain",
+      "range_strategy_candidate": "prove-collected-item-y-finite-and-signed-i32",
+      "correspondence_status": "manual-disassembly-source-alignment-unproved",
+      "proof_status": "unproved",
+      "base_obligation_id": "ftol2-0041fbb2"
+    },
+    {
+      "call_address": "0x0041fc11",
+      "function": "th06::ItemManager::OnUpdate",
+      "source_candidate": {
+        "file": "src/ItemManager.cpp",
+        "line": 80,
+        "line_anchor": "(i32)curItem->currentPosition.y < 128",
+        "inlined_at_line": 220,
+        "inlined_at_anchor": "calculatePointScore(curItem"
+      },
+      "semantic_sink": "point-item-score",
+      "candidate_disposition": "retain",
+      "range_strategy_candidate": "prove-collected-item-y-finite-and-signed-i32",
+      "correspondence_status": "manual-disassembly-source-alignment-unproved",
+      "proof_status": "unproved",
+      "base_obligation_id": "ftol2-0041fc11"
+    },
+    {
+      "call_address": "0x0041fc32",
+      "function": "th06::ItemManager::OnUpdate",
+      "source_candidate": {
+        "file": "src/ItemManager.cpp",
+        "line": 82,
+        "line_anchor": "(i32)curItem->currentPosition.y - 128",
+        "inlined_at_line": 220,
+        "inlined_at_anchor": "calculatePointScore(curItem"
+      },
+      "semantic_sink": "point-item-score",
+      "candidate_disposition": "retain",
+      "range_strategy_candidate": "prove-collected-item-y-finite-and-signed-i32",
+      "correspondence_status": "manual-disassembly-source-alignment-unproved",
+      "proof_status": "unproved",
+      "base_obligation_id": "ftol2-0041fc32"
+    },
+    {
+      "call_address": "0x0041fc8e",
+      "function": "th06::ItemManager::OnUpdate",
+      "source_candidate": {
+        "file": "src/ItemManager.cpp",
+        "line": 80,
+        "line_anchor": "(i32)curItem->currentPosition.y < 128",
+        "inlined_at_line": 224,
+        "inlined_at_anchor": "calculatePointScore(curItem"
+      },
+      "semantic_sink": "point-item-score",
+      "candidate_disposition": "retain",
+      "range_strategy_candidate": "prove-collected-item-y-finite-and-signed-i32",
+      "correspondence_status": "manual-disassembly-source-alignment-unproved",
+      "proof_status": "unproved",
+      "base_obligation_id": "ftol2-0041fc8e"
+    },
+    {
+      "call_address": "0x0041fcaf",
+      "function": "th06::ItemManager::OnUpdate",
+      "source_candidate": {
+        "file": "src/ItemManager.cpp",
+        "line": 82,
+        "line_anchor": "(i32)curItem->currentPosition.y - 128",
+        "inlined_at_line": 224,
+        "inlined_at_anchor": "calculatePointScore(curItem"
+      },
+      "semantic_sink": "point-item-score",
+      "candidate_disposition": "retain",
+      "range_strategy_candidate": "prove-collected-item-y-finite-and-signed-i32",
+      "correspondence_status": "manual-disassembly-source-alignment-unproved",
+      "proof_status": "unproved",
+      "base_obligation_id": "ftol2-0041fcaf"
+    },
+    {
+      "call_address": "0x00420298",
+      "function": "th06::ItemManager::OnDraw",
+      "source_candidate": {
+        "file": "src/ItemManager.cpp",
+        "line": 382,
+        "line_anchor": "itemAlpha = 255 - (i32)"
+      },
+      "semantic_sink": "presentation-alpha",
+      "candidate_disposition": "omit-after-noninterference",
+      "range_strategy_candidate": "eliminate-with-item-draw",
+      "correspondence_status": "manual-disassembly-source-alignment-unproved",
+      "proof_status": "unproved",
+      "base_obligation_id": "ftol2-00420298"
+    },
+    {
+      "call_address": "0x00422755",
+      "function": "th06::MidiOutput::OnTimerElapsed",
+      "source_candidate": {
+        "file": "src/MidiOutput.cpp",
+        "line": 459,
+        "line_anchor": "fadeOutVolumeMultiplier * 128.0f"
+      },
+      "semantic_sink": "audio-volume",
+      "candidate_disposition": "omit-after-noninterference",
+      "range_strategy_candidate": "eliminate-with-midi-output",
+      "correspondence_status": "manual-disassembly-source-alignment-unproved",
+      "proof_status": "unproved",
+      "base_obligation_id": "ftol2-00422755"
+    },
+    {
+      "call_address": "0x0042277e",
+      "function": "th06::MidiOutput::OnTimerElapsed",
+      "source_candidate": {
+        "file": "src/MidiOutput.cpp",
+        "line": 463,
+        "line_anchor": "fadeOutLastSetVolume ="
+      },
+      "semantic_sink": "audio-volume",
+      "candidate_disposition": "omit-after-noninterference",
+      "range_strategy_candidate": "eliminate-with-midi-output",
+      "correspondence_status": "manual-disassembly-source-alignment-unproved",
+      "proof_status": "unproved",
+      "base_obligation_id": "ftol2-0042277e"
+    },
+    {
+      "call_address": "0x00422ec4",
+      "function": "th06::MidiOutput::ProcessMsg",
+      "source_candidate": {
+        "file": "src/MidiOutput.cpp",
+        "line": 632,
+        "line_anchor": "lVar5 = (f32)arg2"
+      },
+      "semantic_sink": "audio-volume",
+      "candidate_disposition": "omit-after-noninterference",
+      "range_strategy_candidate": "eliminate-with-midi-output",
+      "correspondence_status": "manual-disassembly-source-alignment-unproved",
+      "proof_status": "unproved",
+      "base_obligation_id": "ftol2-00422ec4"
+    },
+    {
+      "call_address": "0x004232d6",
+      "function": "th06::MidiOutput::FadeOutSetVolume",
+      "source_candidate": {
+        "file": "src/MidiOutput.cpp",
+        "line": 707,
+        "line_anchor": "volumeClamped = (i32)"
+      },
+      "semantic_sink": "audio-volume",
+      "candidate_disposition": "omit-after-noninterference",
+      "range_strategy_candidate": "eliminate-with-midi-output",
+      "correspondence_status": "manual-disassembly-source-alignment-unproved",
+      "proof_status": "unproved",
+      "base_obligation_id": "ftol2-004232d6"
+    },
+    {
+      "call_address": "0x00424da9",
+      "function": "th06::Supervisor::FadeOutMusic",
+      "source_candidate": {
+        "file": "src/Supervisor.cpp",
+        "line": 879,
+        "line_anchor": "SetFadeOut(1000.0f * fadeOutSeconds)"
+      },
+      "semantic_sink": "audio-fade-duration",
+      "candidate_disposition": "omit-after-noninterference",
+      "range_strategy_candidate": "eliminate-with-audio-output",
+      "correspondence_status": "manual-disassembly-source-alignment-unproved",
+      "proof_status": "unproved",
+      "base_obligation_id": "ftol2-00424da9"
+    },
+    {
+      "call_address": "0x00424e74",
+      "function": "th06::SoundPlayer::FadeOut",
+      "source_candidate": {
+        "file": "src/SoundPlayer.hpp",
+        "line": 80,
+        "line_anchor": "seconds * 60"
+      },
+      "semantic_sink": "audio-fade-duration",
+      "candidate_disposition": "omit-after-noninterference",
+      "range_strategy_candidate": "eliminate-with-audio-output",
+      "correspondence_status": "manual-disassembly-source-alignment-unproved",
+      "proof_status": "unproved",
+      "base_obligation_id": "ftol2-00424e74"
+    },
+    {
+      "call_address": "0x00428cc8",
+      "function": "th06::Player::OnUpdate",
+      "source_candidate": {
+        "file": "src/Player.cpp",
+        "line": 234,
+        "line_anchor": "COLOR_SET_ALPHA(COLOR_WHITE"
+      },
+      "semantic_sink": "presentation-alpha",
+      "candidate_disposition": "omit-after-noninterference",
+      "range_strategy_candidate": "eliminate-player-sprite-color-while-retaining-respawn-timer",
+      "correspondence_status": "manual-disassembly-source-alignment-unproved",
+      "proof_status": "unproved",
+      "base_obligation_id": "ftol2-00428cc8"
+    },
+    {
+      "call_address": "0x0042f842",
+      "function": "th06::ScreenEffect::CalcFadeIn",
+      "source_candidate": {
+        "file": "src/ScreenEffect.cpp",
+        "line": 43,
+        "line_anchor": "effect->fadeAlpha = 255.0f"
+      },
+      "semantic_sink": "presentation-alpha",
+      "candidate_disposition": "omit-after-noninterference",
+      "range_strategy_candidate": "eliminate-fadeAlpha-while-retaining-job-lifetime",
+      "correspondence_status": "manual-disassembly-source-alignment-unproved",
+      "proof_status": "unproved",
+      "base_obligation_id": "ftol2-0042f842"
+    },
+    {
+      "call_address": "0x0042fcbc",
+      "function": "th06::ScreenEffect::CalcFadeOut",
+      "source_candidate": {
+        "file": "src/ScreenEffect.cpp",
+        "line": 109,
+        "line_anchor": "effect->fadeAlpha ="
+      },
+      "semantic_sink": "presentation-alpha",
+      "candidate_disposition": "omit-after-noninterference",
+      "range_strategy_candidate": "eliminate-fadeAlpha-while-retaining-job-lifetime",
+      "correspondence_status": "manual-disassembly-source-alignment-unproved",
+      "proof_status": "unproved",
+      "base_obligation_id": "ftol2-0042fcbc"
+    },
+    {
+      "call_address": "0x0043473f",
+      "function": "th06::AnmManager::ExecuteScript",
+      "source_candidate": {
+        "file": "src/AnmManager.cpp",
+        "line": 1312,
+        "line_anchor": "local_34 ="
+      },
+      "semantic_sink": "presentation-color",
+      "candidate_disposition": "omit-after-noninterference",
+      "range_strategy_candidate": "eliminate-anm-color-while-retaining-script-timing",
+      "correspondence_status": "manual-disassembly-source-alignment-unproved",
+      "proof_status": "unproved",
+      "base_obligation_id": "ftol2-0043473f"
+    },
+    {
+      "call_address": "0x00434bc8",
+      "function": "th06::AnmManager::DrawVmTextFmt",
+      "source_candidate": {
+        "file": "src/AnmManager.cpp",
+        "line": 1399,
+        "line_anchor": "textureHeight"
+      },
+      "semantic_sink": "text-raster-coordinate",
+      "candidate_disposition": "omit-after-noninterference",
+      "range_strategy_candidate": "eliminate-with-text-rasterization",
+      "correspondence_status": "manual-disassembly-source-alignment-unproved",
+      "proof_status": "unproved",
+      "base_obligation_id": "ftol2-00434bc8"
+    },
+    {
+      "call_address": "0x00434bda",
+      "function": "th06::AnmManager::DrawVmTextFmt",
+      "source_candidate": {
+        "file": "src/AnmManager.cpp",
+        "line": 1399,
+        "line_anchor": "textureWidth"
+      },
+      "semantic_sink": "text-raster-coordinate",
+      "candidate_disposition": "omit-after-noninterference",
+      "range_strategy_candidate": "eliminate-with-text-rasterization",
+      "correspondence_status": "manual-disassembly-source-alignment-unproved",
+      "proof_status": "unproved",
+      "base_obligation_id": "ftol2-00434bda"
+    },
+    {
+      "call_address": "0x00434bec",
+      "function": "th06::AnmManager::DrawVmTextFmt",
+      "source_candidate": {
+        "file": "src/AnmManager.cpp",
+        "line": 1399,
+        "line_anchor": "startPixelInclusive.y"
+      },
+      "semantic_sink": "text-raster-coordinate",
+      "candidate_disposition": "omit-after-noninterference",
+      "range_strategy_candidate": "eliminate-with-text-rasterization",
+      "correspondence_status": "manual-disassembly-source-alignment-unproved",
+      "proof_status": "unproved",
+      "base_obligation_id": "ftol2-00434bec"
+    },
+    {
+      "call_address": "0x00434bfe",
+      "function": "th06::AnmManager::DrawVmTextFmt",
+      "source_candidate": {
+        "file": "src/AnmManager.cpp",
+        "line": 1398,
+        "line_anchor": "startPixelInclusive.x"
+      },
+      "semantic_sink": "text-raster-coordinate",
+      "candidate_disposition": "omit-after-noninterference",
+      "range_strategy_candidate": "eliminate-with-text-rasterization",
+      "correspondence_status": "manual-disassembly-source-alignment-unproved",
+      "proof_status": "unproved",
+      "base_obligation_id": "ftol2-00434bfe"
+    },
+    {
+      "call_address": "0x00434cc7",
+      "function": "th06::AnmManager::DrawStringFormat",
+      "source_candidate": {
+        "file": "src/AnmManager.cpp",
+        "line": 1418,
+        "line_anchor": "textureHeight"
+      },
+      "semantic_sink": "text-raster-coordinate",
+      "candidate_disposition": "omit-after-noninterference",
+      "range_strategy_candidate": "eliminate-with-text-rasterization",
+      "correspondence_status": "manual-disassembly-source-alignment-unproved",
+      "proof_status": "unproved",
+      "base_obligation_id": "ftol2-00434cc7"
+    },
+    {
+      "call_address": "0x00434cd9",
+      "function": "th06::AnmManager::DrawStringFormat",
+      "source_candidate": {
+        "file": "src/AnmManager.cpp",
+        "line": 1418,
+        "line_anchor": "textureWidth"
+      },
+      "semantic_sink": "text-raster-coordinate",
+      "candidate_disposition": "omit-after-noninterference",
+      "range_strategy_candidate": "eliminate-with-text-rasterization",
+      "correspondence_status": "manual-disassembly-source-alignment-unproved",
+      "proof_status": "unproved",
+      "base_obligation_id": "ftol2-00434cd9"
+    },
+    {
+      "call_address": "0x00434ceb",
+      "function": "th06::AnmManager::DrawStringFormat",
+      "source_candidate": {
+        "file": "src/AnmManager.cpp",
+        "line": 1418,
+        "line_anchor": "startPixelInclusive.y"
+      },
+      "semantic_sink": "text-raster-coordinate",
+      "candidate_disposition": "omit-after-noninterference",
+      "range_strategy_candidate": "eliminate-with-text-rasterization",
+      "correspondence_status": "manual-disassembly-source-alignment-unproved",
+      "proof_status": "unproved",
+      "base_obligation_id": "ftol2-00434ceb"
+    },
+    {
+      "call_address": "0x00434cfd",
+      "function": "th06::AnmManager::DrawStringFormat",
+      "source_candidate": {
+        "file": "src/AnmManager.cpp",
+        "line": 1417,
+        "line_anchor": "startPixelInclusive.x"
+      },
+      "semantic_sink": "text-raster-coordinate",
+      "candidate_disposition": "omit-after-noninterference",
+      "range_strategy_candidate": "eliminate-with-text-rasterization",
+      "correspondence_status": "manual-disassembly-source-alignment-unproved",
+      "proof_status": "unproved",
+      "base_obligation_id": "ftol2-00434cfd"
+    },
+    {
+      "call_address": "0x00434d86",
+      "function": "th06::AnmManager::DrawStringFormat",
+      "source_candidate": {
+        "file": "src/AnmManager.cpp",
+        "line": 1420,
+        "line_anchor": "secondPartStartX ="
+      },
+      "semantic_sink": "text-raster-coordinate",
+      "candidate_disposition": "omit-after-noninterference",
+      "range_strategy_candidate": "eliminate-with-text-rasterization",
+      "correspondence_status": "manual-disassembly-source-alignment-unproved",
+      "proof_status": "unproved",
+      "base_obligation_id": "ftol2-00434d86"
+    },
+    {
+      "call_address": "0x00434db6",
+      "function": "th06::AnmManager::DrawStringFormat",
+      "source_candidate": {
+        "file": "src/AnmManager.cpp",
+        "line": 1423,
+        "line_anchor": "textureHeight"
+      },
+      "semantic_sink": "text-raster-coordinate",
+      "candidate_disposition": "omit-after-noninterference",
+      "range_strategy_candidate": "eliminate-with-text-rasterization",
+      "correspondence_status": "manual-disassembly-source-alignment-unproved",
+      "proof_status": "unproved",
+      "base_obligation_id": "ftol2-00434db6"
+    },
+    {
+      "call_address": "0x00434dc8",
+      "function": "th06::AnmManager::DrawStringFormat",
+      "source_candidate": {
+        "file": "src/AnmManager.cpp",
+        "line": 1423,
+        "line_anchor": "textureWidth"
+      },
+      "semantic_sink": "text-raster-coordinate",
+      "candidate_disposition": "omit-after-noninterference",
+      "range_strategy_candidate": "eliminate-with-text-rasterization",
+      "correspondence_status": "manual-disassembly-source-alignment-unproved",
+      "proof_status": "unproved",
+      "base_obligation_id": "ftol2-00434dc8"
+    },
+    {
+      "call_address": "0x00434dda",
+      "function": "th06::AnmManager::DrawStringFormat",
+      "source_candidate": {
+        "file": "src/AnmManager.cpp",
+        "line": 1422,
+        "line_anchor": "startPixelInclusive.y"
+      },
+      "semantic_sink": "text-raster-coordinate",
+      "candidate_disposition": "omit-after-noninterference",
+      "range_strategy_candidate": "eliminate-with-text-rasterization",
+      "correspondence_status": "manual-disassembly-source-alignment-unproved",
+      "proof_status": "unproved",
+      "base_obligation_id": "ftol2-00434dda"
+    },
+    {
+      "call_address": "0x00434ea7",
+      "function": "th06::AnmManager::DrawStringFormat2",
+      "source_candidate": {
+        "file": "src/AnmManager.cpp",
+        "line": 1442,
+        "line_anchor": "textureHeight"
+      },
+      "semantic_sink": "text-raster-coordinate",
+      "candidate_disposition": "omit-after-noninterference",
+      "range_strategy_candidate": "eliminate-with-text-rasterization",
+      "correspondence_status": "manual-disassembly-source-alignment-unproved",
+      "proof_status": "unproved",
+      "base_obligation_id": "ftol2-00434ea7"
+    },
+    {
+      "call_address": "0x00434eb9",
+      "function": "th06::AnmManager::DrawStringFormat2",
+      "source_candidate": {
+        "file": "src/AnmManager.cpp",
+        "line": 1442,
+        "line_anchor": "textureWidth"
+      },
+      "semantic_sink": "text-raster-coordinate",
+      "candidate_disposition": "omit-after-noninterference",
+      "range_strategy_candidate": "eliminate-with-text-rasterization",
+      "correspondence_status": "manual-disassembly-source-alignment-unproved",
+      "proof_status": "unproved",
+      "base_obligation_id": "ftol2-00434eb9"
+    },
+    {
+      "call_address": "0x00434ecb",
+      "function": "th06::AnmManager::DrawStringFormat2",
+      "source_candidate": {
+        "file": "src/AnmManager.cpp",
+        "line": 1442,
+        "line_anchor": "startPixelInclusive.y"
+      },
+      "semantic_sink": "text-raster-coordinate",
+      "candidate_disposition": "omit-after-noninterference",
+      "range_strategy_candidate": "eliminate-with-text-rasterization",
+      "correspondence_status": "manual-disassembly-source-alignment-unproved",
+      "proof_status": "unproved",
+      "base_obligation_id": "ftol2-00434ecb"
+    },
+    {
+      "call_address": "0x00434edd",
+      "function": "th06::AnmManager::DrawStringFormat2",
+      "source_candidate": {
+        "file": "src/AnmManager.cpp",
+        "line": 1441,
+        "line_anchor": "startPixelInclusive.x"
+      },
+      "semantic_sink": "text-raster-coordinate",
+      "candidate_disposition": "omit-after-noninterference",
+      "range_strategy_candidate": "eliminate-with-text-rasterization",
+      "correspondence_status": "manual-disassembly-source-alignment-unproved",
+      "proof_status": "unproved",
+      "base_obligation_id": "ftol2-00434edd"
+    },
+    {
+      "call_address": "0x00434f6c",
+      "function": "th06::AnmManager::DrawStringFormat2",
+      "source_candidate": {
+        "file": "src/AnmManager.cpp",
+        "line": 1444,
+        "line_anchor": "secondPartStartX ="
+      },
+      "semantic_sink": "text-raster-coordinate",
+      "candidate_disposition": "omit-after-noninterference",
+      "range_strategy_candidate": "eliminate-with-text-rasterization",
+      "correspondence_status": "manual-disassembly-source-alignment-unproved",
+      "proof_status": "unproved",
+      "base_obligation_id": "ftol2-00434f6c"
+    },
+    {
+      "call_address": "0x00434f9c",
+      "function": "th06::AnmManager::DrawStringFormat2",
+      "source_candidate": {
+        "file": "src/AnmManager.cpp",
+        "line": 1447,
+        "line_anchor": "textureHeight"
+      },
+      "semantic_sink": "text-raster-coordinate",
+      "candidate_disposition": "omit-after-noninterference",
+      "range_strategy_candidate": "eliminate-with-text-rasterization",
+      "correspondence_status": "manual-disassembly-source-alignment-unproved",
+      "proof_status": "unproved",
+      "base_obligation_id": "ftol2-00434f9c"
+    },
+    {
+      "call_address": "0x00434fae",
+      "function": "th06::AnmManager::DrawStringFormat2",
+      "source_candidate": {
+        "file": "src/AnmManager.cpp",
+        "line": 1447,
+        "line_anchor": "textureWidth"
+      },
+      "semantic_sink": "text-raster-coordinate",
+      "candidate_disposition": "omit-after-noninterference",
+      "range_strategy_candidate": "eliminate-with-text-rasterization",
+      "correspondence_status": "manual-disassembly-source-alignment-unproved",
+      "proof_status": "unproved",
+      "base_obligation_id": "ftol2-00434fae"
+    },
+    {
+      "call_address": "0x00434fc0",
+      "function": "th06::AnmManager::DrawStringFormat2",
+      "source_candidate": {
+        "file": "src/AnmManager.cpp",
+        "line": 1446,
+        "line_anchor": "startPixelInclusive.y"
+      },
+      "semantic_sink": "text-raster-coordinate",
+      "candidate_disposition": "omit-after-noninterference",
+      "range_strategy_candidate": "eliminate-with-text-rasterization",
+      "correspondence_status": "manual-disassembly-source-alignment-unproved",
+      "proof_status": "unproved",
+      "base_obligation_id": "ftol2-00434fc0"
+    }
+  ],
+  "artifact_sha256": "2885d3ed814784f4446a8f977646b3f1fc2edbdd058285ec37eb77d089a16466"
+}

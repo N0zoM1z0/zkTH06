@@ -114,11 +114,14 @@ extracts the pinned address range into a temporary directory, and executes it
 in a freestanding i386 stream harness.  An independent integer decoder treats
 canonical finite ext80 inputs as exact dyadic rationals and compares the full
 EDX:EAX result with truncation toward zero.  This experiment is restricted to
-signed-i64-representable inputs.  The proposed gameplay slice additionally
-requires a reachable-state proof that each mapped call produces a signed-i32
-result.  A bit-mask scan finds 75 full-EAX and two AL-only observers, but no
-EDX observer before its bounded branch/call termination; EDX is still live at
-42 such stopping points, so complete control-flow use remains an obligation.
+signed-i64-representable inputs.  A bit-mask scan finds 75 full-EAX and two
+AL-only observers, but no EDX observer before its bounded branch/call
+termination; EDX is still live at 42 such stopping points, so complete
+control-flow use remains an obligation.  Range/refinement premises are then
+chosen from the actual downstream observation rather than imposed globally.
+For a general integer consumer this may require a reachable signed-i32 bound;
+for ECL variable resolution it is enough to prove which, if any, of 25
+sentinel IDs is selected, including exceptional and out-of-range inputs.
 
 The fidelity representation is address-indexed.  Each retained arithmetic
 operation records its pinned original address, x87 stack/control inputs,
@@ -138,6 +141,22 @@ class, and the relevant Lean model contract.  Every slice disposition remains
 \code{unclassified}; every helper range remains \code{unproved}.  Thus the
 ledger is a quantified work queue for later translation validation and
 noninterference proofs, not a premise silently promoted from static analysis.
+
+A second, derived ledger associates every helper address with a manually
+reviewed source-expression candidate and semantic sink at a pinned source
+revision.  Such an alignment requires consistent function ownership, local
+disassembly dataflow, source order, and exact source anchors, but remains
+explicitly weaker than debug-line evidence or compiler correctness.  Its
+``omit after noninterference'' labels prioritize quotient proofs; they do not
+change the conservative base-ledger status.
+
+For the retained ECL call, an observation-specific artifact checks the local
+\code{GetVarFloat}/\code{GetVar} instruction signatures and derives its 25-way
+jump table.  A finite Lean bit-vector theorem models the decoded wrapping add
+and unsigned bound, and an abstract resolver theorem factors all non-sentinel
+integer results into the same literal path.  The eventual code-binding theorem
+must still validate the decode, helper/classifier semantics, jump-target
+meanings, reachability, and guest implementation.
 
 The optimization lane uses field-specific fixed-point formats, explicit
 overflow and rounding, integer phase angles, and deterministic trigonometric

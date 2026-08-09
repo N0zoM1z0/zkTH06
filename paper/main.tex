@@ -37,9 +37,12 @@ conversion-helper, store-boundary, and control-profile obligations.  These
 are followed by a pinned x87/SoftFloat counterexample search in which
 34,002,802 tested result/condition/exception tuples match.  A separate
 temporary i386 harness executes the verified original \code{\_\_ftol2} body;
-1,000,014 in-domain EDX:EAX results match exact dyadic truncation.  These
-two audited families are materialized as a hash-bound, byte-free ledger of 321
-original addresses, each still marked with open slicing and refinement status.
+1,000,014 in-domain EDX:EAX results match exact dyadic truncation, and a
+further 1,000,154 focused executions match the 25-way ECL-variable
+classification.  These two audited families are materialized as a hash-bound,
+byte-free ledger of 321 original addresses.  A derived source/sink ledger
+identifies 68 omission candidates and nine retained calls, while keeping every
+correspondence, slicing, and refinement status open.
 These results establish same-host self-consistency and an arithmetic proof
 surface only; exact x87
 transcendental semantics, presentation-dependent state, and an

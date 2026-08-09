@@ -233,11 +233,19 @@ the x87 stack to empty, and 908,273 cases left the inexact flag set.  The run
 took 3.5 seconds.  A Lean case model separately checks the helper's
 nearest-even carry/borrow correction and the EDX:EAX split/join identity.
 
-The result is deliberately not generalized to NaNs or out-of-range inputs.
-Nor does it prove that mapped gameplay calls stay within signed i32, even
-though static consumers observe only EAX or AL.  Reachable-range invariants and
-binary-to-model correspondence remain required before the helper can be
-replaced by a smaller truncation operation in the proof kernel.
+A second campaign queried only the observation used by ECL variable dispatch.
+Its 1,000,154 cases include quarter-step boundaries around IDs $-10025$ through
+$-10001$, dense deterministic PC53 samples, infinities, quiet/signaling NaNs,
+large finite values, a pseudo-denormal, and an unnormal.  All classifications
+matched; 3,084 operands selected a variable ID and nine cases set invalid.
+The combined campaign therefore executed the exact helper 2,000,168 times.
+
+The full-result claim is deliberately not generalized to NaNs or out-of-range
+inputs, and the classifier result is finite counterexample search rather than
+a universal theorem.  General integer consumers still require reachable-range
+invariants.  The ECL call instead requires exact agreement on the 25 sentinel
+outcomes, together with binary-to-model correspondence, before the helper can
+be replaced by a smaller classifier in the proof kernel.
 
 \subsection{Address-level obligation ledger}
 
@@ -255,3 +263,27 @@ helper records remain \code{unclassified} and
 \code{reachable\_signed\_i32\_range = unproved}.  Each retained record must
 eventually name a binary-to-model and guest-refinement theorem; each omitted
 record must name a projection-noninterference theorem.
+
+\subsection{Source candidates and an observation quotient}
+
+A derived ledger covers all 77 helper calls with source-expression candidates
+anchored to 16 files at authoritative revision
+\code{cc475a0bc3fef38683b0f02224c87ddba0a021d9}.  It classifies 68 calls as
+omission-after-noninterference candidates and nine as retained: one ECL
+variable-dispatch call and eight point-item scoring calls.  The largest sink
+classes are 28 D3D viewport conversions and 20 text-raster coordinates.  The
+method combines function mapping, local disassembly dataflow, source order,
+and pinned line anchors.  It is explicitly marked as manual, unproved
+correspondence, and no omission is yet admitted.
+
+The ECL call at \code{0x0040b38b} admits a smaller observation than an arbitrary
+integer result.  A hash-bound artifact checks 17 local instruction signatures
+and extracts 25 unique in-function jump targets.  The decoded code adds 10025
+modulo $2^{32}$ and accepts unsigned values at most 24, corresponding to ECL
+variable IDs $-10025$ through $-10001$; every other value returns the original
+float literal.  Lean's bit-vector decision procedure checks the machine
+interval identity, and an abstract theorem checks irrelevance of the exact
+non-label integer.  These results narrow, but do not discharge, four remaining
+obligations: verified decode, universal helper/classifier agreement, target-to-
+variable binding, and guest refinement.  The eight retained scoring calls
+still require a reachable finite signed-i32 bound on collected-item position.

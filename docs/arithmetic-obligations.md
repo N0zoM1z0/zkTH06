@@ -99,6 +99,59 @@ zk kernel, the project still needs:
 
 The exact helper remains the executable oracle until those premises close.
 
+## Source/sink classification candidates
+
+[`arithmetic/ftol2-source-candidates-v1.json`](../arithmetic/ftol2-source-candidates-v1.json)
+adds a conservative candidate annotation for every one of the 77 base-ledger
+calls. It is bound to authoritative source revision
+`cc475a0bc3fef38683b0f02224c87ddba0a021d9`, hashes each of the 16 referenced
+source files, and checks every recorded line anchor against the pinned Git
+blob. The artifact digest is
+`2885d3ed814784f4446a8f977646b3f1fc2edbdd058285ec37eb77d089a16466`.
+
+The alignment combines mapped function ownership, local disassembly dataflow,
+source order, and exact source anchors. It is explicitly marked
+`manual-disassembly-source-alignment-unproved`: it is neither debug-line
+evidence nor a compiler-correctness theorem. Its current queue is:
+
+| Candidate disposition | Calls | Meaning |
+| --- | ---: | --- |
+| `omit-after-noninterference` | 68 | presentation/audio sink; still retained until transitive noninterference is proved |
+| `retain` | 9 | one ECL variable dispatch and eight point-item score conversions |
+
+Thus the artifact prioritizes proof work but discharges no base-ledger entry.
+In particular, labels such as `d3d-viewport` or `audio-volume` are semantic
+sink hypotheses, not permission to remove those paths.
+
+## Observation-specific ECL narrowing
+
+The retained call at `0x0040b38b` is narrower than a general integer cast.
+[`arithmetic/ecl-var-dispatch-v1.json`](../arithmetic/ecl-var-dispatch-v1.json)
+binds the pinned image, mapping, and base ledger; checks 17 instruction
+signatures in `EnemyEclInstr::GetVar` and `GetVarFloat`; and extracts the
+25-entry jump table at `0x0040b31c`. The wrapping `add eax, 10025` followed by
+an unsigned comparison with 24 recognizes precisely the signed 32-bit labels
+`-10025..-10001`. All other conversion outputs cause `GetVar` to return its
+input integer pointer, after which `GetVarFloat` returns the original float
+pointer. The artifact digest is
+`4f30ab443aa0a557ed7d39c2389a8be329601eba956aed073f05bad51b46e4cc`.
+
+`ZkTH06.EclVarId.machine_classifier_matches_signed_interval` checks the
+32-bit wrapping-add/unsigned-compare identity with `bv_decide`.
+`nonvariable_integer_value_is_irrelevant` proves in the abstract resolver that
+any two non-label results make the same choice. Together these facts change the
+desired refinement for this call: prove that the exact helper and guest agree
+on the 25-way classifier, rather than first proving that every reachable input
+has an arbitrary signed-32-bit conversion result.
+
+This is a reduction in proof surface, not a completed proof. Static decoding is
+still performed by unverified `objdump`; table targets are not yet bound to the
+modeled variable values; the helper/classifier agreement has only finite
+boundary and exceptional-input testing; and no guest resolver is connected to
+the Lean model. The other eight retained calls still require a reachable
+finite/signed-32-bit bound for collected item `y` unless a similarly narrow
+observation theorem is found.
+
 ## Discharge discipline
 
 A future ledger revision should replace `unclassified` only with a structured

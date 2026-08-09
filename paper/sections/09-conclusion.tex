@@ -27,15 +27,18 @@ arithmetic, stores, rounding, integer conversion, and both reached comparison
 widths, after an initial denormal-priority rule was falsified and corrected.
 All 244 mapped comparison consumers are classified into eleven checked truth
 tables.  A temporary i386 harness additionally matches 1,000,014 in-domain
-executions of the exact \code{\_\_ftol2} body against dyadic truncation.  This
-surface is now indexed by a hash-bound ledger of 244 comparison and 77 helper
+executions of the exact \code{\_\_ftol2} body against dyadic truncation, plus
+1,000,154 focused executions against its ECL sentinel observation.  This
+surface is indexed by a hash-bound ledger of 244 comparison and 77 helper
 addresses.  A bit-mask re-audit records 75 full-EAX and two AL-only helper
-observers while explicitly retaining unresolved control-flow obligations.
-This remains counterexample search and bookkeeping: startup state,
-load/remainder behavior, reachable helper ranges, code correspondence, and
-transcendental microarchitecture are not yet proved.  The fidelity design
-therefore binds operations to original addresses and store widths instead of
-assuming source-level host arithmetic is exact.
+observers, while a derived source ledger proposes 68 omission and nine retain
+candidates.  For the ECL call, a pinned 25-way dispatch audit and Lean theorem
+replace a blanket range goal with exact helper-to-classifier refinement.  This
+remains counterexample search and conservative bookkeeping: startup state,
+load/remainder behavior, noninterference, reachable item ranges, verified code
+correspondence, and transcendental microarchitecture are not yet proved.  The
+fidelity design therefore binds operations to original addresses and actual
+observations instead of assuming source-level host arithmetic is exact.
 
 That evidence will guide the projection, but it cannot prove a slice sound.
 The intended end state additionally requires a machine-checked commuting

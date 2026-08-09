@@ -63,7 +63,17 @@ def main() -> int:
     generated = probe.random_inputs(1000)
     assert len(generated) == 1000
     assert all(-(1 << 63) <= probe.trunc_ext80(value) < (1 << 63) for value in generated)
-    print("validated PE range extraction and exact finite ext80 truncation")
+
+    assert probe.ecl_var_id(probe.finite_float_to_ext80(-10025.75)) == -10025
+    assert probe.ecl_var_id(probe.finite_float_to_ext80(-10001.75)) == -10001
+    assert probe.ecl_var_id(probe.finite_float_to_ext80(-10026.0)) is None
+    assert probe.ecl_var_id(probe.finite_float_to_ext80(-10000.75)) is None
+    assert probe.ecl_var_id(probe.ext80(0, 0x7FFF, 0x8000000000000000)) is None
+    assert probe.ecl_var_id(probe.ext80(0, 0x3FFF, 0x4000000000000000)) is None
+    classifier_inputs = probe.ecl_classifier_inputs(1000)
+    assert len(classifier_inputs) == 1154
+    assert sum(probe.ecl_var_id(value) is not None for value in classifier_inputs) > 0
+    print("validated PE extraction, finite ext80 truncation, and ECL classification")
     return 0
 
 

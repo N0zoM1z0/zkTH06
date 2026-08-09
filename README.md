@@ -29,6 +29,12 @@ The 244 comparison addresses and 77 conversion-call addresses are now frozen
 in a hash-bound, proprietary-byte-free obligation ledger. Every site remains
 explicitly unclassified until it receives either a retained-operation
 refinement or an omitted-path noninterference proof.
+A derived source/sink ledger conservatively identifies 68 helper calls as
+omission candidates and nine as gameplay-retained candidates. For the retained
+ECL call, a pinned dispatch audit and Lean bit-vector theorem reduce the
+observable result to one of 25 variable IDs (`-10025..-10001`) or the unchanged
+literal path. This narrows a future proof obligation; it does not yet discharge
+source/binary correspondence, helper semantics, reachability, or guest binding.
 
 ## Repository boundary
 

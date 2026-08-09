@@ -34,9 +34,20 @@ binary-decoding theorem.
 nearest-integer carry/borrow correction recovers truncation toward zero in all
 sign/rounding-position cases. It also proves the EDX:EAX split/join identity
 and that a low-32-bit observer is independent of EDX. The unproved premises
-remain substantial: raw ext80 decoding, signed-range safety at every reachable
-call, correspondence with the 117 extracted bytes, and replacement of the
-bounded no-EDX-observer scan with complete control-flow evidence.
+remain substantial: raw ext80 decoding, site-specific range or observation
+safety for every reachable call, correspondence with the 117 extracted bytes,
+and replacement of the bounded no-EDX-observer scan with complete control-flow
+evidence.
+
+[`ZkTH06/EclVarId.lean`](ZkTH06/EclVarId.lean) isolates the observation made
+by the retained `EnemyEclInstr::GetVarFloat` call. It proves with `bv_decide`
+that the decoded 32-bit wrapping add and unsigned comparison recognize exactly
+the signed encodings `-10025..-10001`, and proves that all non-label integer
+results return the same original literal in the abstract resolver. This removes
+the need for an arbitrary signed-32-bit range premise from the desired
+site-specific theorem. It does not prove that the executable decodes to the
+model, that `__ftol2` implements the classifier for all reachable ext80 inputs,
+that jump targets have the modeled meanings, or that the guest refines it.
 
 The address-level bridge to these definitions is
 [`arithmetic/obligations-v1.json`](../arithmetic/obligations-v1.json). Its 244

@@ -20,6 +20,9 @@ HELPER_SIZE = 0x75
 HELPER_SHA256 = "5333b186c02836974c6f792303aeb2c00d856316b93ccbbe65f51def6ae661b4"
 TARGET_CONTROL_WORD = 0x027F
 X87_TOP_MASK = 0x3800
+X87_INVALID_MASK = 0x0001
+ECL_VAR_ID_MIN = -10025
+ECL_VAR_ID_MAX = -10001
 
 
 class ProbeError(RuntimeError):
@@ -90,6 +93,11 @@ def finite_f32_to_ext80(bits: int) -> bytes:
     return ext80(sign, exponent - 127 + 16383, ((1 << 23) | fraction) << 40)
 
 
+def finite_float_to_ext80(value: float) -> bytes:
+    bits = struct.unpack("<I", struct.pack("<f", value))[0]
+    return finite_f32_to_ext80(bits)
+
+
 def trunc_ext80(value: bytes) -> int:
     """Exact truncation for a canonical finite ext80 value in signed-i64 range."""
     significand, sign_exp = struct.unpack("<QH", value)
@@ -109,6 +117,23 @@ def trunc_ext80(value: bytes) -> int:
     if not -(1 << 63) <= result < (1 << 63):
         raise ValueError("input is outside the signed-i64 range")
     return result
+
+
+def ecl_var_id(value: bytes) -> int | None:
+    """Classify the only truncation results observed by GetVarFloat's switch."""
+    significand, sign_exp = struct.unpack("<QH", value)
+    exponent = sign_exp & 0x7FFF
+    if exponent == 0x7FFF:
+        return None
+    if exponent != 0 and significand >> 63 == 0:
+        return None
+    try:
+        truncated = trunc_ext80(value)
+    except ValueError:
+        return None
+    if ECL_VAR_ID_MIN <= truncated <= ECL_VAR_ID_MAX:
+        return truncated
+    return None
 
 
 def fixed_inputs() -> list[bytes]:
@@ -157,6 +182,34 @@ def random_inputs(count: int) -> list[bytes]:
     return values
 
 
+def ecl_classifier_inputs(count: int) -> list[bytes]:
+    """Exercise ECL sentinel intervals plus exceptional/default-path values."""
+    values = [
+        ext80(0, 0x7FFF, 0x8000000000000000),  # +infinity
+        ext80(1, 0x7FFF, 0x8000000000000000),  # -infinity
+        ext80(0, 0x7FFF, 0xC000000000000001),  # quiet NaN
+        ext80(0, 0x7FFF, 0xA000000000000001),  # signaling NaN
+        ext80(0, 0x7FFE, 0xFFFFFFFFFFFFFFFF),  # largest positive finite
+        ext80(0, 0x403E, 0x8000000000000000),  # +2^63
+        ext80(0, 0x403F, 0x8000000000000000),  # +2^64
+        ext80(1, 0x403F, 0x8000000000000000),  # -2^64
+        ext80(0, 0x0000, 0x8000000000000000),  # pseudo-denormal
+        ext80(0, 0x3FFF, 0x4000000000000000),  # unnormal
+    ]
+    for integer in range(ECL_VAR_ID_MIN - 5, ECL_VAR_ID_MAX + 7):
+        for fraction in (0.0, 0.25, 0.5, 0.75):
+            values.append(finite_float_to_ext80(integer + fraction))
+
+    generator = random.Random(0xEC1C1A55)
+    for _ in range(count):
+        # Negative PC53 values in [8192, 16384) densely exercise all 25
+        # sentinel intervals without assuming that source operands are f32.
+        significand = generator.getrandbits(53) << 11
+        significand |= 1 << 63
+        values.append(ext80(1, 16383 + 13, significand))
+    return values
+
+
 def build_harness(root: Path, helper: bytes, temporary: Path) -> Path:
     assembler = shutil.which("as")
     linker = shutil.which("ld")
@@ -182,6 +235,11 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("executable", type=Path, help="verified Japanese TH06 v1.02h PE")
     parser.add_argument("--cases", type=positive_count, default=1_000_000)
+    parser.add_argument(
+        "--classifier-cases",
+        type=positive_count,
+        help="focused ECL-variable cases (defaults to --cases)",
+    )
     args = parser.parse_args()
 
     image = args.executable.read_bytes()
@@ -191,7 +249,10 @@ def main() -> int:
     if sha256(helper) != HELPER_SHA256:
         raise ProbeError("extracted __ftol2 helper SHA-256 does not match the pinned body")
 
-    inputs = fixed_inputs() + random_inputs(args.cases)
+    in_domain_inputs = fixed_inputs() + random_inputs(args.cases)
+    classifier_count = args.cases if args.classifier_cases is None else args.classifier_cases
+    classifier_inputs = ecl_classifier_inputs(classifier_count)
+    inputs = in_domain_inputs + classifier_inputs
     with tempfile.TemporaryDirectory(prefix="zkth06-ftol2-") as directory:
         harness = build_harness(root, helper, Path(directory))
         try:
@@ -212,7 +273,7 @@ def main() -> int:
         )
 
     inexact = 0
-    for index, value in enumerate(inputs):
+    for index, value in enumerate(in_domain_inputs):
         result_bits, status = struct.unpack_from("<QH", completed.stdout, index * 10)
         expected = trunc_ext80(value) & 0xFFFFFFFFFFFFFFFF
         if result_bits != expected or status & X87_TOP_MASK:
@@ -224,15 +285,42 @@ def main() -> int:
         if status & (1 << 5):
             inexact += 1
 
+    matched_ecl_variables = 0
+    classifier_invalid = 0
+    classifier_offset = len(in_domain_inputs)
+    for classifier_index, value in enumerate(classifier_inputs):
+        output_offset = (classifier_offset + classifier_index) * 10
+        result_bits, status = struct.unpack_from("<QH", completed.stdout, output_offset)
+        expected_var_id = ecl_var_id(value)
+        eax = result_bits & 0xFFFFFFFF
+        signed_eax = eax - (1 << 32) if eax & (1 << 31) else eax
+        actual_var_id = (
+            signed_eax if ECL_VAR_ID_MIN <= signed_eax <= ECL_VAR_ID_MAX else None
+        )
+        if actual_var_id != expected_var_id or status & X87_TOP_MASK:
+            significand, sign_exp = struct.unpack("<QH", value)
+            raise ProbeError(
+                f"ECL classifier mismatch at case {classifier_index}: "
+                f"input={sign_exp:04x}:{significand:016x} result={result_bits:016x} "
+                f"actual={actual_var_id} expected={expected_var_id} status={status:04x}"
+            )
+        matched_ecl_variables += expected_var_id is not None
+        classifier_invalid += bool(status & X87_INVALID_MASK)
+
     print(f"executable SHA-256: {EXECUTABLE_SHA256}")
     print(f"__ftol2 address/size: 0x{HELPER_VIRTUAL_ADDRESS:08x}/{HELPER_SIZE}")
     print(f"__ftol2 body SHA-256: {HELPER_SHA256}")
     print(f"control word: 0x{TARGET_CONTROL_WORD:04x}")
     print(
-        f"matched {len(inputs)} in-domain full EDX:EAX results against exact dyadic "
+        f"matched {len(in_domain_inputs)} in-domain full EDX:EAX results against exact dyadic "
         "truncation; x87 stack returned empty"
     )
     print(f"inexact status observed in {inexact} cases")
+    print(
+        f"matched {len(classifier_inputs)} focused/exceptional ECL sentinel classifications; "
+        f"recognized {matched_ecl_variables} variable operands and observed invalid in "
+        f"{classifier_invalid} cases"
+    )
     return 0
 
 

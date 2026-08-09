@@ -295,10 +295,47 @@ the nearest-integer correction table and EDX:EAX split/join identities, but
 does not connect raw encodings, executable bytes, or reachable inputs to those
 definitions.
 
-Exceptional/out-of-range inputs remain outside this result. Because the game
-consumes only EAX/AL, the desired simplification requires a proved invariant
-that all 77 reachable inputs truncate into signed 32 bits. The exact helper is
-retained until that range and the model-to-code binding are established.
+A second focused campaign tests the narrower ECL-variable observation. It
+combines exact fractional boundaries around `-10025..-10001`, dense
+deterministic PC53 samples, infinities, quiet/signaling NaNs, very large finite
+values, a pseudo-denormal, and an unnormal. All 1,000,154 exact-helper outputs
+agreed with the independent 25-way classifier; 3,084 selected a variable and
+nine set invalid. Together both campaigns execute the helper 2,000,168 times.
+
+Exceptional/out-of-range full results remain outside the first result, and the
+classifier campaign is finite testing rather than a theorem. The correct
+simplification premise is now site-specific. General EAX consumers require
+their actual reachable result range unless another observation quotient is
+proved; `GetVarFloat` needs only exact agreement on the 25 sentinel outcomes.
+The helper remains retained until those refinement and code-binding
+obligations are established.
+
+## Source candidates and ECL dispatch quotient
+
+A derived source ledger aligns all 77 addresses with expression candidates in
+the pinned authoritative source. It labels 68 presentation/audio conversions
+as `omit-after-noninterference` candidates and nine as retain candidates: the
+single ECL variable conversion and eight point-item score conversions. These
+labels are manual disassembly/source alignments with checked Git line anchors,
+not compiler correspondence or slicing proofs. All proof statuses remain
+`unproved`.
+
+For `EnemyEclInstr::GetVarFloat` at `0x0040b38b`, a second hash-bound artifact
+checks 17 critical instruction signatures and derives the 25 unique targets in
+the jump table at `0x0040b31c`. The machine adds 10025 modulo $2^{32}$ and
+accepts unsigned indices at most 24. A Lean bit-vector theorem checks that this
+is exactly the signed interval `-10025..-10001`; another abstract theorem shows
+that the precise integer is irrelevant outside that interval because the
+original float pointer is returned. This replaces a global range target for
+that call with the narrower helper-to-classifier refinement target.
+
+The static artifact is not verified decoding, does not yet associate each
+target body with its modeled ECL value, and does not bind either reference
+function to a guest. The eight score calls still need a reachable finite and
+signed-32-bit bound for collected item `y`. Reproduction commands, artifact
+digests, and the per-site discharge discipline are in
+[`arithmetic/README.md`](../arithmetic/README.md) and
+[`arithmetic-obligations.md`](arithmetic-obligations.md).
 
 ## Transcendentals are a scope decision
 
@@ -373,9 +410,10 @@ equivalence.
    owning field and original operation site.
 4. Discharge the address ledger: translation-validate retained comparison and
    conversion blocks, prove noninterference for omitted ones, establish
-   control-flow-complete result use and the signed-i32 input invariant at every
-   retained `__ftol2` site, and extend the oracle through `fisttp`, `fld`
-   denormal signaling, remainder, and exceptional inputs where relevant.
+   control-flow-complete result use, prove the ECL helper/classifier refinement
+   and the point-item `y` range invariant, and extend the oracle through
+   `fisttp`, `fld` denormal signaling, remainder, and exceptional inputs where
+   relevant.
 5. Prove draw/D3DX noninterference one callback at a time. Only then may their
    x87 and XMM sites leave the arithmetic kernel.
 6. State and prove the chosen transcendental execution profile; corpus equality
