@@ -1,0 +1,42 @@
+\section{Background and Source Boundary}
+
+The primary executable specification is the matching-oriented reconstruction
+maintained by GensokyoClub~\cite{gensokyoclub-th06}.  It targets the Japanese
+v1.02h executable and is valuable precisely because it is organized around
+comparison with that binary.  It is not an official source release.  The
+portable Linux/headless adaptation used by this project is derived from a
+separate snapshot~\cite{n0zom1z0-headless}.  \project{} imports only a curated
+source snapshot under \path{reference/}; upstream history, CI, reverse-engineering
+automation, and unrelated documentation are not the project history.
+
+The target executable is bound by SHA-256:
+\begin{center}
+\small\ttfamily
+9f76483c46256804792399296619c1274363c31cd8f1775fafb55106fb852245
+\end{center}
+The commercial executable and DAT archives are not redistributed.  A
+machine-readable manifest records every required filename and digest, and a
+local verifier checks a user-supplied installation before experiments.
+
+\subsection{Replay semantics}
+
+A v1.02h replay contains character and difficulty metadata, per-stage state
+snapshots, and run-length encoded input changes.  The shipped playback path
+restores lives, bombs, power, rank, score-related counters, and RNG seed at stage
+boundaries.  Its reversible byte transform and additive checksum detect some
+accidental corruption but provide no authentication.
+
+Consequently, ``the replay player reaches the ending'' is not a sound proof
+statement.  A malicious witness can forge favorable stage snapshots.  A
+canonical proof must derive stage $i+1$ from the live end state of stage $i$ and
+either ignore the supplied snapshot or constrain it to equality.
+
+\subsection{The ECL virtual machine is not the game}
+
+Enemy ECL is a genuine domain-specific virtual machine with program counters,
+integer and floating-point registers, control flow, call stacks, movement, and
+bullet opcodes.  However, ECL reads player position, difficulty, rank, and enemy
+state; it consumes the global RNG and mutates bullets, items, GUI state, and
+score.  An isolated ECL proof would therefore accept an unconstrained
+environment.  ECL is one subsystem of the frame transition, not the complete
+proof boundary.

@@ -1,0 +1,47 @@
+\section{Evolution of the Research Direction}
+
+This section is intentionally chronological.  Superseded ideas remain visible
+so that later design choices can be audited rather than reconstructed from
+memory.
+
+\paragraph{Phase A: prove the ECL virtual machine.}
+The initial idea treated enemy ECL as the natural zkVM target.  ECL has an
+explicit instruction format, registers, comparison state, call stack, program
+counter, and interpreter loop, making it attractive for an opcode-constraint
+prototype.
+
+\paragraph{Phase B: recognize the open environment.}
+Source inspection showed that ECL reads Player and GameManager state, shares the
+global RNG, and mutates bullets, items, GUI, and scoring state.  A proof of ECL
+alone could accept forged player positions or rank.  The claim was narrowed
+from ``a TH06 pattern was executed'' to ``ECL executed under supplied external
+inputs,'' which was judged insufficient as the main result.
+
+\paragraph{Phase C: reframe the game as a frame transition.}
+The project moved from inventing a larger VM to extracting a deterministic
+gameplay kernel $S_{t+1}=F(S_t,I_t)$.  ECL became one ordered subsystem.  This
+reframing also made replay inputs a natural witness serialization.
+
+\paragraph{Phase D: distrust replay checkpoints.}
+Inspection of ReplayManager revealed that each stage carries mutable resources
+and RNG state that playback restores directly.  Merely proving successful
+playback would allow forged resources at every boundary.  Canonical proof mode
+must derive stage continuity and constrain or discard those snapshots.
+
+\paragraph{Phase E: differential validation before ZK.}
+The portable headless runner was found deterministic but not known equivalent:
+it substitutes host math for x87 behavior and skips draw callbacks that can
+write later-observable state.  The immediate milestone changed from circuit
+construction to an exact replay differential runner against the shipped or an
+exactly matched reference executable.
+
+\paragraph{Phase F: digest first, snapshot on divergence.}
+A naive full-state dump for 640 enemy bullets, 513 items, effects, enemies, and
+ANM state on every frame is unnecessarily large.  The current design emits
+ordered subsystem digests each frame, then reruns only the first mismatching
+tick with a versioned field-level snapshot.  Stable slot identity and iteration
+order are retained because allocation, collision, and RNG behavior can depend
+on them.
+
+Future changes to the central claim or state boundary should be appended here
+with the evidence that motivated them.

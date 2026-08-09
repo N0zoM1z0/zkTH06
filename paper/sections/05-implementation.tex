@@ -1,0 +1,23 @@
+\section{Implementation Status}
+
+The public repository uses a flattened, project-owned history.  The imported
+engine is isolated under \path{reference/}; its pinned revisions and license
+boundary are explicit.  Changes made for \project{} remain ordinary reviewable
+commits on top of that snapshot.
+
+As of 9 August 2026, the following components are implemented:
+
+\begin{itemize}
+  \item a standalone Python replay inspector and a stricter owning C++ loader;
+  \item direct headless compatibility playback from the first populated stage;
+  \item bounded, complete-mask input injection through the original callback;
+  \item deterministic JSON diagnostics and explicit terminal reasons;
+  \item a retail-data manifest and local SHA-256 verifier;
+  \item Linux CI that builds the reference runner and cross-checks both replay
+  validators on three valid and three deliberately malformed cases.
+\end{itemize}
+
+The current compatibility path intentionally restores each replay stage
+snapshot because that mirrors shipped playback and enables oracle development.
+It is not yet canonical proof playback.  No zkVM guest is frozen or claimed to
+be implemented.

@@ -1,0 +1,30 @@
+\section{Introduction}
+
+A zero-knowledge proof can establish that a computation was executed correctly
+without revealing all of its inputs.  For a game, this suggests a statement of
+the form
+\[
+  S_{t+1} = F(S_t, I_t),
+\]
+where $S_t$ is gameplay state, $I_t$ is a private frame input, and $F$ is the
+game's transition function.  A proof could commit to the game version, initial
+state, route, input stream, and terminal claim while keeping the frame inputs
+private.
+
+The equation hides the hard part: what exactly is $F$?  \thgame{} is a closed,
+legacy executable whose reconstructed source mixes gameplay with animation,
+effects, message scripts, floating-point library behavior, and global random
+number consumption.  A deterministic rewrite is not automatically equivalent
+to the executable.  Proving the rewrite would only make its differences
+cryptographically undeniable.
+
+\project{} therefore places differential semantics before proof engineering.
+The immediate objective is a replay runner that can expose the first differing
+field at the first differing frame between an instrumented original or exact
+reference and a portable implementation.  Only after representative full
+replays agree do we freeze a proof-oriented kernel and select a zkVM backend.
+
+Our intended claim is deliberately narrow.  It proves that an input sequence is
+a valid execution under a committed game transition and reaches an explicit
+terminal predicate.  It does not prove that a human generated the inputs, that
+no external tool was used, or that a replay file is authentic.

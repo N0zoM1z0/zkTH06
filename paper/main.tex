@@ -1,0 +1,52 @@
+\documentclass[10pt]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[margin=1in]{geometry}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{microtype}
+\usepackage{xurl}
+\usepackage[hidelinks]{hyperref}
+
+\newcommand{\project}{\textsc{zkTH06}}
+\newcommand{\thgame}{Touhou Koumakyou v1.02h}
+\newcommand{\code}[1]{\texttt{#1}}
+
+\title{\project: Toward Replay-Verified Zero-Knowledge Execution\\
+of a Legacy Bullet-Hell Game}
+\author{N0zoM1z0}
+\date{Living draft --- 9 August 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We investigate whether a complete run of a legacy bullet-hell game can be
+expressed as a deterministic transition system and eventually proven inside a
+zero-knowledge virtual machine.  The central difficulty is semantic, not merely
+cryptographic: the proof must represent the behavior of the shipped 32-bit
+Windows executable rather than a convenient but divergent port.  We develop a
+strict replay parser, a deterministic Linux compatibility runner, and a
+frame-level differential methodology for \thgame.  Four locally pinned
+six-stage replays complete under the compatibility runner, and repeated runs
+produce byte-identical traces.  These results establish same-host
+self-consistency only; x87 arithmetic, presentation-dependent state, and an
+original-executable exporter remain open equivalence gates.  This living paper
+records the research questions, implementation evidence, negative results, and
+changes in proof boundary as the project develops.
+\end{abstract}
+
+\input{sections/01-introduction}
+\input{sections/02-background}
+\input{sections/03-research-questions}
+\input{sections/04-methodology}
+\input{sections/05-implementation}
+\input{sections/06-evaluation}
+\input{sections/07-research-evolution}
+\input{sections/08-limitations}
+\input{sections/09-conclusion}
+
+\bibliographystyle{plain}
+\bibliography{references}
+
+\end{document}

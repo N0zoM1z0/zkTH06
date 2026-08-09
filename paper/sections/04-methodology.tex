@@ -1,0 +1,45 @@
+\section{Methodology}
+
+\subsection{Fail-closed replay ingestion}
+
+The replay loader owns the decoded buffer and rejects invalid magic, version,
+checksum, character/shot metadata, difficulty, unaligned or non-monotonic stage
+offsets, malformed block sizes, unsupported input bits, regressing frame
+numbers, and missing or malformed playback sentinels.  Playback cursors are
+bounded by the first validated sentinel rather than by ambient process memory.
+
+\subsection{Authentic frame order}
+
+Replay input is injected by the existing replay callback at calculation
+priority 5, after the game manager and before Stage, Player, Enemy/ECL,
+Effects, Bullets/Items, and GUI.  Dialogue can restart the calculation chain;
+this behavior is retained.  Complete Shoot, Bomb, Focus, Skip, and direction
+masks are replayed.  Compatibility mode follows deaths, bombs, and respawns
+instead of applying the reinforcement-learning harness's first-hit terminal.
+
+\subsection{Two-level canonical tracing}
+
+Writing every field of hundreds of entity slots on every frame would generate
+multi-gigabyte traces.  The differential design therefore has two levels:
+
+\begin{enumerate}
+  \item a fixed-size per-frame record containing metadata and cryptographic
+  digests for ordered subsystems; and
+  \item a field-level canonical snapshot for a selected tick around the first
+  digest mismatch.
+\end{enumerate}
+
+Every serializer uses explicit little-endian integer widths, raw IEEE-754 bit
+patterns, stable array slot indices, and offsets relative to loaded script
+bases.  It never hashes pointers, compiler padding, locale-dependent text, or
+unordered container iteration.  Subsystem separation distinguishes global/RNG,
+Player, player bullets, Enemy/ECL, enemy bullets, lasers, items, Stage,
+GUI/message, ANM shadow, and Effects.
+
+\subsection{Differential loop}
+
+For each pinned replay, both runners must use the same data hashes and replay
+bytes.  The comparison proceeds in frame order, first comparing the root digest,
+then subsystem digests, then a rerun with the field-level snapshot at the first
+failing tick.  A final score match is supporting evidence but never substitutes
+for frame equivalence.

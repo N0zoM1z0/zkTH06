@@ -19,6 +19,7 @@ kept as a supporting snapshot rather than as this repository's history:
 
 - `zkvm/` defines the future guest/public-input boundary;
 - `docs/` records the differential methodology and milestone evidence;
+- `paper/` is the living English LaTeX research paper and decision history;
 - `tools/` contains format and comparison tooling owned by zkTH06;
 - `replays/` contains redistributable fixtures and provenance for local-only
   inputs;
@@ -80,7 +81,9 @@ The source audit and compatibility risks are in
 and open gates are in [`docs/m0-progress.md`](docs/m0-progress.md). Replay
 fixture sources, redistribution status and hashes are in
 [`replays/README.md`](replays/README.md). The required retail-data identity and
-local import procedure are in [`data/README.md`](data/README.md).
+local import procedure are in [`data/README.md`](data/README.md). The evolving
+research questions, method and evaluation are maintained in
+[`paper/main.tex`](paper/main.tex).
 
 ## Reference runner
 

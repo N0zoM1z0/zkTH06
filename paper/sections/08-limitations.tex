@@ -1,0 +1,26 @@
+\section{Limitations and Open Threats to Validity}
+
+\begin{itemize}
+  \item \textbf{No original equivalence yet.}  All current execution evidence
+  comes from the Linux reconstruction.  An original/exact-reference exporter
+  using the same canonical schema is still required.
+  \item \textbf{Floating point.}  The target uses x87 instructions including
+  trigonometric and rounding operations.  Host \code{libm}, spill behavior, and
+  intermediate precision may diverge by one or more bits and later alter
+  collisions.
+  \item \textbf{Draw-chain effects.}  Headless mode skips drawing, but some draw
+  callbacks write flags, ANM fields, laser positions, or other state that may be
+  read later.  Each removal needs dependency analysis and corpus validation.
+  \item \textbf{Incomplete corpus.}  The current samples cover Normal and
+  Lunatic full runs but not all characters, shot types, Extra, retries, and
+  adversarial stage-checkpoint mutations.
+  \item \textbf{Reconstruction gaps.}  The matching project is highly complete
+  but not identical in every function.  Unmatched code must be closed or
+  explicitly excluded from the accepted statement.
+  \item \textbf{Claim scope.}  A valid execution proof is not a proof of human
+  play, authorship, or the absence of tool assistance.
+\end{itemize}
+
+The commercial game data is verified locally by digest and is not
+redistributed.  Replay fixtures retain source links and redistribution status;
+inputs whose sources prohibit reuse remain local.

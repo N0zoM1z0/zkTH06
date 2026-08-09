@@ -1,0 +1,40 @@
+\section{Preliminary Evaluation}
+
+Four six-stage v1.02h replays are pinned by hash.  Three are tracked fixtures
+from a public replay uploader; one world-record replay remains local because its
+source prohibits secondary redistribution.  All four reached the
+\code{replay-complete} terminal in the Linux compatibility runner.
+
+\begin{table}[h]
+  \centering
+  \small
+  \begin{tabular}{@{}llrrr@{}}
+    \toprule
+    Replay & Route & Logic ticks & Stage 6 frame & Final score \\
+    \midrule
+    \code{th6\_ud000134} & Lunatic / Marisa B & 84,817 & 16,485 & 181,778,020 \\
+    \code{th6\_ud000232} & Lunatic / Reimu B  & 86,676 & 16,727 & 136,978,560 \\
+    \code{th6\_ud002677} & Normal / Reimu A, NN/NB & 85,759 & 17,283 & 172,519,700 \\
+    \code{th6\_udLuRB}   & Lunatic / Reimu B  & 118,605 & 26,233 & 804,515,970 \\
+    \bottomrule
+  \end{tabular}
+  \caption{Compatibility playback results.  NN/NB denotes no-miss,
+  no-bomb.  These are Linux self-consistency measurements, not original-game
+  equivalence results.}
+  \label{tab:compatibility-results}
+\end{table}
+
+Two independent 1,000-tick runs of \code{th6\_ud002677} produced
+byte-identical JSONL with SHA-256
+\begin{center}
+\small\ttfamily
+d4606beb09ea9040b0e747d95b2dc7ebe70d36f5b5c152c8289b6074e69e899a.
+\end{center}
+On the initial host, full untraced runs completed in approximately
+1.1--1.6 seconds and stayed below 40 MiB resident memory.  These timings are
+environment-specific and are not a performance claim.
+
+The Stage 6 final score is computed during gameplay: playback restores the
+preceding stage's score at Stage 6 entry but does not restore Stage 6's own end
+score.  Exact score agreement is therefore a useful end-to-end consistency
+check.  It remains much weaker than frame-level state equivalence.

@@ -1,0 +1,30 @@
+\section{Research Questions}
+
+\begin{description}[style=nextline,leftmargin=0pt]
+  \item[RQ1: Semantic boundary.]
+  What canonical state projection is sufficient for observational equivalence
+  with v1.02h gameplay across all reachable states in the evaluation corpus?
+
+  \item[RQ2: Differential diagnosis.]
+  How can heterogeneous executions---the original 32-bit Windows program and a
+  portable Linux reconstruction---emit a stable, versioned representation that
+  identifies the first divergent subsystem and field?
+
+  \item[RQ3: Untrusted replay witnesses.]
+  How can the compact input information in \code{.rpy} files be reused while
+  preventing their per-stage checkpoints from becoming trusted state resets?
+
+  \item[RQ4: Semantics-preserving slicing.]
+  Which rendering, audio, animation, message, and effect operations can be
+  removed, and which must remain as dependency-preserving shadow semantics due
+  to timing, control flow, collision geometry, or shared RNG consumption?
+
+  \item[RQ5: Proof decomposition.]
+  After equivalence is established, which state layout, arithmetic model, frame
+  chunking, and recursive aggregation strategy makes a spell, stage, and full
+  six-stage run practical in a zkVM?
+\end{description}
+
+RQ1--RQ4 are prerequisites for RQ5.  The project intentionally does not select
+a proof backend before the transition relation and its dominant costs are
+measured.

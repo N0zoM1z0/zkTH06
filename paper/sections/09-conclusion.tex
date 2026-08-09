@@ -1,0 +1,14 @@
+\section{Conclusion}
+
+\project{} treats semantic equivalence as the first-class obstacle to proving
+a legacy game's execution.  The initial replay runner demonstrates that the
+reconstructed engine can consume real v1.02h witnesses deterministically and
+complete full runs, while strict parsing removes several ambient-memory and
+format-trust hazards.  The result is not yet a proof system and is not yet an
+exact model of the shipped executable.
+
+The next concrete milestone is a shared canonical binary protocol with
+per-frame subsystem digests and selected field-level snapshots.  It will turn
+``the replay desynchronized'' into a reproducible first-frame, first-subsystem,
+first-field diagnosis.  That evidence will determine the eventual gameplay
+projection, shadow semantics, arithmetic model, and only then the zkVM design.
