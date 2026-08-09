@@ -42,7 +42,9 @@ void PrintUsage(const char *program)
                  "[--practice-stage 1..6] [--difficulty 0..3] [--character 0..1] "
                  "[--shot-type 0..1] [--actions PATH] [--trace PATH] [--step] [--auto-shoot] "
                  "[--continue-after-hit]\n"
+                 "       %s --headless --replay PATH [--max-ticks N] [--trace PATH]\n"
                  "       %s --replay-info PATH\n",
+                 program,
                  program,
                  program);
 }
@@ -180,6 +182,15 @@ bool HeadlessRuntime::ParseArguments(int argc, char *argv[])
             }
             this->replayInfoPath = argv[i];
         }
+        else if (std::strcmp(argv[i], "--replay") == 0)
+        {
+            if (++i >= argc)
+            {
+                PrintUsage(argv[0]);
+                return false;
+            }
+            this->replayPath = argv[i];
+        }
         else if (std::strcmp(argv[i], "--auto-shoot") == 0)
         {
             this->autoShoot = true;
@@ -216,9 +227,25 @@ bool HeadlessRuntime::ParseArguments(int argc, char *argv[])
         }
         return true;
     }
+    if (this->replayPath != NULL)
+    {
+        if (!this->enabled)
+        {
+            std::fprintf(stderr, "--replay requires --headless\n");
+            return false;
+        }
+        if (this->practiceStage != 0 || this->actionsPath != NULL || this->stepMode || this->autoShoot ||
+            this->continueAfterHit || this->seedProvided)
+        {
+            std::fprintf(stderr,
+                         "--replay cannot be combined with Practice, action, step, seed, auto-shoot, or hit options\n");
+            return false;
+        }
+    }
     if (!this->enabled &&
         (this->maxTicks != 0 || this->seedProvided || this->practiceStage != 0 || this->actionsPath != NULL ||
-         this->tracePath != NULL || this->autoShoot || this->stepMode || this->continueAfterHit))
+         this->tracePath != NULL || this->autoShoot || this->stepMode || this->continueAfterHit ||
+         this->replayPath != NULL))
     {
         std::fprintf(stderr, "headless-only runtime options require --headless\n");
         return false;
@@ -275,6 +302,52 @@ bool HeadlessRuntime::PrintReplayInfo() const
     return true;
 }
 
+bool HeadlessRuntime::PrepareReplay()
+{
+    if (this->replayPath == NULL)
+    {
+        return true;
+    }
+    if (std::strlen(this->replayPath) >= sizeof(g_GameManager.replayFile))
+    {
+        std::fprintf(stderr, "Replay path is too long for TH06: %s\n", this->replayPath);
+        return false;
+    }
+
+    ReplayFile replay;
+    char error[256];
+    if (!replay.LoadExternal(this->replayPath, error, sizeof(error)))
+    {
+        std::fprintf(stderr, "Invalid TH06 replay: %s\n", error);
+        return false;
+    }
+
+    const ReplayHeader *header = replay.Header();
+    this->difficulty = header->difficulty;
+    this->character = header->shottypeChara / 2;
+    this->shotType = header->shottypeChara % 2;
+    for (size_t index = 0; index < 7; index++)
+    {
+        const ReplayStageView &stage = replay.Stage(index);
+        if (stage.data == NULL)
+        {
+            continue;
+        }
+        this->replayStartStage = static_cast<i32>(index + 1);
+        this->replayInitialLives = stage.data->livesRemaining;
+        this->replayInitialBombs = stage.data->bombsRemaining;
+        this->seed = static_cast<u16>(stage.data->randomSeed);
+        this->seedProvided = true;
+        break;
+    }
+    if (this->replayStartStage == 0)
+    {
+        std::fprintf(stderr, "Replay has no playable stage\n");
+        return false;
+    }
+    return true;
+}
+
 void HeadlessRuntime::ConfigureEnvironment() const
 {
     if (!this->enabled)
@@ -291,6 +364,10 @@ void HeadlessRuntime::ConfigureEnvironment() const
 
 bool HeadlessRuntime::InitializeIo()
 {
+    if (!this->PrepareReplay())
+    {
+        return false;
+    }
     if (this->stepMode)
     {
         this->actionsFile = stdin;
@@ -360,6 +437,30 @@ void HeadlessRuntime::ConfigureDirectPractice()
     g_Supervisor.curState = SUPERVISOR_STATE_GAMEMANAGER;
 }
 
+void HeadlessRuntime::ConfigureDirectReplay()
+{
+    if (this->replayPath == NULL)
+    {
+        return;
+    }
+    g_GameManager.isInPracticeMode = 0;
+    g_GameManager.difficulty = static_cast<Difficulty>(this->difficulty);
+    g_GameManager.character = static_cast<u8>(this->character);
+    g_GameManager.shotType = static_cast<u8>(this->shotType);
+    g_GameManager.currentStage = this->replayStartStage - 1;
+    g_GameManager.livesRemaining = this->replayInitialLives;
+    g_GameManager.bombsRemaining = this->replayInitialBombs;
+    g_GameManager.isInReplay = 1;
+    g_GameManager.demoMode = 0;
+    std::snprintf(reinterpret_cast<char *>(g_GameManager.replayFile), sizeof(g_GameManager.replayFile), "%s",
+                  this->replayPath);
+
+    // Reproduce the state transition made by replay selection without driving
+    // the title menu. ReplayManager still injects inputs at calc priority 5.
+    g_Supervisor.wantedState = SUPERVISOR_STATE_MAINMENU;
+    g_Supervisor.curState = SUPERVISOR_STATE_GAMEMANAGER;
+}
+
 u16 HeadlessRuntime::NextInput()
 {
     if (!this->enabled)
@@ -368,6 +469,12 @@ u16 HeadlessRuntime::NextInput()
     }
     if (!this->inputReady)
     {
+        return 0;
+    }
+    if (this->replayPath != NULL)
+    {
+        // ReplayManager replaces captured gameplay bits later in the authentic
+        // calc-chain position. Host input must contribute no uncaptured bits.
         return 0;
     }
     if (this->actionsFile == NULL)
@@ -431,18 +538,38 @@ u16 HeadlessRuntime::NextInput()
 
 bool HeadlessRuntime::ShouldStopForHit() const
 {
-    return this->inputReady && !this->continueAfterHit && g_Player.playerState == PLAYER_STATE_DEAD;
+    return this->replayPath == NULL && this->inputReady && !this->continueAfterHit &&
+           g_Player.playerState == PLAYER_STATE_DEAD;
+}
+
+bool HeadlessRuntime::IsReplayComplete() const
+{
+    return this->replayPath != NULL && g_Supervisor.curState == SUPERVISOR_STATE_MAINMENU_REPLAY;
 }
 
 void HeadlessRuntime::WriteState(const char *terminalReason)
 {
+    this->terminalReason = terminalReason;
     if (this->practiceStage != 0 && g_GameManager.currentStage == this->practiceStage)
+    {
+        this->inputReady = true;
+    }
+    if (this->replayPath != NULL && g_GameManager.currentStage >= this->replayStartStage)
     {
         this->inputReady = true;
     }
     if (this->traceFile == NULL)
     {
         return;
+    }
+    char terminalJson[64];
+    if (terminalReason == NULL)
+    {
+        std::snprintf(terminalJson, sizeof(terminalJson), "null");
+    }
+    else
+    {
+        std::snprintf(terminalJson, sizeof(terminalJson), "\"%s\"", terminalReason);
     }
     std::fprintf(this->traceFile,
                  "{\"tick\":%llu,\"terminal_reason\":%s,"
@@ -451,8 +578,9 @@ void HeadlessRuntime::WriteState(const char *terminalReason)
                  "\"rng_seed\":%u,\"rng_generation\":%u,\"input\":%u,"
                  "\"player\":{\"x\":%.9g,\"y\":%.9g,\"state\":%d},"
                  "\"lives\":%d,\"bombs\":%d,\"score\":%u,\"bullets\":[",
-                 (unsigned long long)this->ticks, terminalReason == NULL ? "null" : terminalReason,
-                 this->difficulty, this->character, this->shotType, this->practiceStage, this->actualSeed,
+                 (unsigned long long)this->ticks, terminalJson,
+                 this->difficulty, this->character, this->shotType,
+                 this->replayPath == NULL ? this->practiceStage : g_GameManager.currentStage, this->actualSeed,
                  g_Supervisor.curState, g_GameManager.currentStage,
                  g_GameManager.gameFrames, g_Rng.seed, g_Rng.generationCount, g_CurFrameInput,
                  g_Player.positionCenter.x, g_Player.positionCenter.y, g_Player.playerState,

@@ -27,6 +27,7 @@ class ReplayFile
     ReplayFile &operator=(const ReplayFile &) = delete;
 
     bool LoadExternal(const char *path, char *error, size_t errorSize);
+    bool LoadPath(const char *path, bool external, char *error, size_t errorSize);
     void Reset();
 
     ReplayHeader *Header()

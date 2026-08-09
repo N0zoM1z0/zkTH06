@@ -9,6 +9,7 @@
 #include "GameManager.hpp"
 #include "Gui.hpp"
 #include "ReplayManager.hpp"
+#include "ReplayFile.hpp"
 #include "Rng.hpp"
 #include "Supervisor.hpp"
 #include "utils.hpp"
@@ -171,7 +172,12 @@ ChainCallbackResult ReplayManager::OnUpdateDemoHighPrio(ReplayManager *mgr)
         return CHAIN_CALLBACK_RESULT_CONTINUE;
     }
 
-    while (mgr->frameId >= mgr->replayInputs[1].frameNum)
+    if (mgr->replayInputs == NULL || mgr->replayInputEnd == NULL || mgr->replayInputs + 1 >= mgr->replayInputEnd)
+    {
+        std::fprintf(stderr, "Replay input cursor escaped its validated stage bounds\n");
+        return CHAIN_CALLBACK_RESULT_EXIT_GAME_ERROR;
+    }
+    while (mgr->replayInputs + 1 < mgr->replayInputEnd && mgr->frameId >= mgr->replayInputs[1].frameNum)
     {
         mgr->replayInputs += 1;
     }
@@ -278,32 +284,29 @@ ZunResult ReplayManager::AddedCallbackDemo(ReplayManager *mgr)
     mgr->frameId = 0;
     if (mgr->replayData == NULL)
     {
-        mgr->replayData = (ReplayData *)std::malloc(sizeof(ReplayData));
-
-        mgr->replayData->header = (ReplayHeader *)FileSystem::OpenPath(mgr->replayFile, g_GameManager.demoMode == 0);
-        if (ValidateReplayData(mgr->replayData->header, g_LastFileSize) != ZUN_SUCCESS)
+        mgr->loadedReplay = new ReplayFile();
+        char error[256];
+        if (!mgr->loadedReplay->LoadPath(mgr->replayFile, g_GameManager.demoMode == 0, error, sizeof(error)))
         {
+            std::fprintf(stderr, "Invalid TH06 replay: %s\n", error);
+            delete mgr->loadedReplay;
+            mgr->loadedReplay = NULL;
             return ZUN_ERROR;
         }
+        mgr->replayData = new ReplayData();
+        mgr->replayData->header = mgr->loadedReplay->Header();
         for (idx = 0; idx < ARRAY_SIZE_SIGNED(mgr->replayData->stageReplayData); idx += 1)
         {
-            if (mgr->replayData->header->stageReplayDataOffsets[idx] != 0)
-            {
-                mgr->replayData->stageReplayData[idx] =
-                    (StageReplayData *)(((u8 *)mgr->replayData->header) +
-                                        mgr->replayData->header->stageReplayDataOffsets[idx]);
-            }
-            else
-            {
-                mgr->replayData->stageReplayData[idx] = NULL;
-            }
+            mgr->replayData->stageReplayData[idx] = mgr->loadedReplay->Stage(idx).data;
         }
     }
-    if (mgr->replayData->stageReplayData[g_GameManager.currentStage - 1] == NULL)
+    const i32 stageIndex = g_GameManager.currentStage - 1;
+    if (stageIndex < 0 || stageIndex >= ARRAY_SIZE_SIGNED(mgr->replayData->stageReplayData) ||
+        mgr->replayData->stageReplayData[stageIndex] == NULL)
     {
         return ZUN_ERROR;
     }
-    replayData = mgr->replayData->stageReplayData[g_GameManager.currentStage - 1];
+    replayData = mgr->replayData->stageReplayData[stageIndex];
     g_GameManager.character = mgr->replayData->header->shottypeChara / 2;
     g_GameManager.shotType = mgr->replayData->header->shottypeChara % 2;
     g_GameManager.difficulty = (Difficulty)mgr->replayData->header->difficulty;
@@ -314,6 +317,8 @@ ZunResult ReplayManager::AddedCallbackDemo(ReplayManager *mgr)
     g_GameManager.bombsRemaining = replayData->bombsRemaining;
     g_GameManager.currentPower = replayData->power;
     mgr->replayInputs = replayData->replayInputs;
+    const ReplayStageView &stageView = mgr->loadedReplay->Stage(stageIndex);
+    mgr->replayInputEnd = stageView.inputs + stageView.playbackRecordCount;
     g_GameManager.powerItemCountForScore = replayData->powerItemCountForScore;
     if (2 <= g_GameManager.currentStage && mgr->replayData->stageReplayData[g_GameManager.currentStage - 2] != NULL)
     {
@@ -332,10 +337,18 @@ ZunResult ReplayManager::DeletedCallback(ReplayManager *mgr)
         g_Chain.Cut(mgr->calcChainDemoHighPrio);
         mgr->calcChainDemoHighPrio = NULL;
     }
-    std::free(g_ReplayManager->replayData->header);
-    ReleaseReplayData(g_ReplayManager->replayData);
-    delete g_ReplayManager;
-    g_ReplayManager = NULL;
+    if (mgr->loadedReplay != NULL)
+    {
+        delete mgr->loadedReplay;
+        mgr->loadedReplay = NULL;
+    }
+    else if (mgr->replayData != NULL)
+    {
+        delete mgr->replayData->header;
+    }
+    delete mgr->replayData;
+    mgr->replayData = NULL;
+    delete mgr;
     g_ReplayManager = NULL;
     return ZUN_SUCCESS;
 }
@@ -343,7 +356,7 @@ ZunResult ReplayManager::DeletedCallback(ReplayManager *mgr)
 void ReplayManager::StopRecording()
 {
     ReplayManager *mgr = g_ReplayManager;
-    if (mgr != NULL)
+    if (mgr != NULL && !mgr->IsDemo())
     {
         mgr->replayInputs += 1;
         mgr->replayInputs->frameNum = mgr->frameId;

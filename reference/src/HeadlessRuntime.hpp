@@ -22,6 +22,10 @@ struct HeadlessRuntime
     const char *actionsPath = NULL;
     const char *tracePath = NULL;
     const char *replayInfoPath = NULL;
+    const char *replayPath = NULL;
+    i32 replayStartStage = 0;
+    i8 replayInitialLives = 0;
+    i8 replayInitialBombs = 0;
     FILE *actionsFile = NULL;
     FILE *traceFile = NULL;
     bool ownsActionsFile = false;
@@ -30,16 +34,20 @@ struct HeadlessRuntime
     u16 repeatedAction = 0;
     bool inputReady = false;
     bool inputError = false;
+    const char *terminalReason = NULL;
 
     bool ParseArguments(int argc, char *argv[]);
     bool PrintReplayInfo() const;
+    bool PrepareReplay();
     void ConfigureEnvironment() const;
     bool InitializeIo();
     void CloseIo();
     void ConfigureDirectPractice();
+    void ConfigureDirectReplay();
     u16 NextInput();
     void WriteState(const char *terminalReason);
     bool ShouldStopForHit() const;
+    bool IsReplayComplete() const;
     bool AdvanceTick();
 };
 

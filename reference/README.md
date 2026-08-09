@@ -46,8 +46,24 @@ Replay files can be inspected without the game archives:
 
 This standalone mode fails closed on invalid magic, byte transform/checksum,
 version, metadata, stage bounds, input masks, frame ordering or missing playback
-sentinels. It does not yet execute the replay; compatibility playback is the
-next M0 step.
+sentinels.
+
+Compatibility playback starts directly from the first populated replay stage:
+
+```sh
+./th06 --headless --replay /path/to/th6_ud0001.rpy \
+  --max-ticks 200000 --trace replay.jsonl
+```
+
+ReplayManager injects the complete recorded mask at its original calc priority
+and handles dialogue restart behavior. Replay mode does not stop on deaths; it
+follows the replay through bombs, deaths and respawns until the game returns to
+the replay menu. `replay-complete` is a playback terminal, not yet a proof
+acceptance predicate.
+
+Compatibility mode restores each stage snapshot exactly as the shipped game
+does. A later canonical-proof mode must instead derive cross-stage state and
+constrain every supplied snapshot.
 
 ## Evidence boundary
 
@@ -61,3 +77,8 @@ Windows exporter using the same data, scope, seed, and actions. Multi-process
 orchestration must also impose explicit CPU and memory limits. Until the
 differential gate passes, use this mode as an acceleration harness and keep the
 shipped Windows game as final physical-run evidence.
+
+The initial local corpus gate contains four six-stage v1.02h files. All four
+reach `replay-complete`; their final Stage 6 frame and computed score match the
+replay terminal metadata, including a Normal no-miss/no-bomb run and three
+Lunatic runs. This is useful Linux self-consistency evidence only.

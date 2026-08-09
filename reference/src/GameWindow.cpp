@@ -46,33 +46,38 @@ RenderResult GameWindow::Render()
         g_Supervisor.effectiveFramerateMultiplier = 1.0f;
         res = g_Chain.RunCalcChain();
         bool reachedLimit = g_HeadlessRuntime.AdvanceTick();
+        bool replayComplete = g_HeadlessRuntime.IsReplayComplete();
         const char *terminalReason = NULL;
         if (g_HeadlessRuntime.inputError)
         {
-            terminalReason = "\"input-error\"";
+            terminalReason = "input-error";
         }
         else if (g_HeadlessRuntime.ShouldStopForHit())
         {
-            terminalReason = "\"physical-hit\"";
+            terminalReason = "physical-hit";
+        }
+        else if (replayComplete)
+        {
+            terminalReason = "replay-complete";
         }
         else if (res == 0)
         {
-            terminalReason = "\"chain-exit-success\"";
+            terminalReason = "chain-exit-success";
         }
         else if (res == -1)
         {
-            terminalReason = "\"chain-exit-error\"";
+            terminalReason = "chain-exit-error";
         }
         else if (reachedLimit)
         {
-            terminalReason = "\"tick-limit\"";
+            terminalReason = "tick-limit";
         }
         g_HeadlessRuntime.WriteState(terminalReason);
         if (g_HeadlessRuntime.inputError)
         {
             return RENDER_RESULT_EXIT_ERROR;
         }
-        if (g_HeadlessRuntime.ShouldStopForHit() || res == 0)
+        if (g_HeadlessRuntime.ShouldStopForHit() || replayComplete || res == 0)
         {
             return RENDER_RESULT_EXIT_SUCCESS;
         }

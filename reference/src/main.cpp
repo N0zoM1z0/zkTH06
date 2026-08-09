@@ -6,6 +6,7 @@
 #include "Chain.hpp"
 #include "FileSystem.hpp"
 #include "GameErrorContext.hpp"
+#include "GameManager.hpp"
 #include "GameWindow.hpp"
 #include "HeadlessRuntime.hpp"
 #include "SoundPlayer.hpp"
@@ -25,12 +26,12 @@ int main(int argc, char *argv[])
     {
         return g_HeadlessRuntime.PrintReplayInfo() ? 0 : 2;
     }
-    g_HeadlessRuntime.ConfigureEnvironment();
     const bool headlessAtLaunch = g_HeadlessRuntime.enabled;
     if (!g_HeadlessRuntime.InitializeIo())
     {
         return 2;
     }
+    g_HeadlessRuntime.ConfigureEnvironment();
 
     i32 renderResult = 0;
     //    MSG msg;
@@ -89,6 +90,7 @@ restart:
     {
         goto stop;
     }
+    g_HeadlessRuntime.ConfigureDirectReplay();
     g_HeadlessRuntime.ConfigureDirectPractice();
     if (!g_Supervisor.cfg.windowed)
     {
@@ -173,8 +175,14 @@ stop:
         goto restart;
     }
 
-    std::fprintf(stderr, "TH06 runtime complete (headless=%d, ticks=%llu)\n", headlessAtLaunch,
-                 (unsigned long long)g_HeadlessRuntime.ticks);
+    std::fprintf(stderr,
+                 "TH06 runtime complete (headless=%d, ticks=%llu, terminal=%s, stage=%d, frame=%u, "
+                 "score=%u, lives=%d, bombs=%d)\n",
+                 headlessAtLaunch,
+                 (unsigned long long)g_HeadlessRuntime.ticks,
+                 g_HeadlessRuntime.terminalReason == NULL ? "none" : g_HeadlessRuntime.terminalReason,
+                 g_GameManager.currentStage, g_GameManager.gameFrames, g_GameManager.score,
+                 g_GameManager.livesRemaining, g_GameManager.bombsRemaining);
     if (!headlessAtLaunch)
     {
         FileSystem::WriteDataToFile(TH_CONFIG_FILE, &g_Supervisor.cfg, sizeof(g_Supervisor.cfg));

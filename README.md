@@ -67,7 +67,8 @@ inputs were produced by a human or without external tools.
 The source audit and concrete compatibility risks are recorded in
 [`docs/initial-analysis.md`](docs/initial-analysis.md).  Replay fixture sources
 and hashes are recorded in [`replays/README.md`](replays/README.md); downloaded
-replays are intentionally excluded from Git.
+replays are intentionally excluded from Git. Current corpus results and open
+gates are tracked in [`docs/m0-progress.md`](docs/m0-progress.md).
 
 ## Current headless harness
 
@@ -84,6 +85,18 @@ Validate a v1.02h replay without loading proprietary game data:
 The C++ validator checks the byte transform, checksum, version, character and
 difficulty bounds, monotonic stage offsets, block sizes, complete input masks,
 frame ordering and a bounded playback sentinel for every populated stage.
+
+Run compatibility playback from the first populated stage:
+
+```sh
+./th06 --headless --replay /path/to/th6_ud0001.rpy \
+  --max-ticks 200000 --trace trace.jsonl
+```
+
+This path uses the original replay callback ordering and complete Shoot, Bomb,
+Focus, Skip and direction masks.  It intentionally reproduces the shipped
+playback behavior by restoring per-stage snapshots.  Those snapshots remain
+untrusted in the future canonical-proof mode.
 
 Build on Debian or Ubuntu:
 

@@ -52,6 +52,11 @@ void ReplayFile::Reset()
 
 bool ReplayFile::LoadExternal(const char *path, char *error, size_t errorSize)
 {
+    return this->LoadPath(path, true, error, errorSize);
+}
+
+bool ReplayFile::LoadPath(const char *path, bool external, char *error, size_t errorSize)
+{
     this->Reset();
     if (path == NULL || path[0] == '\0')
     {
@@ -59,7 +64,7 @@ bool ReplayFile::LoadExternal(const char *path, char *error, size_t errorSize)
         return false;
     }
 
-    u8 *fileData = FileSystem::OpenPath(path, 1);
+    u8 *fileData = FileSystem::OpenPath(path, external ? 1 : 0);
     if (fileData == NULL)
     {
         SetError(error, errorSize, "could not open replay: %s", path);
