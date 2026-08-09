@@ -22,11 +22,13 @@ Relative to the pinned headless snapshot, this directory adds:
 - standalone `--replay-info` validation without proprietary game data;
 - direct deterministic replay playback using the complete recorded mask;
 - bounded replay cursors and fail-closed playback errors;
-- deterministic playback terminals and richer diagnostic traces.
+- deterministic playback terminals and richer diagnostic traces; and
+- canonical revision-0.2 subsystem tracing with fail-closed output and
+  future-live ANM field guards.
 
-Later zkTH06 changes will add canonical binary state export and differential
-instrumentation here. Proof-kernel and zkVM-specific code belongs outside this
-directory.
+Field-level mismatch export and original/exact-reference differential
+instrumentation remain future work. Proof-kernel, formal, arithmetic-audit, and
+zkVM-specific code belongs outside this directory.
 
 ## License and assets
 

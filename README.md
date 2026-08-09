@@ -15,7 +15,8 @@ that state machine agree frame-for-frame with the shipped 32-bit Windows game.
 A first owner-local Lean model now machine-checks why active-only Effect slots
 violate one-step noninterference and how a narrow dormant reuse shadow repairs
 that modeled allocation step. It is a proof-design result, not a whole-game or
-C++-binding theorem.
+C++-binding theorem. A second small definition decodes the audited target x87
+control word without yet claiming complete arithmetic semantics.
 
 ## Repository boundary
 
@@ -91,7 +92,10 @@ local import procedure are in [`data/README.md`](data/README.md). The evolving
 canonical digest protocol and its evidence boundary are in
 [`docs/canonical-trace.md`](docs/canonical-trace.md); the proof-oriented field
 and reuse audit is in
-[`docs/state-projection-audit.md`](docs/state-projection-audit.md). Research
+[`docs/state-projection-audit.md`](docs/state-projection-audit.md).
+The pinned executable's x87/XMM census, control-word evidence, helper-call
+surface, and exact-versus-refined arithmetic plan are in
+[`docs/arithmetic-audit.md`](docs/arithmetic-audit.md). Research
 questions, method and evaluation are maintained in
 [`paper/main.tex`](paper/main.tex).
 

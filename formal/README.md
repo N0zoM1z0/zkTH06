@@ -5,6 +5,12 @@ sliced zkTH06 gameplay kernel preserves the relevant behavior of the pinned
 reference transition. One owner-local Effect allocation model is checked; no
 whole-frame, whole-game, or C++-binding theorem is claimed.
 
+[`ZkTH06/X87Profile.lean`](ZkTH06/X87Profile.lean) separately decodes the
+`0x027f` control word embedded in the pinned executable's CRT trigonometric
+wrappers. It checks 53-bit significand precision, round-to-nearest-even, and
+six masked x87 exceptions. This is a profile fact only: it neither implements
+x87 operations nor proves the Windows loader establishes that word at entry.
+
 ## Checked Effect reuse result
 
 [`ZkTH06/EffectReuse.lean`](ZkTH06/EffectReuse.lean) models the specific
@@ -110,3 +116,5 @@ The live field/reuse audit is in
 first intended owner-local lemmas cover enemy template overwrite, canonical
 zeroed enemy bullets, item state-2 target initialization, guarded ANM
 interpolation, dormant Effect reuse, and dynamic screen-effect noninterference.
+The address-level arithmetic evidence and the proposed binary-to-IR binding are
+in [`../docs/arithmetic-audit.md`](../docs/arithmetic-audit.md).

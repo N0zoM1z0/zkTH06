@@ -72,3 +72,57 @@ makes this modeled allocation phase commute.  The proof compiles with Lean
 4.32.0 without \code{sorry}, admitted results, or custom axioms.  Its scope is
 only this allocation phase and does not establish sufficiency for all Effect
 callbacks or bind the model to compiled C++.
+
+\subsection{Static arithmetic census}
+
+The arithmetic audit binds the executable, authoritative function map, and
+implemented-function list by SHA-256.  GNU \code{objdump} 2.38 linearly decoded
+133,078 instruction lines in the complete image, including 10,100 x87 lines.
+Of these, 9,522 lie in mapped ranges.  Complete-image counts are static upper
+bounds: they include CRT, D3DX, and potentially unreachable code rather than
+dynamic execution frequencies.
+
+The mapping attributes 5,980 x87 instructions to 159 \code{th06::} functions,
+all marked implemented by the pinned reconstruction metadata.  Table~\ref{tab:arithmetic-census}
+summarizes the source-binding candidate.  The 26 direct transcendental sites
+are all \code{fsincos}.  The store widths show why rounding every source
+operation to binary32 would also be wrong: x87 intermediates can remain live
+until a specific DWORD or QWORD store.
+
+\begin{table}[h]
+  \centering
+  \small
+  \begin{tabular}{@{}lr@{}}
+    \toprule
+    Static property in mapped game functions & Count \\
+    \midrule
+    x87 instructions & 5,980 \\
+    direct x87 control/environment instructions & 0 \\
+    \code{fsincos} instructions & 26 \\
+    \code{frndint} instructions & 10 \\
+    x87 stores & 1,793 \\
+    DWORD stores & 1,713 \\
+    QWORD stores & 80 \\
+    \bottomrule
+  \end{tabular}
+  \caption{Static x87 census for mapped \code{th06::} ranges.  Counts are
+  sites, not execution frequencies or a proved gameplay slice.}
+  \label{tab:arithmetic-census}
+\end{table}
+
+Function-body counts alone are incomplete.  The audit also finds 163 direct
+calls from mapped game code into 18 x87 helpers or wrappers: 77 call
+\code{\_\_ftol2}, 16 each call \code{sin} and \code{cos}, 11 call
+\code{sqrt}, and seven call \code{atan2}.  The complete image contains 356
+XMM-operand instruction lines, none inside a mapped \code{th06::} range; they
+belong to a Pentium-4 \code{pow} implementation, a CRT helper used by D3DX
+rasterization, and feature detection.  Their removal still requires a
+transitive noninterference argument for the corresponding draw paths.
+
+The CRT trigonometric wrappers embed raw x87 control word \code{0x027f}.  A
+small Lean definition checks its 53-bit significand precision,
+round-to-nearest-even mode, and six masked exception bits.  Static inspection
+did not find a game-body instruction that establishes this word at entry, so
+the result is deliberately a profile fact rather than an environment theorem.
+An original exporter must record and constrain the entry word and processor
+profile before exact transcendental equivalence can be claimed.

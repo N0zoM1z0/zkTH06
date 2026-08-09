@@ -21,6 +21,9 @@ Last updated: 2026-08-09
   first-mismatch comparator, and payload statistics.
 - A Lean 4.32.0 owner-local Effect model that checks the active-only reuse
   counterexample and a commuting allocation step with a narrow dormant shadow.
+- A hash-bound static arithmetic audit that attributes x87 sites and calls to
+  mapped functions, distinguishes XMM-bearing CRT/D3DX code, and emits a
+  path-free JSON summary; plus a checked Lean decode of control word `0x027f`.
 
 Compatibility playback intentionally restores every per-stage replay snapshot,
 matching shipped playback. It is an oracle-development mode, not the future
@@ -68,6 +71,23 @@ was nondeterministic at Stage record zero because disabled interpolation fields
 were uninitialized; guarded future-live encoding restored determinism. This is
 a useful projection-design counterexample, not original-game equivalence.
 
+## Arithmetic census result
+
+The verified v1.02h executable contains 10,100 x87 instruction lines in a
+complete linear `.text` disassembly. The upstream mapping attributes 5,980 to
+159 implemented `th06::` functions, including 26 direct `fsincos` sites, 10
+`frndint` sites, and 1,793 stores. Of those stores, 1,713 target DWORDs and 80
+target QWORDs. A further 163 direct game-to-helper call sites reach 18 x87
+helpers or wrappers, led by 77 `__ftol2`, 16 `sin`, 16 `cos`, 11 `sqrt`, and 7
+`atan2` calls.
+
+The CRT trigonometric wrappers embed x87 control word `0x027f` (53-bit
+significand precision, round-to-nearest-even, exceptions masked), but static
+analysis has not proved the loader-established word at game entry. The exact
+profile must therefore be measured and constrained explicitly. The complete
+audit and soundness consequences are in
+[`arithmetic-audit.md`](arithmetic-audit.md).
+
 ## Remaining M0 gates
 
 1. Close or explicitly constrain the selected projection. Inactive Effect
@@ -77,7 +97,8 @@ a useful projection-design counterexample, not original-game equivalence.
    mismatch can be reduced to its first field.
 3. Export the same schema from the original executable or an exact-reference
    build and identify the first differing field.
-4. Fix x87/libm and skipped-draw semantic differences until the corpus is
-   frame-identical.
+4. Record the entry x87/CPU profile, instrument reached arithmetic sites, and
+   replace host-libm behavior with an exact, address-bound arithmetic baseline;
+   prove skipped-draw arithmetic noninterference before removing it.
 5. Add canonical-proof playback that derives stage transitions and rejects a
    replay whose stage snapshots do not match live state.

@@ -31,8 +31,11 @@ frame-level differential methodology for \thgame.  An experimental canonical
 digest projection is emitted by the runtime and independently checked by C++
 and Python.  Four locally pinned six-stage replays complete under the
 compatibility runner, and repeated complete canonical runs produce
-byte-identical traces.  These results establish same-host
-self-consistency only; x87 arithmetic, presentation-dependent state, and an
+byte-identical traces.  A hash-bound static audit attributes 5,980 x87
+instructions to mapped game functions and identifies direct transcendental,
+conversion-helper, store-boundary, and control-profile obligations.  These
+results establish same-host self-consistency and an arithmetic proof surface
+only; exact x87 transcendental semantics, presentation-dependent state, and an
 original-executable exporter remain open equivalence gates.  This living paper
 records the research questions, implementation evidence, negative results, and
 changes in proof boundary as the project develops.

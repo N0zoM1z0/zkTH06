@@ -5,10 +5,14 @@
   comes from the Linux reconstruction.  An original/exact-reference exporter
   using the same canonical schema is still required.
   \item \textbf{Floating point.}  The target uses x87 instructions including
-  trigonometric and rounding operations.  Host \code{libm}, spill behavior, and
-  intermediate precision may diverge by one or more bits and later alter
-  collisions.  The planned exact software baseline and any fixed-point
-  refinement have not yet been implemented or proved.
+  trigonometric and rounding operations, explicit DWORD/QWORD stores, and
+  conversion helpers.  The static audit identifies control word \code{0x027f},
+  but does not prove its loader-established entry value.  Hardware
+  transcendental approximations also require a processor/emulator profile.
+  Host \code{libm}, spill behavior, and intermediate precision may diverge by
+  one or more bits and later alter collisions.  The address-indexed exact
+  software baseline and any fixed-point refinement have not yet been
+  implemented or proved.
   \item \textbf{Draw-chain effects.}  Headless mode skips drawing, but some draw
   callbacks write flags, ANM fields, laser positions, or other state that may be
   read later.  Each removal needs dependency analysis and corpus validation.

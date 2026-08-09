@@ -70,5 +70,16 @@ retain motion values that can affect a later allocation, so active-only hashing
 is too narrow.  The state boundary is now developed as an explicit queue of
 owner-local overwrite-before-read and noninterference lemmas.
 
+\paragraph{Phase J: bind arithmetic to original addresses.}
+A source-level plan of ``use software IEEE-754 and x87 where required'' was too
+coarse.  Static analysis found 5,980 x87 instructions in mapped game functions,
+26 inline \code{fsincos} sites, 1,793 explicit stores, and 163 direct calls to
+x87 helpers or wrappers.  It also found XMM-bearing CRT/D3DX code outside the
+game-function ranges.  The fidelity lane therefore changed to an
+address-indexed arithmetic IR whose operations retain original opcode, control
+state, and store width.  Control word \code{0x027f} is now an explicit checked
+profile, while its loader-established entry value and the processor-dependent
+transcendental model remain open evidence obligations.
+
 Future changes to the central claim or state boundary should be appended here
 with the evidence that motivated them.

@@ -17,6 +17,14 @@ emit the same schema from the shipped or an exact-reference executable.  This
 should turn ``the replay desynchronized'' into a reproducible first-frame,
 first-subsystem, first-field diagnosis.
 
+A first static arithmetic census now makes the floating-point gate concrete:
+the mapped game surface contains thousands of x87 operations, 26 inline
+\code{fsincos} sites, 1,793 stores, and numerous calls into conversion and
+transcendental helpers.  The embedded \code{0x027f} control profile is decoded
+in Lean, but startup state and transcendental microarchitecture are not yet
+proved.  The fidelity design therefore binds operations to original addresses
+and store widths instead of assuming source-level host arithmetic is exact.
+
 That evidence will guide the projection, but it cannot prove a slice sound.
 The intended end state additionally requires a machine-checked commuting
 transition and noninterference argument, exact or refined arithmetic semantics,

@@ -80,6 +80,9 @@ output errors. It remains a selected-field diagnostic rather than a complete
 state commitment; see
 [`../docs/canonical-trace.md`](../docs/canonical-trace.md) and
 [`../docs/state-projection-audit.md`](../docs/state-projection-audit.md).
+The pinned executable's address-level floating-point census and the reason host
+`libm` is not accepted as proof semantics are in
+[`../docs/arithmetic-audit.md`](../docs/arithmetic-audit.md).
 
 Compatibility mode restores each stage snapshot exactly as the shipped game
 does. A later canonical-proof mode must instead derive cross-stage state and

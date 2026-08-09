@@ -80,11 +80,30 @@ zkVM guest.
 
 The arithmetic study has two explicit lanes.  The fidelity lane preserves raw
 binary32 state and evaluates an integer-implemented IEEE-754 and, where
-required, x87 extended-precision baseline with pinned control state, store
-boundaries, and transcendental behavior.  This lane may be expensive, but it
-provides the semantic oracle and proof-cost baseline.  The optimization lane
-uses field-specific fixed-point formats, explicit overflow and rounding,
-integer phase angles, and deterministic trigonometric tables or polynomials.
+required, x87 extended-precision baseline with pinned control state, original
+instruction selection, store boundaries, conversion helpers, and
+transcendental behavior.  Static binary evidence identifies \code{0x027f} as
+the control word expected by the CRT trigonometric wrappers: 53-bit significand
+precision, round-to-nearest-even, and masked exceptions.  This value is an
+explicit execution precondition rather than an assumed loader default.  Intel
+documents both the x87 control fields~\cite{intel-fp-reference} and the
+approximate, range-reduction-dependent nature of x87 trigonometric
+instructions~\cite{intel-x87-transcendentals}; Microsoft documents the exposed
+control modes~\cite{microsoft-control87}.
+
+The fidelity representation is address-indexed.  Each retained arithmetic
+operation records its pinned original address, x87 stack/control inputs,
+opcode, destination width, and next use or store boundary.  Calls such as
+\code{\_\_ftol2} and D3DX conversion helpers remain explicit operations.  This
+avoids treating source-level C++ expressions as if a different compiler had
+reproduced MSVC 7 register allocation and spills.  The target executable hash,
+arithmetic-profile version, initial control word, and transcendental-model
+identifier are committed by the statement.  This lane may be expensive, but
+it provides the semantic oracle and proof-cost baseline.
+
+The optimization lane uses field-specific fixed-point formats, explicit
+overflow and rounding, integer phase angles, and deterministic trigonometric
+tables or polynomials.
 
 A fixed-point guest may be called compatible with the shipped executable only
 after a formal refinement argument covers every reachable transition in the
