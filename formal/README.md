@@ -51,6 +51,17 @@ site-specific theorem. It does not prove that the executable decodes to the
 model, that `__ftol2` implements the classifier for all reachable ext80 inputs,
 that jump targets have the modeled meanings, or that the guest refines it.
 
+[`ZkTH06/EclPlayerWrite.lean`](ZkTH06/EclPlayerWrite.lean) models the ECL
+output policy relevant to aliased player writes. Typed writers cannot update a
+player coordinate classified readonly, while opcodes 18 and 19 increment or
+decrement the pointer returned by `GetVar` without consulting that type. The
+model proves that a player-y write therefore requires one of those unchecked
+opcodes and checks that the four destination IDs supporting all 80 such
+instructions in the fixed retail data exclude all three player-position IDs.
+The sealed data audit, not Lean, establishes that support by parsing 8,384 ECL
+instructions; extraction, decoder/handler correspondence, runtime
+immutability, and the artifact-to-theorem connection remain unproved.
+
 [`ZkTH06/PlayerPosition.lean`](ZkTH06/PlayerPosition.lean) totalizes the
 retail vertical clamp over exact finite rationals, both infinities, and NaN.
 `clamp_bounded_of_not_nan` proves that every non-NaN candidate---including
@@ -59,7 +70,8 @@ ordered-comparison branches. It also checks the modeled initial and respawn
 center `384`, a finite mathematical movement step, and the radius-12 grab-box
 ranges `4..420` and `28..444`. These are consequences of the model. The
 instruction decode, binary32/x87 behavior, writer completeness, movement
-candidate not-NaN invariant, update ordering, source correspondence, and guest
+candidate not-NaN invariant, update ordering, source correspondence, the ECL
+audit's extraction/handler premises, non-ECL alias completeness, and guest
 binding remain explicit obligations in the associated audit artifact.
 
 [`ZkTH06/ItemPointScore.lean`](ZkTH06/ItemPointScore.lean) models the four

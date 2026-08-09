@@ -57,6 +57,10 @@ As of 9 August 2026, the following components are implemented:
   \item a byte-free audit of all 37 instructions in the 117-byte helper,
   recording the masked-invalid integer-indefinite path and its zero low-EAX
   observation, plus the corresponding Lean bit-vector projection theorem;
+  \item a fixed-data ECL writer audit over 321 subroutines and 8,384
+  instructions, checking 1,844 output operands and all 80 unchecked increment/
+  decrement destinations, plus 28 retail instruction signatures, 17 source
+  anchors, and a Lean writer-policy reduction;
   \item a byte-free player-position audit of 95 instruction signatures across
   eight mapped functions, 21 pinned source anchors, five binary32 constants,
   four character-speed records, and four comparison contracts, plus total Lean

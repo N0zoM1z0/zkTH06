@@ -297,6 +297,35 @@ variable binding, and guest refinement.  The eight retained scoring calls'
 player-candidate, writer/scheduling, collision, helper-observation, and
 code-binding obligations remain open and are decomposed next.
 
+\subsection{Fixed-data ECL alias-writer audit}
+
+The ECL variable resolver returns pointers for the player-position IDs and
+marks them readonly.  Most output handlers honor this type, but retail opcodes
+18 and 19 increment or decrement the returned pointer directly.  Consequently,
+a source search for explicit player assignments is not a complete writer
+inventory: a fixed script could name player y as an aliased output.
+
+The new artifact binds the executable, mapping, data manifest, stage archive,
+and variable-dispatch audit.  A pinned thtk Release 12 extraction~\cite{thtk}
+is checked by the hashes of all seven ECL outputs.  An independent parser then
+walks 321 subroutines, their 321 sentinels, and 8,384 instructions.  It
+identifies 1,844 candidate output operations; none names a readonly or
+player-position ID.  Of
+these, 80 are direct increment/decrement operations that bypass the type guard.
+Their destination support is only four local IDs: $-10012$, $-10004$,
+$-10002$, and $-10001$.  The artifact also checks 28 retail instruction
+signatures and 17 source anchors.  A Lean policy theorem reduces a modeled
+player-y alias write to one of the unchecked opcodes and checks the transcribed
+four-ID support.
+
+This result is conditional.  The thdat extraction is not proved equivalent to
+the retail PBG3 loader; the independent walk is not yet connected to the
+runtime decoder; handler classification, compiler correspondence, instruction
+immutability, non-ECL alias completeness, artifact-to-Lean binding, and guest
+refinement remain open.  It nevertheless removes a concrete fixed-data
+counterexample family without assuming that the readonly guard is universally
+obeyed.
+
 \subsection{Player-position clamp decomposition}
 
 A dependent artifact checks 95 exact instruction signatures across eight
@@ -306,7 +335,8 @@ from the base ledger.  It covers initialization and respawn at center
 $y=384$, movement-speed construction, bomb and effective-frame multipliers,
 the ordered clamp to $[16,432]$, radius-12 grab-box construction, and the
 vertical item-collision branches.  The point-item artifact seals this player
-artifact's digest as a direct input.
+artifact's digest as a direct input, and the player artifact in turn seals the
+fixed-data ECL writer artifact.
 
 The exceptional cases make the invariant smaller than expected.  Negative
 infinity satisfies the lower comparison and is assigned 16; positive infinity
@@ -319,11 +349,12 @@ $[28,444]$.
 
 This does not yet prove the reachable player invariant.  The remaining queue
 contains verified decode and source correspondence, GameManager
-reinitialization, complete direct and aliased writer coverage, finite movement
-operands and non-NaN candidate construction, binary32 store and x87 comparison
-semantics, Player-before-Item scheduling, and guest refinement.  In particular,
-the audit records adaptive effective-frame-multiplier publishers and does not
-replace them with a constant-one assumption.
+reinitialization, the ECL extraction/parser/handler bindings, non-ECL direct
+and aliased writer coverage, finite movement operands and non-NaN candidate
+construction, binary32 store and x87 comparison semantics, Player-before-Item
+scheduling, and guest refinement.  In particular, the audit records adaptive
+effective-frame-multiplier publishers and does not replace them with a
+constant-one assumption.
 
 \subsection{Point-item range decomposition}
 

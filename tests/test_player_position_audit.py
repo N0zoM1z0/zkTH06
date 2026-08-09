@@ -19,7 +19,8 @@ import x87_audit  # noqa: E402
 
 ARTIFACT = ROOT / "arithmetic" / "player-position-v1.json"
 BASE_LEDGER = ROOT / "arithmetic" / "obligations-v1.json"
-EXPECTED_ARTIFACT_SHA256 = "9479136fa169191d88c96ef92f06607eeaeaa751996bab0fcd820f4a2a2440bb"
+ECL_WRITE_AUDIT = ROOT / "arithmetic" / "ecl-player-write-v1.json"
+EXPECTED_ARTIFACT_SHA256 = "d9df54457b70dd57ba1cf3989de0ec72a0bfff82955d1d375d71a3915c6f2bb4"
 
 
 def reject_disassembly_operands(value: Any) -> None:
@@ -38,6 +39,7 @@ def main() -> int:
     assert "local/original-th06" not in artifact_text
     document = json.loads(artifact_text)
     base_ledger = json.loads(BASE_LEDGER.read_text())
+    ecl_write_audit = json.loads(ECL_WRITE_AUDIT.read_text())
 
     assert document["schema_version"] == audit.SCHEMA_VERSION
     assert document["kind"] == audit.KIND
@@ -47,6 +49,7 @@ def main() -> int:
         "executable_sha256": arithmetic_obligations.PINNED_EXECUTABLE_SHA256,
         "mapping_sha256": arithmetic_obligations.PINNED_MAPPING_SHA256,
         "base_ledger_artifact_sha256": base_ledger["artifact_sha256"],
+        "ecl_player_write_artifact_sha256": ecl_write_audit["artifact_sha256"],
     }
     assert document["generator"]["sha256"] == arithmetic_obligations.sha256_file(
         ROOT / "tools" / "player_position_audit.py"
@@ -95,6 +98,7 @@ def main() -> int:
     assert derived["initial_and_respawn_y"] == "384"
     assert (derived["movement_lower_y"], derived["movement_upper_y"]) == ("16", "432")
     assert derived["grab_radius_y"] == "12"
+    assert derived["fixed_ecl_player_position_output_count"] == 0
     assert derived["ordered_clamp_exception_behavior"] == {
         "negative_infinity": "assign lower 16",
         "positive_infinity": "assign upper 432",

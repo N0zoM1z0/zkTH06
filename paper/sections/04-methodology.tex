@@ -166,8 +166,12 @@ masked-invalid path and isolates its low-EAX observation.  Third, a dependent
 player artifact follows initialization, respawn, movement, the ordered
 $[16,432]$ clamp, and radius-12 grab-box construction.  A total Lean clamp
 theorem shows that either infinity is restored to a finite boundary and that
-only a NaN movement candidate evades both assignments.  Fourth, a total
-item-coordinate split handles finite dyadic values, both infinities, and NaN.
+only a NaN movement candidate evades both assignments.  Fourth, because the
+ECL variable resolver can expose player-position pointers, a fixed-data audit
+independently walks every subroutine instruction and classifies output operands,
+with special attention to increment/decrement handlers that bypass the readonly
+guard.  Fifth, a total item-coordinate split handles finite dyadic values, both
+infinities, and NaN.
 Unordered NaN comparisons can produce an apparent collision, so finiteness
 cannot be inferred; instead, masked-invalid conversion returns modeled low EAX
 zero and selects the top-score branch.  Infinities are separated by a finite
@@ -175,7 +179,8 @@ player box, while finite overlap implies a narrow item interval.  A Lean exact-
 rational model checks this case split, truncation, and score bounds, while
 debug-runner breakpoints search the replay corpus for counterexamples.  Neither
 the model theorem nor corpus measurements establish the missing x87,
-architectural, reachability, writer/scheduling, and code bindings.
+architectural, reachability, ECL extraction/decoder, writer/scheduling, and
+code bindings.
 Reachable difficulty $0..4$ and the pre-item global-score cap are recorded as
 separate control invariants rather than assumed from the selected profile.
 

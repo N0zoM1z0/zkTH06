@@ -261,6 +261,14 @@ its conservative base status:
   architectural premise that masked-invalid `fistp m64int` stores integer-
   indefinite, the path returns EDX:EAX `0x80000000:00000000`; Lean checks the
   low-EAX projection, but not the decoder, x87 premise, or code binding.
+- [`ecl-player-write-v1.json`](ecl-player-write-v1.json) independently walks
+  all 8,384 subroutine instructions extracted from the seven hash-pinned retail
+  ECL files. Among 1,844 candidate output operations, none names a player
+  position or other readonly ID. All 80 direct increment/decrement operations
+  that bypass the modeled type guard target four local-variable IDs. The
+  artifact checks 28 retail instruction signatures and 17 source anchors, but
+  archive extraction, runtime decoding/handler correspondence, immutability,
+  non-ECL writer completeness, and guest binding remain open.
 - [`player-position-v1.json`](player-position-v1.json) checks 95 instruction
   signatures across eight mapped functions, 21 pinned source anchors, five
   binary32 constants, four character-speed records, and four comparison
@@ -294,6 +302,11 @@ python3 tools/ecl_var_dispatch_audit.py \
 python3 tools/ftol2_helper_audit.py \
   local/original-th06/東方紅魔郷.exe \
   --check arithmetic/ftol2-helper-v1.json
+python3 tools/ecl_player_write_audit.py \
+  local/original-th06/東方紅魔郷.exe \
+  local/original-th06/紅魔郷ST.DAT \
+  --mapping repos/th06/config/mapping.csv \
+  --check arithmetic/ecl-player-write-v1.json
 python3 tools/player_position_audit.py \
   local/original-th06/東方紅魔郷.exe \
   --mapping repos/th06/config/mapping.csv \
@@ -357,6 +370,8 @@ player-candidate/writer/scheduling and collision/helper quotient for eight
 score calls, complete result-use evidence, load/remainder semantics, and an
 exact transcendental profile. The total score model no longer assumes finite
 item coordinates, and the clamp model no longer assumes the pre-clamp candidate
-is finite, but their architectural and address bindings remain open. The exact
-implementation remains the fallback whenever a refinement theorem cannot be
-proved.
+is finite. The fixed retail ECL scan removes one concrete alias-writer family
+from the data-level queue but not its extraction/decoder/handler bindings or
+non-ECL completeness. Their architectural and address bindings remain open.
+The exact implementation remains the fallback whenever a refinement theorem
+cannot be proved.

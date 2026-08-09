@@ -13,6 +13,7 @@ from pathlib import Path
 from typing import Any
 
 import arithmetic_obligations
+import ecl_player_write_audit
 import run_ftol2_probe
 import x87_audit
 
@@ -337,6 +338,7 @@ def build_document(
     executable: Path,
     mapping_path: Path,
     base_ledger: dict[str, Any],
+    ecl_write_audit: dict[str, Any],
     source_root: Path,
     objdump: str,
     tool_path: Path,
@@ -353,6 +355,27 @@ def build_document(
         raise ValueError("base ledger is bound to a different executable")
     if target.get("mapping_sha256") != mapping_hash:
         raise ValueError("base ledger is bound to a different mapping")
+    if ecl_write_audit.get("kind") != ecl_player_write_audit.KIND:
+        raise ValueError("selected ECL player-write artifact has the wrong kind")
+    ecl_inputs = ecl_write_audit.get("inputs", {})
+    if (
+        ecl_inputs.get("executable_sha256"),
+        ecl_inputs.get("mapping_sha256"),
+        ecl_inputs.get("data_manifest_sha256"),
+        ecl_inputs.get("stage_archive_sha256"),
+    ) != (
+        executable_hash,
+        mapping_hash,
+        ecl_player_write_audit.DATA_MANIFEST_SHA256,
+        ecl_player_write_audit.STAGE_ARCHIVE_SHA256,
+    ):
+        raise ValueError("ECL player-write artifact is not bound to the selected target")
+    ecl_contract = ecl_write_audit.get("fixed_data_contract", {})
+    if (
+        ecl_contract.get("player_position_output_count"),
+        ecl_contract.get("unchecked_readonly_output_count"),
+    ) != (0, 0):
+        raise ValueError("ECL player-write artifact does not establish the fixed-data exclusion")
 
     source_anchors, source_hashes = verify_sources(source_root)
     disassembler, disassembly = x87_audit.run_objdump(executable, objdump)
@@ -365,6 +388,7 @@ def build_document(
             "executable_sha256": executable_hash,
             "mapping_sha256": mapping_hash,
             "base_ledger_artifact_sha256": base_ledger["artifact_sha256"],
+            "ecl_player_write_artifact_sha256": ecl_write_audit["artifact_sha256"],
         },
         "generator": {
             "path": "tools/player_position_audit.py",
@@ -393,6 +417,7 @@ def build_document(
             "grab_radius_y": "12",
             "grab_top_range_if_center_bounded": "4..420",
             "grab_bottom_range_if_center_bounded": "28..444",
+            "fixed_ecl_player_position_output_count": 0,
             "ordered_clamp_exception_behavior": {
                 "negative_infinity": "assign lower 16",
                 "positive_infinity": "assign upper 432",
@@ -407,9 +432,10 @@ def build_document(
             },
         },
         "evidence_status": (
-            "exact static signatures, pinned source candidates, and proved model consequences; "
-            "not verified decoding, compiler correspondence, whole-program write completeness, "
-            "x87/binary32 semantics, invariant preservation, scheduling, or guest refinement"
+            "exact static signatures, pinned source candidates, fixed-data ECL output exclusion, "
+            "and proved model consequences; not verified decoding, compiler correspondence, "
+            "whole-program write completeness, x87/binary32 semantics, invariant preservation, "
+            "scheduling, or guest refinement"
         ),
         "open_obligations": [
             "Prove or translation-validate every checked instruction and source alignment.",
@@ -418,7 +444,7 @@ def build_document(
             "Prove finite movement operands and the positive sqrt(2) path cannot produce a NaN candidate.",
             "Bind binary32 stores and the four ordered comparisons to the total Lean clamp/collision models.",
             "Prove Player update precedes item collision whenever collision can accept the player state.",
-            "Prove no unmodeled direct or aliased writer corrupts player center/grab-box fields.",
+            "Discharge the ECL artifact's extraction/parser/handler bindings and prove no non-ECL direct or aliased writer corrupts player center/grab-box fields.",
             "Prove the zkVM guest refines the address-bound player-position and collision contract.",
         ],
         "counts": {
@@ -438,6 +464,11 @@ def main() -> int:
     parser.add_argument("executable", type=Path)
     parser.add_argument("--mapping", type=Path, default=Path("repos/th06/config/mapping.csv"))
     parser.add_argument("--ledger", type=Path, default=Path("arithmetic/obligations-v1.json"))
+    parser.add_argument(
+        "--ecl-write-audit",
+        type=Path,
+        default=Path("arithmetic/ecl-player-write-v1.json"),
+    )
     parser.add_argument("--source-root", type=Path, default=Path("repos/th06"))
     parser.add_argument("--objdump", default="objdump")
     destination = parser.add_mutually_exclusive_group()
@@ -449,6 +480,7 @@ def main() -> int:
         args.executable,
         args.mapping,
         load_sealed(args.ledger),
+        load_sealed(args.ecl_write_audit),
         args.source_root,
         args.objdump,
         Path(__file__).resolve(),

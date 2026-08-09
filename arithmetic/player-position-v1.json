@@ -4,11 +4,12 @@
   "inputs": {
     "executable_sha256": "9f76483c46256804792399296619c1274363c31cd8f1775fafb55106fb852245",
     "mapping_sha256": "0f20300d5b107b36c933a7f7dc448407ee5f01c5cd7faad132d406c023163191",
-    "base_ledger_artifact_sha256": "1c4c128284bf5ab4aa36e636cd5ed15f0300e5295e7fb29f12c0cb2f897f65af"
+    "base_ledger_artifact_sha256": "1c4c128284bf5ab4aa36e636cd5ed15f0300e5295e7fb29f12c0cb2f897f65af",
+    "ecl_player_write_artifact_sha256": "cd1d73507c72963dd783dda83c398f741d0cab6e2b5fe4e348e47ad995e06a24"
   },
   "generator": {
     "path": "tools/player_position_audit.py",
-    "sha256": "4e613ba7ea7a108ad55fb0e8617bda7626c6d4683b81c9018d56ab4a02738e98",
+    "sha256": "761ac32f5263fa49155ed8a7aaeb780008d9d1851dfb4bb8b9fa681ebc784526",
     "x87_audit_sha256": "93c6aee778f489c92788dc7dfc6c51749fa5f20d075305a4190616d9b5d46290",
     "disassembler": "GNU objdump (GNU Binutils for Ubuntu) 2.38"
   },
@@ -810,6 +811,7 @@
     "grab_radius_y": "12",
     "grab_top_range_if_center_bounded": "4..420",
     "grab_bottom_range_if_center_bounded": "28..444",
+    "fixed_ecl_player_position_output_count": 0,
     "ordered_clamp_exception_behavior": {
       "negative_infinity": "assign lower 16",
       "positive_infinity": "assign upper 432",
@@ -823,7 +825,7 @@
       "grab_box": "ZkTH06.PlayerPosition.bounded_center_grab_box"
     }
   },
-  "evidence_status": "exact static signatures, pinned source candidates, and proved model consequences; not verified decoding, compiler correspondence, whole-program write completeness, x87/binary32 semantics, invariant preservation, scheduling, or guest refinement",
+  "evidence_status": "exact static signatures, pinned source candidates, fixed-data ECL output exclusion, and proved model consequences; not verified decoding, compiler correspondence, whole-program write completeness, x87/binary32 semantics, invariant preservation, scheduling, or guest refinement",
   "open_obligations": [
     "Prove or translation-validate every checked instruction and source alignment.",
     "Prove the movement-area constants remain initialized across GameManager reinitialization.",
@@ -831,7 +833,7 @@
     "Prove finite movement operands and the positive sqrt(2) path cannot produce a NaN candidate.",
     "Bind binary32 stores and the four ordered comparisons to the total Lean clamp/collision models.",
     "Prove Player update precedes item collision whenever collision can accept the player state.",
-    "Prove no unmodeled direct or aliased writer corrupts player center/grab-box fields.",
+    "Discharge the ECL artifact's extraction/parser/handler bindings and prove no non-ECL direct or aliased writer corrupts player center/grab-box fields.",
     "Prove the zkVM guest refines the address-bound player-position and collision contract."
   ],
   "counts": {
@@ -842,5 +844,5 @@
     "checked_instruction_roles": 95,
     "comparison_contracts": 4
   },
-  "artifact_sha256": "9479136fa169191d88c96ef92f06607eeaeaa751996bab0fcd820f4a2a2440bb"
+  "artifact_sha256": "d9df54457b70dd57ba1cf3989de0ec72a0bfff82955d1d375d71a3915c6f2bb4"
 }

@@ -32,7 +32,12 @@
   together with reachable difficulty and pre-score bounds.  The 95-instruction
   player audit and total clamp theorem reduce its invariant to non-NaN movement
   candidates plus initialization, writer-completeness, scheduling, binary/x87,
-  correspondence, and guest obligations; they do not prove those premises.
+  correspondence, and guest obligations; they do not prove those premises.  A
+  fixed-data ECL audit finds zero player-position outputs among 1,844 candidates
+  and checks all 80 operations using the two handlers that bypass the readonly
+  guard, but still lacks a
+  proof of archive extraction, runtime decoding/dispatch, instruction
+  immutability, non-ECL alias completeness, and artifact-to-Lean binding.
   The total score model covers finite, infinite, and NaN item coordinates
   conditionally; 2,081 Linux samples exercise only its finite branch and prove
   none of those bindings.  The complete address-indexed semantics, code

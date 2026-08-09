@@ -1,5 +1,6 @@
 import ZkTH06.EffectReuse
 import ZkTH06.EclVarId
+import ZkTH06.EclPlayerWrite
 import ZkTH06.ItemPointScore
 import ZkTH06.PlayerPosition
 import ZkTH06.X87Exceptions

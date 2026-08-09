@@ -346,6 +346,35 @@ discharge discipline are in
 [`arithmetic/README.md`](../arithmetic/README.md) and
 [`arithmetic-obligations.md`](arithmetic-obligations.md).
 
+## Fixed retail ECL alias writes
+
+Writer completeness cannot be established by searching only explicit C++
+assignments. `EnemyEclInstr::GetVar` can return the player-position addresses;
+although it labels them readonly and typed writers honor that label, ECL
+opcodes 18 and 19 increment or decrement the returned pointer without a type
+check. A script naming `-10019` as such a destination could corrupt the raw
+player-y bits before the movement clamp.
+
+A proprietary-byte-free artifact binds the retail executable, mapping, data
+manifest, `紅魔郷ST.DAT`, and the earlier 25-way variable dispatch. It uses a
+pinned thtk extractor whose seven outputs are checked by hash, then independently
+walks 321 subroutines and 8,384 instructions. None of 1,844 candidate output
+operands names a player-position or readonly ID. The 80 unchecked opcode-18/19
+operations target only four local IDs: `-10012`, `-10004`, `-10002`, and
+`-10001`. The audit also checks 28 retail instruction signatures, including the
+unchecked stores and player-y readonly block, plus 17 pinned source anchors.
+The sealed artifact is
+[`arithmetic/ecl-player-write-v1.json`](../arithmetic/ecl-player-write-v1.json),
+with digest
+`cd1d73507c72963dd783dda83c398f741d0cab6e2b5fe4e348e47ad995e06a24`.
+
+This is fixed-data evidence, not a decoder theorem. Correct archive extraction,
+agreement of the independent walk with the runtime parser, exhaustive opcode-
+handler classification, compiler correspondence, runtime immutability,
+non-ECL alias coverage, and guest binding remain open. A Lean policy theorem
+isolates the unchecked-opcode condition and checks the four-ID support, but is
+not yet mechanically connected to the artifact.
+
 ## Player-position invariant decomposition
 
 The point-item geometry depends on the player's vertical center and radius. A
@@ -356,7 +385,8 @@ source anchors, five binary32 constants, four character-speed records, and the
 four relevant comparison contracts from the base ledger. The sealed artifact
 is [`arithmetic/player-position-v1.json`](../arithmetic/player-position-v1.json),
 with digest
-`9479136fa169191d88c96ef92f06607eeaeaa751996bab0fcd820f4a2a2440bb`.
+`d9df54457b70dd57ba1cf3989de0ec72a0bfff82955d1d375d71a3915c6f2bb4`.
+This artifact now seals the fixed ECL writer audit as a direct dependency.
 
 The exception behavior matters. The ordered lower-then-upper clamp sends
 negative infinity to 16 and positive infinity to 432. NaN is unordered at both
@@ -367,12 +397,12 @@ initial/respawn center 384 and derives radius-12 grab-box ranges `4..420` and
 `28..444` once the center is bounded.
 
 This result converts one vague invariant into a smaller proof queue; it does
-not prove reachability. Whole-program writer completeness (including aliased
-writes), GameManager reinitialization, non-NaN candidate construction,
-binary32/x87 comparison and store semantics, Player-before-Item scheduling,
-verified decoding/source correspondence, and guest refinement remain open.
-The effective frame multiplier is explicitly treated as having adaptive
-publishers rather than being assumed constant.
+not prove reachability. The ECL extraction/parser/handler bindings and non-ECL
+writer completeness (including aliased writes), GameManager reinitialization,
+non-NaN candidate construction, binary32/x87 comparison and store semantics,
+Player-before-Item scheduling, verified decoding/source correspondence, and
+guest refinement remain open. The effective frame multiplier is explicitly
+treated as having adaptive publishers rather than being assumed constant.
 
 ## Point-item score range decomposition
 

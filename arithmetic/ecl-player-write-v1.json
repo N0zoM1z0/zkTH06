@@ -1,0 +1,1173 @@
+{
+  "schema_version": 1,
+  "kind": "zkth06.ecl-player-write-audit",
+  "inputs": {
+    "executable_sha256": "9f76483c46256804792399296619c1274363c31cd8f1775fafb55106fb852245",
+    "mapping_sha256": "0f20300d5b107b36c933a7f7dc448407ee5f01c5cd7faad132d406c023163191",
+    "data_manifest_sha256": "f59a3fa3981eed369b47aa03fe0c9e0c555f976c422bdaa37108ca2f3f892a4a",
+    "stage_archive_sha256": "0f834a35aef2d73b05cffecc830c017dacbcc6f11b9a0611a9da2f3970a112e7",
+    "ecl_var_dispatch_artifact_sha256": "4f30ab443aa0a557ed7d39c2389a8be329601eba956aed073f05bad51b46e4cc"
+  },
+  "generator": {
+    "path": "tools/ecl_player_write_audit.py",
+    "sha256": "eb75460a02e249dafba9ae408db10a748f21512acdeeb7aa6516e3571c66ca9b",
+    "x87_audit_sha256": "93c6aee778f489c92788dc7dfc6c51749fa5f20d075305a4190616d9b5d46290",
+    "disassembler": "GNU objdump (GNU Binutils for Ubuntu) 2.38"
+  },
+  "extractor": {
+    "name": "thtk thdat",
+    "version": "Touhou Toolkit release 12",
+    "upstream_url": "https://github.com/thpatch/thtk",
+    "revision": "892114a0fcaa0bbdaaecf3cb4ad56f758683fb40",
+    "selected_source_files": {
+      "thdat/thdat.c": "04c3003b965917c0655d316c1df4687e9c1b57c7602824e4804a4dd840234426",
+      "thtk/error.c": "5c08ac2f2cc020074510dbe730255c73a7b020dde268effb1104aeb06507c130",
+      "thtk/io.c": "4900364832f701eddb4c2d662e66431fe3c2a3bda117f31b16bf4aa8a2074fe9",
+      "thtk/thcrypt.c": "ef49d5bf7a09d8592a76c4a5fc6c7d4e7ca94ebed325b09587738dd033d94365",
+      "thtk/thdat.c": "49132417391eff5bb081d400f34719f1fa6a6b8f4bc43081a3a7c5b3d660422f",
+      "thtk/thdat06.c": "3502004bc70207fa82598630519feff14cdb32de486f84f949644d212e44b22d",
+      "thtk/thlzss.c": "a4f6f52b76ad8828af44f46ee5eb056220bc5070b3f16c030241e3d6d0656cfc",
+      "thtk/thrle.c": "55347ad4b0a95635df189812cd3cc12c6de2ec304a49807e11137ca65cc4bf4d"
+    },
+    "status": "pinned extractor output checked by hash; extraction correctness unproved"
+  },
+  "upstream": {
+    "url": "https://github.com/GensokyoClub/th06",
+    "revision": "cc475a0bc3fef38683b0f02224c87ddba0a021d9",
+    "source_files": {
+      "src/EclManager.cpp": "b4671d3bb277ffafafea18f58f8340f0900d61983816fca947bfc7f1d7f0a668",
+      "src/EclManager.hpp": "33ce812331571a9bb819c31eb26f56e704ff9478338e0725c77234a09b1ee2be",
+      "src/EnemyEclInstr.cpp": "7aa69c652861d37df44edf5e65dc137f4d6e1af8d1985c96c0c6234f8ffbc334"
+    },
+    "anchors": [
+      {
+        "file": "src/EclManager.hpp",
+        "line": 349,
+        "anchor": "enum EclRawInstrOpcode",
+        "role": "opcode enumeration"
+      },
+      {
+        "file": "src/EclManager.hpp",
+        "line": 354,
+        "anchor": "ECL_OPCODE_JUMPDEC",
+        "role": "guarded writer opcode 3"
+      },
+      {
+        "file": "src/EclManager.hpp",
+        "line": 369,
+        "anchor": "ECL_OPCODE_MATHINC",
+        "role": "unchecked writer opcode 18"
+      },
+      {
+        "file": "src/EclManager.hpp",
+        "line": 370,
+        "anchor": "ECL_OPCODE_MATHDEC",
+        "role": "unchecked writer opcode 19"
+      },
+      {
+        "file": "src/EclManager.cpp",
+        "line": 126,
+        "anchor": "switch (instruction->opCode)",
+        "role": "subroutine dispatch"
+      },
+      {
+        "file": "src/EclManager.cpp",
+        "line": 133,
+        "anchor": "EnemyEclInstr::SetVar",
+        "role": "jump-decrement guarded store"
+      },
+      {
+        "file": "src/EclManager.cpp",
+        "line": 143,
+        "anchor": "EnemyEclInstr::SetVar",
+        "role": "set opcode guarded store"
+      },
+      {
+        "file": "src/EclManager.cpp",
+        "line": 185,
+        "anchor": "EnemyEclInstr::MathAdd",
+        "role": "typed arithmetic writer"
+      },
+      {
+        "file": "src/EclManager.cpp",
+        "line": 188,
+        "anchor": "EnemyEclInstr::GetVar",
+        "role": "increment pointer resolution"
+      },
+      {
+        "file": "src/EclManager.cpp",
+        "line": 189,
+        "anchor": "*local_3c += 1",
+        "role": "unchecked increment store"
+      },
+      {
+        "file": "src/EclManager.cpp",
+        "line": 192,
+        "anchor": "EnemyEclInstr::GetVar",
+        "role": "decrement pointer resolution"
+      },
+      {
+        "file": "src/EclManager.cpp",
+        "line": 193,
+        "anchor": "*local_40 -= 1",
+        "role": "unchecked decrement store"
+      },
+      {
+        "file": "src/EnemyEclInstr.cpp",
+        "line": 197,
+        "anchor": "case ECL_VAR_PLAYER_POS_Y",
+        "role": "player-y variable ID"
+      },
+      {
+        "file": "src/EnemyEclInstr.cpp",
+        "line": 199,
+        "anchor": "ECL_VALUE_TYPE_READONLY",
+        "role": "player-y readonly type"
+      },
+      {
+        "file": "src/EnemyEclInstr.cpp",
+        "line": 200,
+        "anchor": "g_Player.positionCenter.y",
+        "role": "player-y returned pointer"
+      },
+      {
+        "file": "src/EnemyEclInstr.cpp",
+        "line": 261,
+        "anchor": "lhsType == ECL_VALUE_TYPE_INT",
+        "role": "integer store guard"
+      },
+      {
+        "file": "src/EnemyEclInstr.cpp",
+        "line": 265,
+        "anchor": "lhsType == ECL_VALUE_TYPE_FLOAT",
+        "role": "float store guard"
+      }
+    ],
+    "correspondence_status": "manual-disassembly-source-alignment-unproved"
+  },
+  "mapped_functions": [
+    {
+      "name": "th06::EclManager::RunEcl",
+      "start": "0x004074a0",
+      "size": 13572
+    },
+    {
+      "name": "th06::EnemyEclInstr::GetVar",
+      "start": "0x0040afb0",
+      "size": 876
+    },
+    {
+      "name": "th06::EnemyEclInstr::SetVar",
+      "start": "0x0040b3c0",
+      "size": 88
+    }
+  ],
+  "checked_instruction_roles": [
+    {
+      "address": "0x00407515",
+      "mnemonic": "movsx",
+      "role": "load ECL opcode"
+    },
+    {
+      "address": "0x00407525",
+      "mnemonic": "sub",
+      "role": "normalize opcode one to table index zero"
+    },
+    {
+      "address": "0x0040752e",
+      "mnemonic": "cmp",
+      "role": "bound normalized opcode by 134"
+    },
+    {
+      "address": "0x00407538",
+      "mnemonic": "ja",
+      "role": "reject opcode outside dispatch table"
+    },
+    {
+      "address": "0x00407544",
+      "mnemonic": "jmp",
+      "role": "dispatch through 135-entry table"
+    },
+    {
+      "address": "0x0040784c",
+      "mnemonic": "add",
+      "role": "locate increment destination word"
+    },
+    {
+      "address": "0x00407854",
+      "mnemonic": "call",
+      "role": "resolve increment destination through GetVar"
+    },
+    {
+      "address": "0x0040785c",
+      "mnemonic": "mov",
+      "role": "retain increment destination pointer"
+    },
+    {
+      "address": "0x00407862",
+      "mnemonic": "mov",
+      "role": "load increment destination value"
+    },
+    {
+      "address": "0x00407864",
+      "mnemonic": "add",
+      "role": "increment value without checking returned type"
+    },
+    {
+      "address": "0x0040786a",
+      "mnemonic": "mov",
+      "role": "store unchecked increment result"
+    },
+    {
+      "address": "0x00407876",
+      "mnemonic": "add",
+      "role": "locate decrement destination word"
+    },
+    {
+      "address": "0x0040787e",
+      "mnemonic": "call",
+      "role": "resolve decrement destination through GetVar"
+    },
+    {
+      "address": "0x00407886",
+      "mnemonic": "mov",
+      "role": "retain decrement destination pointer"
+    },
+    {
+      "address": "0x0040788c",
+      "mnemonic": "mov",
+      "role": "load decrement destination value"
+    },
+    {
+      "address": "0x0040788e",
+      "mnemonic": "sub",
+      "role": "decrement value without checking returned type"
+    },
+    {
+      "address": "0x00407894",
+      "mnemonic": "mov",
+      "role": "store unchecked decrement result"
+    },
+    {
+      "address": "0x0040b1db",
+      "mnemonic": "cmp",
+      "role": "test optional player-y type output"
+    },
+    {
+      "address": "0x0040b1e1",
+      "mnemonic": "mov",
+      "role": "load player-y type output pointer"
+    },
+    {
+      "address": "0x0040b1e4",
+      "mnemonic": "mov",
+      "role": "mark player y readonly"
+    },
+    {
+      "address": "0x0040b1ea",
+      "mnemonic": "mov",
+      "role": "return retail player center-y address"
+    },
+    {
+      "address": "0x0040b3e7",
+      "mnemonic": "call",
+      "role": "resolve SetVar output and its type"
+    },
+    {
+      "address": "0x0040b3f2",
+      "mnemonic": "cmp",
+      "role": "test integer output type"
+    },
+    {
+      "address": "0x0040b3f6",
+      "mnemonic": "jne",
+      "role": "skip integer store for other types"
+    },
+    {
+      "address": "0x0040b400",
+      "mnemonic": "mov",
+      "role": "store integer output"
+    },
+    {
+      "address": "0x0040b404",
+      "mnemonic": "cmp",
+      "role": "test float output type"
+    },
+    {
+      "address": "0x0040b408",
+      "mnemonic": "jne",
+      "role": "skip final store for non-float type"
+    },
+    {
+      "address": "0x0040b412",
+      "mnemonic": "mov",
+      "role": "store float output bits"
+    }
+  ],
+  "writer_dispatch": [
+    {
+      "opcode": 3,
+      "handler_target": "0x00407553",
+      "modeled_policy": "typed-guard-candidate"
+    },
+    {
+      "opcode": 4,
+      "handler_target": "0x004075b8",
+      "modeled_policy": "typed-guard-candidate"
+    },
+    {
+      "opcode": 5,
+      "handler_target": "0x004075b8",
+      "modeled_policy": "typed-guard-candidate"
+    },
+    {
+      "opcode": 6,
+      "handler_target": "0x0040761e",
+      "modeled_policy": "typed-guard-candidate"
+    },
+    {
+      "opcode": 7,
+      "handler_target": "0x00407684",
+      "modeled_policy": "typed-guard-candidate"
+    },
+    {
+      "opcode": 8,
+      "handler_target": "0x0040770d",
+      "modeled_policy": "typed-guard-candidate"
+    },
+    {
+      "opcode": 9,
+      "handler_target": "0x00407753",
+      "modeled_policy": "typed-guard-candidate"
+    },
+    {
+      "opcode": 10,
+      "handler_target": "0x004077bc",
+      "modeled_policy": "typed-guard-candidate"
+    },
+    {
+      "opcode": 11,
+      "handler_target": "0x004077de",
+      "modeled_policy": "typed-guard-candidate"
+    },
+    {
+      "opcode": 12,
+      "handler_target": "0x004077ff",
+      "modeled_policy": "typed-guard-candidate"
+    },
+    {
+      "opcode": 13,
+      "handler_target": "0x00407821",
+      "modeled_policy": "typed-guard-candidate"
+    },
+    {
+      "opcode": 14,
+      "handler_target": "0x0040789b",
+      "modeled_policy": "typed-guard-candidate"
+    },
+    {
+      "opcode": 15,
+      "handler_target": "0x004078c1",
+      "modeled_policy": "typed-guard-candidate"
+    },
+    {
+      "opcode": 16,
+      "handler_target": "0x004078e7",
+      "modeled_policy": "typed-guard-candidate"
+    },
+    {
+      "opcode": 17,
+      "handler_target": "0x0040790d",
+      "modeled_policy": "typed-guard-candidate"
+    },
+    {
+      "opcode": 18,
+      "handler_target": "0x00407847",
+      "modeled_policy": "unchecked-direct"
+    },
+    {
+      "opcode": 19,
+      "handler_target": "0x00407871",
+      "modeled_policy": "unchecked-direct"
+    },
+    {
+      "opcode": 20,
+      "handler_target": "0x00407821",
+      "modeled_policy": "typed-guard-candidate"
+    },
+    {
+      "opcode": 21,
+      "handler_target": "0x0040789b",
+      "modeled_policy": "typed-guard-candidate"
+    },
+    {
+      "opcode": 22,
+      "handler_target": "0x004078c1",
+      "modeled_policy": "typed-guard-candidate"
+    },
+    {
+      "opcode": 23,
+      "handler_target": "0x004078e7",
+      "modeled_policy": "typed-guard-candidate"
+    },
+    {
+      "opcode": 24,
+      "handler_target": "0x0040790d",
+      "modeled_policy": "typed-guard-candidate"
+    },
+    {
+      "opcode": 25,
+      "handler_target": "0x00407933",
+      "modeled_policy": "typed-guard-candidate"
+    },
+    {
+      "opcode": 26,
+      "handler_target": "0x004075d7",
+      "modeled_policy": "typed-guard-candidate"
+    }
+  ],
+  "ecl_files": [
+    {
+      "name": "ecldata1.ecl",
+      "sha256": "9d9a40e9f7e3ab9346d3874438134659cacf9d34f4aff57b96b4be4ea85b99d7",
+      "size": 24562,
+      "subroutine_count": 24,
+      "sentinel_count": 24,
+      "header_timeline_count": 0,
+      "active_timeline_offsets": [
+        "0x0000472e"
+      ],
+      "subroutine_instruction_count": 644,
+      "candidate_output_count": 103,
+      "unchecked_output_count": 0,
+      "readonly_output_count": 0,
+      "player_position_output_count": 0
+    },
+    {
+      "name": "ecldata2.ecl",
+      "sha256": "aa89aaaf13264d909bbaaa24f2af263ae1a58145ad5cc33fcea5eb9cb920c43e",
+      "size": 26880,
+      "subroutine_count": 33,
+      "sentinel_count": 33,
+      "header_timeline_count": 0,
+      "active_timeline_offsets": [
+        "0x000035c4"
+      ],
+      "subroutine_instruction_count": 565,
+      "candidate_output_count": 110,
+      "unchecked_output_count": 0,
+      "readonly_output_count": 0,
+      "player_position_output_count": 0
+    },
+    {
+      "name": "ecldata3.ecl",
+      "sha256": "44dfcaa737b7d4b3d1275655627e15a9d5b7710fc75a0885fb39d8c9485056d6",
+      "size": 33070,
+      "subroutine_count": 35,
+      "sentinel_count": 35,
+      "header_timeline_count": 0,
+      "active_timeline_offsets": [
+        "0x0000541e"
+      ],
+      "subroutine_instruction_count": 838,
+      "candidate_output_count": 203,
+      "unchecked_output_count": 7,
+      "readonly_output_count": 0,
+      "player_position_output_count": 0
+    },
+    {
+      "name": "ecldata4.ecl",
+      "sha256": "92695da99b651da492f4fb7c7497b5c8ed8105a23370cc4529901609077c8b60",
+      "size": 60796,
+      "subroutine_count": 61,
+      "sentinel_count": 61,
+      "header_timeline_count": 0,
+      "active_timeline_offsets": [
+        "0x0000c1cc"
+      ],
+      "subroutine_instruction_count": 1969,
+      "candidate_output_count": 301,
+      "unchecked_output_count": 24,
+      "readonly_output_count": 0,
+      "player_position_output_count": 0
+    },
+    {
+      "name": "ecldata5.ecl",
+      "sha256": "50b5c4777a56910148466c7e5ea1c8dadc126e706420604d52421a49bf861d1b",
+      "size": 30392,
+      "subroutine_count": 52,
+      "sentinel_count": 52,
+      "header_timeline_count": 0,
+      "active_timeline_offsets": [
+        "0x00005d50"
+      ],
+      "subroutine_instruction_count": 972,
+      "candidate_output_count": 195,
+      "unchecked_output_count": 3,
+      "readonly_output_count": 0,
+      "player_position_output_count": 0
+    },
+    {
+      "name": "ecldata6.ecl",
+      "sha256": "4a4d4e5bf7ff79ab49b918267130b42308b3a5565cc892dc0e636b8b667740e5",
+      "size": 30866,
+      "subroutine_count": 46,
+      "sentinel_count": 46,
+      "header_timeline_count": 0,
+      "active_timeline_offsets": [
+        "0x00006a46"
+      ],
+      "subroutine_instruction_count": 1158,
+      "candidate_output_count": 250,
+      "unchecked_output_count": 11,
+      "readonly_output_count": 0,
+      "player_position_output_count": 0
+    },
+    {
+      "name": "ecldata7.ecl",
+      "sha256": "fb900c7e54b1f5d0c36a2e09986bef8f8fde002ca7b5005d12e3aaec7e856392",
+      "size": 59890,
+      "subroutine_count": 70,
+      "sentinel_count": 70,
+      "header_timeline_count": 0,
+      "active_timeline_offsets": [
+        "0x0000c456"
+      ],
+      "subroutine_instruction_count": 2238,
+      "candidate_output_count": 682,
+      "unchecked_output_count": 35,
+      "readonly_output_count": 0,
+      "player_position_output_count": 0
+    }
+  ],
+  "fixed_data_contract": {
+    "parser": "independent TH06 subroutine-header walk; timeline records excluded",
+    "candidate_output_opcodes": [
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26
+    ],
+    "guarded_output_opcodes": [
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26
+    ],
+    "unchecked_output_opcodes": [
+      18,
+      19
+    ],
+    "player_position_ids": [
+      -10018,
+      -10019,
+      -10020
+    ],
+    "player_y_id": -10019,
+    "readonly_ids": [
+      -10013,
+      -10014,
+      -10018,
+      -10019,
+      -10020,
+      -10021,
+      -10023
+    ],
+    "opcode_counts": [
+      {
+        "value": 0,
+        "count": 4
+      },
+      {
+        "value": 1,
+        "count": 158
+      },
+      {
+        "value": 2,
+        "count": 195
+      },
+      {
+        "value": 3,
+        "count": 223
+      },
+      {
+        "value": 4,
+        "count": 455
+      },
+      {
+        "value": 5,
+        "count": 209
+      },
+      {
+        "value": 6,
+        "count": 14
+      },
+      {
+        "value": 8,
+        "count": 57
+      },
+      {
+        "value": 9,
+        "count": 140
+      },
+      {
+        "value": 10,
+        "count": 1
+      },
+      {
+        "value": 13,
+        "count": 52
+      },
+      {
+        "value": 14,
+        "count": 4
+      },
+      {
+        "value": 15,
+        "count": 4
+      },
+      {
+        "value": 16,
+        "count": 20
+      },
+      {
+        "value": 17,
+        "count": 93
+      },
+      {
+        "value": 18,
+        "count": 80
+      },
+      {
+        "value": 20,
+        "count": 272
+      },
+      {
+        "value": 21,
+        "count": 199
+      },
+      {
+        "value": 23,
+        "count": 3
+      },
+      {
+        "value": 25,
+        "count": 5
+      },
+      {
+        "value": 26,
+        "count": 13
+      },
+      {
+        "value": 27,
+        "count": 173
+      },
+      {
+        "value": 28,
+        "count": 18
+      },
+      {
+        "value": 29,
+        "count": 14
+      },
+      {
+        "value": 30,
+        "count": 8
+      },
+      {
+        "value": 31,
+        "count": 11
+      },
+      {
+        "value": 32,
+        "count": 1
+      },
+      {
+        "value": 33,
+        "count": 29
+      },
+      {
+        "value": 34,
+        "count": 128
+      },
+      {
+        "value": 35,
+        "count": 174
+      },
+      {
+        "value": 36,
+        "count": 62
+      },
+      {
+        "value": 39,
+        "count": 55
+      },
+      {
+        "value": 43,
+        "count": 28
+      },
+      {
+        "value": 45,
+        "count": 88
+      },
+      {
+        "value": 46,
+        "count": 64
+      },
+      {
+        "value": 47,
+        "count": 145
+      },
+      {
+        "value": 48,
+        "count": 58
+      },
+      {
+        "value": 49,
+        "count": 5
+      },
+      {
+        "value": 50,
+        "count": 113
+      },
+      {
+        "value": 51,
+        "count": 1
+      },
+      {
+        "value": 52,
+        "count": 16
+      },
+      {
+        "value": 56,
+        "count": 2
+      },
+      {
+        "value": 57,
+        "count": 104
+      },
+      {
+        "value": 59,
+        "count": 4
+      },
+      {
+        "value": 61,
+        "count": 109
+      },
+      {
+        "value": 63,
+        "count": 7
+      },
+      {
+        "value": 65,
+        "count": 47
+      },
+      {
+        "value": 66,
+        "count": 6
+      },
+      {
+        "value": 67,
+        "count": 201
+      },
+      {
+        "value": 68,
+        "count": 179
+      },
+      {
+        "value": 69,
+        "count": 220
+      },
+      {
+        "value": 70,
+        "count": 185
+      },
+      {
+        "value": 71,
+        "count": 16
+      },
+      {
+        "value": 74,
+        "count": 4
+      },
+      {
+        "value": 75,
+        "count": 148
+      },
+      {
+        "value": 76,
+        "count": 98
+      },
+      {
+        "value": 77,
+        "count": 107
+      },
+      {
+        "value": 78,
+        "count": 78
+      },
+      {
+        "value": 79,
+        "count": 78
+      },
+      {
+        "value": 81,
+        "count": 169
+      },
+      {
+        "value": 82,
+        "count": 155
+      },
+      {
+        "value": 83,
+        "count": 7
+      },
+      {
+        "value": 84,
+        "count": 117
+      },
+      {
+        "value": 85,
+        "count": 140
+      },
+      {
+        "value": 86,
+        "count": 14
+      },
+      {
+        "value": 87,
+        "count": 139
+      },
+      {
+        "value": 88,
+        "count": 79
+      },
+      {
+        "value": 90,
+        "count": 15
+      },
+      {
+        "value": 92,
+        "count": 5
+      },
+      {
+        "value": 93,
+        "count": 64
+      },
+      {
+        "value": 94,
+        "count": 44
+      },
+      {
+        "value": 95,
+        "count": 104
+      },
+      {
+        "value": 96,
+        "count": 73
+      },
+      {
+        "value": 97,
+        "count": 180
+      },
+      {
+        "value": 98,
+        "count": 28
+      },
+      {
+        "value": 99,
+        "count": 25
+      },
+      {
+        "value": 100,
+        "count": 76
+      },
+      {
+        "value": 101,
+        "count": 23
+      },
+      {
+        "value": 102,
+        "count": 47
+      },
+      {
+        "value": 103,
+        "count": 120
+      },
+      {
+        "value": 104,
+        "count": 88
+      },
+      {
+        "value": 105,
+        "count": 227
+      },
+      {
+        "value": 106,
+        "count": 279
+      },
+      {
+        "value": 107,
+        "count": 108
+      },
+      {
+        "value": 108,
+        "count": 89
+      },
+      {
+        "value": 109,
+        "count": 11
+      },
+      {
+        "value": 111,
+        "count": 41
+      },
+      {
+        "value": 112,
+        "count": 80
+      },
+      {
+        "value": 113,
+        "count": 67
+      },
+      {
+        "value": 114,
+        "count": 71
+      },
+      {
+        "value": 115,
+        "count": 120
+      },
+      {
+        "value": 116,
+        "count": 99
+      },
+      {
+        "value": 117,
+        "count": 98
+      },
+      {
+        "value": 118,
+        "count": 72
+      },
+      {
+        "value": 119,
+        "count": 39
+      },
+      {
+        "value": 120,
+        "count": 5
+      },
+      {
+        "value": 121,
+        "count": 58
+      },
+      {
+        "value": 122,
+        "count": 36
+      },
+      {
+        "value": 123,
+        "count": 3
+      },
+      {
+        "value": 124,
+        "count": 6
+      },
+      {
+        "value": 125,
+        "count": 3
+      },
+      {
+        "value": 126,
+        "count": 43
+      },
+      {
+        "value": 127,
+        "count": 3
+      },
+      {
+        "value": 128,
+        "count": 28
+      },
+      {
+        "value": 129,
+        "count": 10
+      },
+      {
+        "value": 130,
+        "count": 1
+      },
+      {
+        "value": 131,
+        "count": 24
+      },
+      {
+        "value": 132,
+        "count": 16
+      },
+      {
+        "value": 133,
+        "count": 31
+      },
+      {
+        "value": 134,
+        "count": 8
+      },
+      {
+        "value": 135,
+        "count": 11
+      }
+    ],
+    "candidate_destination_counts": [
+      {
+        "value": -10022,
+        "count": 3
+      },
+      {
+        "value": -10017,
+        "count": 4
+      },
+      {
+        "value": -10016,
+        "count": 3
+      },
+      {
+        "value": -10015,
+        "count": 3
+      },
+      {
+        "value": -10012,
+        "count": 157
+      },
+      {
+        "value": -10011,
+        "count": 6
+      },
+      {
+        "value": -10010,
+        "count": 54
+      },
+      {
+        "value": -10009,
+        "count": 417
+      },
+      {
+        "value": -10008,
+        "count": 66
+      },
+      {
+        "value": -10007,
+        "count": 164
+      },
+      {
+        "value": -10006,
+        "count": 279
+      },
+      {
+        "value": -10005,
+        "count": 447
+      },
+      {
+        "value": -10004,
+        "count": 22
+      },
+      {
+        "value": -10003,
+        "count": 6
+      },
+      {
+        "value": -10002,
+        "count": 60
+      },
+      {
+        "value": -10001,
+        "count": 153
+      }
+    ],
+    "unchecked_destination_counts": [
+      {
+        "value": -10012,
+        "count": 61
+      },
+      {
+        "value": -10004,
+        "count": 2
+      },
+      {
+        "value": -10002,
+        "count": 1
+      },
+      {
+        "value": -10001,
+        "count": 16
+      }
+    ],
+    "player_position_output_count": 0,
+    "unchecked_readonly_output_count": 0,
+    "lean_contracts": {
+      "write_policy": "ZkTH06.EclPlayerWrite.writerPolicy",
+      "guarded_player_y": "ZkTH06.EclPlayerWrite.typed_writer_cannot_write_player_y",
+      "bypass_reduction": "ZkTH06.EclPlayerWrite.player_y_write_requires_unchecked_opcode",
+      "fixed_support": "ZkTH06.EclPlayerWrite.retail_unchecked_support_excludes_player_position"
+    }
+  },
+  "evidence_status": "hash-bound fixed-data parsing and exact static signatures; not an archive/runtime decoder proof, exhaustive handler theorem, compiler correspondence proof, runtime immutability proof, whole-program writer proof, or guest binding",
+  "open_obligations": [
+    "Prove the pinned thdat extraction agrees with the retail PBG3 archive loader.",
+    "Prove the independent ECL header/instruction walk agrees with the retail decoder.",
+    "Translation-validate RunEcl dispatch, writer classification, GetVar, and type guards.",
+    "Prove no runtime mutation can replace an audited opcode or output destination.",
+    "Prove no non-ECL direct or aliased path writes player center or grab-box fields.",
+    "Prove the zkVM guest refines the fixed-data ECL write contract."
+  ],
+  "counts": {
+    "ecl_files": 7,
+    "subroutines": 321,
+    "subroutine_instructions": 8384,
+    "candidate_outputs": 1844,
+    "guarded_outputs": 1764,
+    "unchecked_outputs": 80,
+    "checked_instruction_roles": 28,
+    "source_anchors": 17
+  },
+  "artifact_sha256": "cd1d73507c72963dd783dda83c398f741d0cab6e2b5fe4e348e47ad995e06a24"
+}

@@ -196,5 +196,22 @@ reinitialization, non-NaN arithmetic, Player-before-Item scheduling, verified
 decode/source correspondence, x87/binary32 semantics, and guest refinement
 remain the explicit proof queue.
 
+\paragraph{Phase S: treat script-resolved pointers as writers.}
+A direct source search suggested that only initialization, respawn, movement,
+and one bomb callback wrote the player center or its multipliers.  Inspecting
+the ECL resolver invalidated that inventory: player coordinates are exposed as
+readonly variable pointers, and opcodes 18/19 increment or decrement a resolved
+pointer without checking its reported type.  We therefore moved fixed script
+data into the invariant argument.  A hash-bound audit extracts all seven retail
+ECL files, independently walks 8,384 subroutine instructions, and checks 1,844
+candidate output operands.  It finds no player-position destination; all 80
+guard-bypassing writes target four local-variable IDs.  A small Lean policy
+model records why only those unchecked handlers matter.  This removes neither
+the archive/runtime-decoder correspondence nor whole-program alias obligations:
+extraction, parsing, handler exhaustiveness, immutability, compiler binding,
+non-ECL writes, and guest refinement remain explicit.  The methodological
+change is durable: future writer inventories must include data-driven pointer
+resolution, not only syntactic assignments.
+
 Future changes to the central claim or state boundary should be appended here
 with the evidence that motivated them.

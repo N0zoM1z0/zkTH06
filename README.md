@@ -46,7 +46,12 @@ audit and total Lean clamp model show that the retail lower/upper clamp restores
 the `16..432` center invariant even from either infinity; only NaN bypasses both
 assignments. This replaces the blanket finite-player premise with explicit
 candidate-not-NaN, writer-completeness, scheduling, binary/x87-binding, and
-guest-refinement obligations. None of those bindings is claimed closed yet.
+guest-refinement obligations. A dependent fixed-data audit independently walks
+8,384 subroutine instructions from the seven hash-pinned retail ECL files. It
+finds no player-position output among 1,844 candidate writers; importantly, all
+80 increment/decrement instructions using the two handlers that bypass the
+readonly type guard target only four local-variable IDs. Archive extraction,
+non-ECL alias completeness, and guest binding are still explicit obligations.
 
 ## Repository boundary
 

@@ -25,3 +25,9 @@ the expected DAT filenames.
 
 The executable is pinned for original-run comparison only. The Linux reference
 runner does not execute or link it.
+
+The fixed-data ECL writer audit locally extracts `ecldata1.ecl` through
+`ecldata7.ecl` from the pinned `紅魔郷ST.DAT`, verifies each extracted hash, and
+commits only aggregate instruction/output counts and hashes in
+[`arithmetic/ecl-player-write-v1.json`](../arithmetic/ecl-player-write-v1.json).
+Neither the DAT nor extracted ECL bytes are tracked or redistributed.

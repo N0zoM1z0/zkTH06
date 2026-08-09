@@ -7,7 +7,7 @@
     "base_ledger_artifact_sha256": "1c4c128284bf5ab4aa36e636cd5ed15f0300e5295e7fb29f12c0cb2f897f65af",
     "source_candidate_artifact_sha256": "2885d3ed814784f4446a8f977646b3f1fc2edbdd058285ec37eb77d089a16466",
     "ftol2_helper_artifact_sha256": "46c87767f9d864ebbb2eca60d698fdaa6f355674c51d231f510e369f77427153",
-    "player_position_artifact_sha256": "9479136fa169191d88c96ef92f06607eeaeaa751996bab0fcd820f4a2a2440bb"
+    "player_position_artifact_sha256": "d9df54457b70dd57ba1cf3989de0ec72a0bfff82955d1d375d71a3915c6f2bb4"
   },
   "generator": {
     "path": "tools/item_score_audit.py",
@@ -565,5 +565,5 @@
     "ftol2_calls": 8,
     "checked_instruction_roles": 77
   },
-  "artifact_sha256": "7c3a5c490b7b0de6a91eb74a79c153be8d3e36af1769c5d942e1d3d9efe3e44f"
+  "artifact_sha256": "b6ef6a5dc04317f6c97fb39722db48e696ca7669120087c382f1370d6bd34ba8"
 }

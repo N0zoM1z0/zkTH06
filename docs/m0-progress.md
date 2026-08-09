@@ -45,7 +45,11 @@ Last updated: 2026-08-09
   audit checks 95 more instruction roles and a total Lean clamp theorem. Item
   finiteness is no longer a premise, and either infinity is clamped; the player
   proof is now reduced to candidate-not-NaN, writer, scheduling, binary/x87,
-  and guest bindings rather than assumed closed.
+  and guest bindings rather than assumed closed. A fixed-data ECL audit walks
+  8,384 subroutine instructions and rules out player-position outputs among
+  1,844 writer candidates, including all 80 type-guard-bypassing
+  increment/decrement operations,
+  conditional on extraction/decoder/handler bindings.
 
 Compatibility playback intentionally restores every per-stage replay snapshot,
 matching shipped playback. It is an oracle-development mode, not the future
@@ -162,9 +166,18 @@ clamped into range and only NaN survives. This materially narrows the remaining
 invariant to non-NaN movement candidates plus complete writers, initialization,
 update scheduling, exact binary32/x87 behavior, verified correspondence, and
 guest refinement. It does not assume the adaptive effective frame multiplier
-is fixed at one. A GDB debug-runner probe observed 2,081 finite collections in
-the four-replay corpus, with no sample outside the candidate interval. This
-remains invariant-discovery evidence, not retail-binary evidence or a proof.
+is fixed at one.
+
+The ECL resolver exposes player-y as a readonly variable, but its increment and
+decrement handlers bypass that guard. An independent walk of the seven fixed
+retail ECL files finds 1,844 candidate outputs and 80 such unchecked writes;
+none names player x, y, or z, and the unchecked destination support contains
+only four local-variable IDs. This removes a concrete fixed-data alias threat
+once the still-open archive extraction, runtime parser/dispatch, immutability,
+and code bindings are proved; it is not whole-program writer completeness. A
+GDB debug-runner probe observed 2,081 finite collections in the four-replay
+corpus, with no sample outside the candidate interval. This remains invariant-
+discovery evidence, not retail-binary evidence or a proof.
 The remaining control invariants are difficulty in `0..4` and pre-item score in
 `0..999999999`; the latter condition is sufficient in Lean to rule out u32
 wrap for one bounded award.
@@ -181,7 +194,8 @@ wrap for one bounded award.
 4. Record the entry x87/CPU profile, instrument reached arithmetic sites,
    cover load/remainder and exceptional helper behavior where reachable, prove
    ECL helper-to-classifier refinement and discharge the point-item player
-   candidate/writer/scheduling plus total collision/helper quotient,
+   candidate/writer/scheduling plus total collision/helper quotient (including
+   the fixed-ECL extraction/parser/handler binding),
    and replace host-libm behavior with an exact, address-bound arithmetic
    baseline; prove skipped-draw arithmetic noninterference before removing it.
 5. Add canonical-proof playback that derives stage transitions and rejects a

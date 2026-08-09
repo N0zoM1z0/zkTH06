@@ -168,6 +168,36 @@ and guest implementation all remain open. The exact-byte probe found the same
 integer-indefinite result in nine exceptional cases, but finite testing is not
 the missing universal theorem.
 
+## Fixed-data ECL alias-writer audit
+
+The ECL resolver exposes `g_Player.positionCenter.y` under variable ID
+`-10019` and marks it readonly. Most output handlers consult this type, but the
+retail increment/decrement handlers for opcodes 18 and 19 write through the
+returned pointer directly. This is a real alias path that a source-only search
+for `positionCenter.y =` would miss.
+
+[`arithmetic/ecl-player-write-v1.json`](../arithmetic/ecl-player-write-v1.json)
+binds the retail executable and mapping, the sealed ECL variable-dispatch
+artifact, the data manifest, and `紅魔郷ST.DAT` hash. A pinned thtk Release 12
+extractor produces seven ECL files with fixed hashes; an independent parser
+then walks 321 subroutines, 321 sentinels, and 8,384 instructions. Of 1,844
+candidate output operations, none names any player-position or readonly ID.
+The 80 unchecked increment/decrement operations have destination support
+`{-10012,-10004,-10002,-10001}`, all local variables. The artifact additionally
+checks 28 retail instruction signatures, the opcode dispatch targets for the
+two unchecked handlers, and 17 authoritative source anchors. Its digest is
+`cd1d73507c72963dd783dda83c398f741d0cab6e2b5fe4e348e47ad995e06a24`.
+
+`ZkTH06.EclPlayerWrite.player_y_write_requires_unchecked_opcode` captures the
+modeled guard reduction, and
+`retail_unchecked_support_excludes_player_position` checks the transcribed
+four-ID support. Neither theorem imports the JSON artifact. Correct thdat-to-
+retail extraction, ECL decoder equivalence, handler exhaustiveness and
+translation, runtime instruction immutability, non-ECL writer completeness,
+and guest refinement remain open. Thus this closes a fixed-data counterexample
+search and narrows an alias family; it is not yet a whole-program no-write
+theorem.
+
 ## Player-position clamp decomposition
 
 [`arithmetic/player-position-v1.json`](../arithmetic/player-position-v1.json)
@@ -177,7 +207,9 @@ across eight mapped functions, 21 line anchors in five files at authoritative
 revision `cc475a0bc3fef38683b0f02224c87ddba0a021d9`, five binary32 constants,
 four character-speed records, and four comparison sites already indexed by the
 base ledger. Its artifact digest is
-`9479136fa169191d88c96ef92f06607eeaeaa751996bab0fcd820f4a2a2440bb`.
+`d9df54457b70dd57ba1cf3989de0ec72a0bfff82955d1d375d71a3915c6f2bb4`.
+It seals the fixed-data ECL writer audit as an input, so later changes to that
+alias evidence cannot silently leave the player and score artifacts unchanged.
 
 The retail update initializes and respawns the center at `384`, computes a
 movement candidate, then performs ordered lower and upper comparisons against
@@ -190,11 +222,12 @@ center. Separate theorems check the modeled initial/respawn state and derive
 the radius-12 grab-box ranges `4..420` and `28..444`.
 
 This is a decomposition, not the reachable invariant itself. Verified decode
-and source correspondence, complete direct and aliased writer coverage,
-GameManager reinitialization, finite movement operands and a non-NaN candidate,
-binary32 store/x87 comparison semantics, Player-before-Item scheduling, and
-guest refinement remain open. In particular, the effective frame multiplier
-has adaptive writers; the artifact does not assume it is always one.
+and source correspondence, the ECL artifact's extraction/parser/handler
+bindings, non-ECL direct and aliased writer coverage, GameManager
+reinitialization, finite movement operands and a non-NaN candidate, binary32
+store/x87 comparison semantics, Player-before-Item scheduling, and guest
+refinement remain open. In particular, the effective frame multiplier has
+adaptive writers; the artifact does not assume it is always one.
 
 ## Point-item score contract and the NaN trap
 
@@ -205,7 +238,7 @@ five-entry Easy/Normal/Hard/Lunatic/Extra table, two loads from the same
 binary32 `Item.currentPosition.y` field per profile, both helper calls, signed
 comparison with 128, profile constants, 32-bit penalty arithmetic, and the
 final addition to gameplay score. Its artifact digest is
-`7c3a5c490b7b0de6a91eb74a79c153be8d3e36af1769c5d942e1d3d9efe3e44f`.
+`b6ef6a5dc04317f6c97fb39722db48e696ca7669120087c382f1370d6bd34ba8`.
 The artifact seals the player-position audit digest as a direct input, making
 the dependency mechanically visible without treating that evidence as proof.
 

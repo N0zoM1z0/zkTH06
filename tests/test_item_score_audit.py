@@ -21,7 +21,7 @@ BASE_LEDGER = ROOT / "arithmetic" / "obligations-v1.json"
 SOURCE_LEDGER = ROOT / "arithmetic" / "ftol2-source-candidates-v1.json"
 HELPER_AUDIT = ROOT / "arithmetic" / "ftol2-helper-v1.json"
 PLAYER_AUDIT = ROOT / "arithmetic" / "player-position-v1.json"
-EXPECTED_ARTIFACT_SHA256 = "7c3a5c490b7b0de6a91eb74a79c153be8d3e36af1769c5d942e1d3d9efe3e44f"
+EXPECTED_ARTIFACT_SHA256 = "b6ef6a5dc04317f6c97fb39722db48e696ca7669120087c382f1370d6bd34ba8"
 
 
 def reject_disassembly_operands(value: Any) -> None:
