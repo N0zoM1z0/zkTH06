@@ -43,4 +43,5 @@ jobs:
         run: |
           python3 -m py_compile tools/*.py tests/*.py
           python3 -m json.tool data/manifest.json >/dev/null
+          reference/th06 --canonical-self-test
           python3 tests/test_replay_validation.py reference/th06

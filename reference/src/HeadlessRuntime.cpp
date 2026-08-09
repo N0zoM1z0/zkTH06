@@ -7,6 +7,7 @@
 #include "Player.hpp"
 #include "ReplayFile.hpp"
 #include "Rng.hpp"
+#include "Sha256.hpp"
 #include "Supervisor.hpp"
 
 #include <SDL2/SDL.h>
@@ -43,7 +44,9 @@ void PrintUsage(const char *program)
                  "[--shot-type 0..1] [--actions PATH] [--trace PATH] [--step] [--auto-shoot] "
                  "[--continue-after-hit]\n"
                  "       %s --headless --replay PATH [--max-ticks N] [--trace PATH]\n"
-                 "       %s --replay-info PATH\n",
+                 "       %s --replay-info PATH\n"
+                 "       %s --canonical-self-test\n",
+                 program,
                  program,
                  program,
                  program);
@@ -203,6 +206,10 @@ bool HeadlessRuntime::ParseArguments(int argc, char *argv[])
         {
             this->continueAfterHit = true;
         }
+        else if (std::strcmp(argv[i], "--canonical-self-test") == 0)
+        {
+            this->canonicalSelfTest = true;
+        }
         else if (std::strcmp(argv[i], "--help") == 0)
         {
             PrintUsage(argv[0]);
@@ -214,6 +221,16 @@ bool HeadlessRuntime::ParseArguments(int argc, char *argv[])
             PrintUsage(argv[0]);
             return false;
         }
+    }
+
+    if (this->canonicalSelfTest)
+    {
+        if (argc != 2)
+        {
+            std::fprintf(stderr, "--canonical-self-test cannot be combined with other options\n");
+            return false;
+        }
+        return true;
     }
 
     if (this->replayInfoPath != NULL)
@@ -265,6 +282,17 @@ bool HeadlessRuntime::ParseArguments(int argc, char *argv[])
         std::fprintf(stderr, "--step cannot be combined with --actions or --trace\n");
         return false;
     }
+    return true;
+}
+
+bool HeadlessRuntime::RunCanonicalSelfTest() const
+{
+    if (!Sha256::SelfTest())
+    {
+        std::fprintf(stderr, "Canonical SHA-256 self-test failed\n");
+        return false;
+    }
+    std::printf("canonical SHA-256 self-test passed\n");
     return true;
 }
 

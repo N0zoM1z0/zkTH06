@@ -63,6 +63,7 @@ project "th06"
     "src/ResultScreen.cpp",
     "src/Rng.cpp",
     "src/ScreenEffect.cpp",
+    "src/Sha256.cpp",
     "src/SoundPlayer.cpp",
     "src/Stage.cpp",
     "src/Supervisor.cpp",

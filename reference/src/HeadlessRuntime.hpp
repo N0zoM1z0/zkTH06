@@ -19,6 +19,7 @@ struct HeadlessRuntime
     bool autoShoot = false;
     bool stepMode = false;
     bool continueAfterHit = false;
+    bool canonicalSelfTest = false;
     const char *actionsPath = NULL;
     const char *tracePath = NULL;
     const char *replayInfoPath = NULL;
@@ -38,6 +39,7 @@ struct HeadlessRuntime
 
     bool ParseArguments(int argc, char *argv[]);
     bool PrintReplayInfo() const;
+    bool RunCanonicalSelfTest() const;
     bool PrepareReplay();
     void ConfigureEnvironment() const;
     bool InitializeIo();

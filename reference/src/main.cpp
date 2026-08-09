@@ -26,6 +26,10 @@ int main(int argc, char *argv[])
     {
         return g_HeadlessRuntime.PrintReplayInfo() ? 0 : 2;
     }
+    if (g_HeadlessRuntime.canonicalSelfTest)
+    {
+        return g_HeadlessRuntime.RunCanonicalSelfTest() ? 0 : 2;
+    }
     const bool headlessAtLaunch = g_HeadlessRuntime.enabled;
     if (!g_HeadlessRuntime.InitializeIo())
     {
