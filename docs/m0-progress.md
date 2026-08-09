@@ -8,6 +8,10 @@ Last updated: 2026-08-09
 - Bounds-checked decoded stage views and a playback cursor capped by the first
   valid `9999999` sentinel.
 - Direct headless compatibility playback with `--replay`.
+- An address-bound Wine/GDB retail probe that verifies the pinned executable
+  and DAT hashes, normalizes a pre-game Wine timing artifact, selects one
+  replay in an isolated runtime directory, and samples the instruction after
+  `Chain::RunCalcChain`.
 - Complete replay masks (Shoot, Bomb, Focus, Skip and four directions) injected
   by the existing ReplayManager at calc priority 5.
 - Replay deaths, bombs and respawns continue rather than using the RL harness's
@@ -54,6 +58,45 @@ Last updated: 2026-08-09
 Compatibility playback intentionally restores every per-stage replay snapshot,
 matching shipped playback. It is an oracle-development mode, not the future
 canonical-proof mode.
+
+## First retail executable anchor
+
+The first shipped-executable comparison uses the tracked Normal Reimu A
+no-miss/no-bomb replay (`01bc11b...ad10f`). The retail side runs Japanese TH06
+v1.02h (`9f76483c...52245`) under Wine 11.0 and stops at `0x00420858`, the
+instruction immediately after `Chain::RunCalcChain`. The Linux trace is written
+at the corresponding return boundary. Across frames 1--2,000, all 23 compared
+fields match exactly:
+
+- route, stage, frame, replay input, and Supervisor state;
+- RNG seed and generation count;
+- score, lives, bombs, deaths, bombs used, retries, power, rank, and subrank;
+- Player state and raw binary32 x/y/z bits; and
+- the raw effective-framerate multiplier bits.
+
+This interval exercises 27 distinct input masks, advances RNG generation from
+2 to 3,555, and reaches score 767,990. At all 2,000 retail anchors the x87
+control word is `0x007f` and MXCSR is `0x00001fa0`. The path-free sealed summary
+and raw trace hashes are in
+[`evidence/retail-reference-002677-2000-v1.json`](../evidence/retail-reference-002677-2000-v1.json).
+
+Two interventions are explicit parts of the diagnostic environment. First,
+Wine's `timeGetTime` reflects long host uptime while the game's last-frame
+global begins at zero, so the probe sets that global to the already-read
+current time and clears the local delta before gameplay. Second, XTest does not
+reach Wine DirectInput on this host, so `Controller::GetInput` is changed to
+return zero. ReplayManager subsequently replaces the complete replay input
+mask at its authentic calc priority; the exported per-frame masks match the
+reference. The probe verifies all three patched/anchored code byte sequences
+before acting.
+
+This closes neither whole-state equivalence nor the M0 milestone. The retail
+probe currently exports a deliberately small root projection, not the eleven
+canonical subsystem payloads; it covers one replay prefix, not the route
+matrix; and finite agreement cannot prove noninterference, source/binary
+correspondence, or guest refinement. Its immediate value is that the core
+replay/RNG/player/global path now has a real retail oracle and a first-mismatch
+mechanism.
 
 ## Local corpus result
 
@@ -117,10 +160,12 @@ points still have live EDX bits, this remains bounded syntactic evidence rather
 than complete data-flow proof.
 
 The CRT trigonometric wrappers embed x87 control word `0x027f` (53-bit
-significand precision, round-to-nearest-even, exceptions masked), but static
-analysis has not proved the loader-established word at game entry. The exact
-profile must therefore be measured and constrained explicitly. The complete
-audit and soundness consequences are in
+significand precision, round-to-nearest-even, exceptions masked). The retail
+anchor instead observes `0x007f` (24-bit precision) at every sampled post-calc
+boundary. This establishes a boundary observation, not the word at every
+instruction: wrappers may change and restore precision internally. Entry,
+per-site control flow, and transient profiles must still be measured and
+constrained explicitly. The complete audit and soundness consequences are in
 [`arithmetic-audit.md`](arithmetic-audit.md).
 
 The arithmetic oracle now compares `add`, `sub`, `mul`, `div`, `sqrt`,

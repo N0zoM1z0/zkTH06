@@ -190,9 +190,20 @@ explains the precision, rounding, and exception controls.
 This static evidence is deliberately not promoted into a startup theorem. No
 game-body `fldcw` establishes `0x027f` before the first mapped transition, and
 the value at an executable address does not prove the loader's ambient state.
-The original exporter must record the entry/gameplay control word. The exact
-runner and future guest must reject any initial profile other than the one
-named by the statement.
+The first retail exporter now supplies a concrete counterweight: at the
+post-calc instruction `0x00420858`, all 2,000 sampled frames of the tracked
+Normal replay have control word `0x007f`, not `0x027f`. Raw `0x007f` selects
+24-bit significand precision, round-to-nearest-even, and masked exceptions.
+The stable boundary observation is hash-bound in
+[`evidence/retail-reference-002677-2000-v1.json`](../evidence/retail-reference-002677-2000-v1.json).
+
+This does not show that every gameplay instruction executes under `0x007f`.
+The CRT trigonometric wrappers can load `0x027f` internally and restore their
+caller's word, while D3DX conversion helpers temporarily change rounding.
+Entry, call-site, and transient control profiles therefore remain explicit
+trace/extraction obligations. The exact runner and future guest must reject a
+profile history other than the one named by the statement; a single global
+`0x027f` precondition is no longer a viable model.
 
 Precision control also does not make every live x87 value an IEEE binary64
 value. x87 registers retain the double-extended exponent range, selected
@@ -222,6 +233,12 @@ to binary32/binary64, `frndint`, and signed 32/64-bit `fistp` under both
 `0x027f` and the D3DX helper's toward-zero profile `0x0e7f`. Both profile
 decodings and their SoftFloat configuration mappings are checked, without an
 arithmetic theorem, in `X87Profile.lean`.
+
+The first retail boundary observation makes a PC24 campaign mandatory before
+this oracle can stand in for ordinary game-body arithmetic. Existing PC53
+results remain relevant to the CRT wrapper profile and to stress cases with the
+extended exponent range, but they do not retroactively validate operations
+executed under the observed `0x007f` ambient word.
 
 The same probe mirrors the 244 mapped comparison forms with `fcomp m32fp` and
 `fcomp m64fp`. It checks C0, C1, C2, and C3 plus exception bits, including

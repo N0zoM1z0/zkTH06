@@ -39,6 +39,36 @@ preceding stage's score at Stage 6 entry but does not restore Stage 6's own end
 score.  Exact score agreement is therefore a useful end-to-end consistency
 check.  It remains much weaker than frame-level state equivalence.
 
+\subsection{Shipped-executable differential anchor}
+
+The first retail experiment runs the pinned Japanese v1.02h executable under
+Wine 11.0 and the tracked Normal Reimu A NN/NB replay.  A debugger verifies the
+expected bytes at the menu, input, and frame-anchor addresses and samples at
+\code{0x00420858}, immediately after \code{Chain::RunCalcChain}.  The Linux
+runner writes its diagnostic row at the corresponding return boundary.  The
+comparison covers 23 fields: route/frame metadata, complete replay input, RNG
+seed and generation, score/resources/rank, Player state and raw binary32 x/y/z
+bits, and raw effective-rate bits.
+
+All 2,000 compared frames match.  This interval contains 27 distinct input
+masks, advances RNG generation from 2 to 3,555, and reaches score 767,990.
+Every retail anchor observes x87 control word \code{0x007f} and MXCSR
+\code{0x00001fa0}.  The raw trace hashes, executable and replay identities,
+environment versions, and compared-field list are sealed in the
+proprietary-byte-free evidence artifact
+\path{evidence/retail-reference-002677-2000-v1.json}.
+
+The Wine environment requires two explicit diagnostic interventions.  Its
+\code{timeGetTime} begins near host uptime while the game's last-frame global
+begins at zero, so the probe equates those values before gameplay to avoid a
+spurious multi-year catch-up loop.  XTest does not reach Wine DirectInput on
+this host, so the physical input routine returns zero; ReplayManager then
+overwrites the complete replay mask at its authentic calc priority.  The
+per-frame input equality is checked rather than assumed.  These interventions
+and the finite 23-field projection prevent promoting the result to whole-state
+or whole-program equivalence, but they establish a real retail oracle for the
+first core slice.
+
 \subsection{Canonical projection experiment}
 
 Two independent complete revision-0.2 traces of the Normal Reimu A NN/NB run
@@ -141,9 +171,12 @@ The CRT trigonometric wrappers embed raw x87 control word \code{0x027f}.  A
 small Lean definition checks its 53-bit significand precision,
 round-to-nearest-even mode, and six masked exception bits.  Static inspection
 did not find a game-body instruction that establishes this word at entry, so
-the result is deliberately a profile fact rather than an environment theorem.
-An original exporter must record and constrain the entry word and processor
-profile before exact transcendental equivalence can be claimed.
+the result is deliberately a wrapper-profile fact rather than an environment
+theorem.  The retail anchor observes \code{0x007f}, selecting 24-bit precision,
+at every post-calc sample.  That observation rules out treating \code{0x027f}
+as one global precondition but does not expose transient words inside a frame.
+A fuller exporter must record or extract the entry and per-site profile changes
+and processor profile before exact transcendental equivalence can be claimed.
 
 \subsection{Arithmetic-boundary oracle experiment}
 
@@ -159,6 +192,11 @@ and compiles only the 37 required translation units with the SoftFloat
 \small\ttfamily
 b062a031b5866b7e86514db17d162ecbdf9398b0a5d0c5530dfcf6c4889ffe71.
 \end{center}
+
+Because the first retail boundary measurement is PC24 rather than PC53, this
+campaign does not yet validate the ambient game-body profile.  A corresponding
+\code{0x007f} campaign is now required; the PC53 result remains evidence for
+the wrapper profile and extended-range stress cases.
 
 Raw result representations and x87 exception bits 0--5 are compared.  The
 SoftFloat flags map invalid, divide-by-zero, overflow, underflow, and inexact;

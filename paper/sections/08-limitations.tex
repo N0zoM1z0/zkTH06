@@ -1,13 +1,19 @@
 \section{Limitations and Open Threats to Validity}
 
 \begin{itemize}
-  \item \textbf{No original equivalence yet.}  All current execution evidence
-  comes from the Linux reconstruction.  An original/exact-reference exporter
-  using the same canonical schema is still required.
+  \item \textbf{Partial retail equivalence only.}  A shipped-executable Wine
+  probe now agrees with the Linux reference for 2,000 frames and a 23-field
+  raw projection on one replay.  It does not yet export the eleven canonical
+  subsystem payloads, cover later stages or the replay matrix, prove that its
+  input/timing interventions are noninterfering, or establish whole-state and
+  whole-program equivalence.
   \item \textbf{Floating point.}  The target uses x87 instructions including
   trigonometric and rounding operations, explicit DWORD/QWORD stores, and
-  conversion helpers.  The static audit identifies control word \code{0x027f},
-  but does not prove its loader-established entry value.  Hardware
+  conversion helpers.  The static audit identifies wrapper word
+  \code{0x027f}, while the retail probe observes ambient \code{0x007f} at all
+  2,000 post-calc boundaries.  Neither result proves entry state or every
+  transient per-instruction word, and the current PC53 SoftFloat campaign does
+  not cover the observed PC24 ambient profile.  Hardware
   transcendental approximations also require a processor/emulator profile.
   Host \code{libm}, spill behavior, and intermediate precision may diverge by
   one or more bits and later alter collisions.  A pinned SoftFloat experiment

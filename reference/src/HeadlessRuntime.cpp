@@ -10,6 +10,7 @@
 #include "ReplayFile.hpp"
 #include "Rng.hpp"
 #include "Supervisor.hpp"
+#include "ZunEndian.hpp"
 
 #include <SDL2/SDL.h>
 #include <cctype>
@@ -737,15 +738,24 @@ void HeadlessRuntime::WriteState(const char *terminalReason)
                  "\"scope\":{\"difficulty\":%d,\"character\":%d,\"shot_type\":%d,\"stage\":%d},"
                  "\"initial_seed\":%u,\"supervisor_state\":%d,\"stage\":%d,\"game_frame\":%u,"
                  "\"rng_seed\":%u,\"rng_generation\":%u,\"input\":%u,"
-                 "\"player\":{\"x\":%.9g,\"y\":%.9g,\"state\":%d},"
-                 "\"lives\":%d,\"bombs\":%d,\"score\":%u,\"bullets\":[",
+                 "\"effective_rate_bits\":%u,"
+                 "\"player\":{\"x\":%.9g,\"y\":%.9g,\"z\":%.9g,"
+                 "\"x_bits\":%u,\"y_bits\":%u,\"z_bits\":%u,\"state\":%d},"
+                 "\"lives\":%d,\"bombs\":%d,\"score\":%u,"
+                 "\"deaths\":%d,\"bombs_used\":%d,\"num_retries\":%u,"
+                 "\"current_power\":%u,\"rank\":%d,\"subrank\":%d,\"bullets\":[",
                  (unsigned long long)this->ticks, terminalJson,
                  this->difficulty, this->character, this->shotType,
                  this->replayPath == NULL ? this->practiceStage : g_GameManager.currentStage, this->actualSeed,
                  g_Supervisor.curState, g_GameManager.currentStage,
                  g_GameManager.gameFrames, g_Rng.seed, g_Rng.generationCount, g_CurFrameInput,
-                 g_Player.positionCenter.x, g_Player.positionCenter.y, g_Player.playerState,
-                 g_GameManager.livesRemaining, g_GameManager.bombsRemaining, g_GameManager.score);
+                 bit_cast_from_size(g_Supervisor.effectiveFramerateMultiplier),
+                 g_Player.positionCenter.x, g_Player.positionCenter.y, g_Player.positionCenter.z,
+                 bit_cast_from_size(g_Player.positionCenter.x), bit_cast_from_size(g_Player.positionCenter.y),
+                 bit_cast_from_size(g_Player.positionCenter.z), g_Player.playerState,
+                 g_GameManager.livesRemaining, g_GameManager.bombsRemaining, g_GameManager.score,
+                 g_GameManager.deaths, g_GameManager.bombsUsed, g_GameManager.numRetries,
+                 g_GameManager.currentPower, g_GameManager.rank, g_GameManager.subRank);
     bool first = true;
     for (const Bullet &bullet : g_BulletManager.bullets)
     {

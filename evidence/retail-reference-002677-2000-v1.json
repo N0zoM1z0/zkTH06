@@ -1,0 +1,59 @@
+{
+  "claim_boundary": "finite differential evidence over the listed projection; not a proof of whole-state or whole-program equivalence",
+  "compared_fields": [
+    "supervisor_state",
+    "stage",
+    "game_frame",
+    "difficulty",
+    "character",
+    "shot_type",
+    "input",
+    "rng_seed",
+    "rng_generation",
+    "score",
+    "deaths",
+    "bombs_used",
+    "num_retries",
+    "current_power",
+    "lives",
+    "bombs",
+    "rank",
+    "subrank",
+    "player_state",
+    "player_x_bits",
+    "player_y_bits",
+    "player_z_bits",
+    "effective_rate_bits"
+  ],
+  "compared_frames": 2000,
+  "config_sha256": "979ad921be658e746040c14b633a2c5114c18529244c6e1ed4b9312beb175d37",
+  "controller_patch": "Controller::GetInput returns zero; ReplayManager overwrites input later in calc order",
+  "first_mismatch": null,
+  "frame_boundary": "0x00420858",
+  "frame_boundary_role": "instruction after Chain::RunCalcChain",
+  "gdb_version": "GNU gdb (Ubuntu 12.1-0ubuntu1~22.04.2) 12.1",
+  "observed_retail_metrics": {
+    "distinct_input_masks": 27,
+    "final_score": 767990,
+    "first_game_frame": 1,
+    "last_game_frame": 2000,
+    "rng_generation_max": 3555,
+    "rng_generation_min": 2
+  },
+  "reference_trace_sha256": "d8903ec95c182d2d615c55f6c96279d15c5c4f110ffb85cbdf279f2c558fc1b5",
+  "replay_sha256": "01bc11b9226932bddeeeff675f1741b89b129f4c8820b3b1cf185a1cb19ad10f",
+  "retail_mxcsr_values": [
+    "0x00001fa0"
+  ],
+  "retail_trace_schema_version": 1,
+  "retail_trace_sha256": "9f2dfe9ae65a89b7eb5981514139b75266771f9f4369036f0385ef6cb8810d88",
+  "retail_x87_control_words": [
+    "0x007f"
+  ],
+  "schema_version": 1,
+  "status": "match",
+  "target_executable_sha256": "9f76483c46256804792399296619c1274363c31cd8f1775fafb55106fb852245",
+  "type": "zkth06.retail-reference-comparison",
+  "wine_timing_normalization": "pre-game last-frame time set to current time; local catch-up delta set to zero",
+  "wine_version": "wine-11.0"
+}

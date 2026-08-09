@@ -83,9 +83,12 @@ binary32 state and evaluates an integer-implemented IEEE-754 and, where
 required, x87 extended-precision baseline with pinned control state, original
 instruction selection, store boundaries, conversion helpers, and
 transcendental behavior.  Static binary evidence identifies \code{0x027f} as
-the control word expected by the CRT trigonometric wrappers: 53-bit significand
-precision, round-to-nearest-even, and masked exceptions.  This value is an
-explicit execution precondition rather than an assumed loader default.  Intel
+the control word expected inside the CRT trigonometric wrappers: 53-bit
+significand precision, round-to-nearest-even, and masked exceptions.  The first
+retail trace instead observes ambient \code{0x007f}, or 24-bit precision, at
+every sampled post-calc boundary.  These are per-boundary/profile facts rather
+than a single assumed loader default: extraction must account for wrapper
+changes and restoration as well as the ambient word.  Intel
 documents both the x87 control fields~\cite{intel-fp-reference} and the
 approximate, range-reduction-dependent nature of x87 trigonometric
 instructions~\cite{intel-x87-transcendentals}; Microsoft documents the exposed

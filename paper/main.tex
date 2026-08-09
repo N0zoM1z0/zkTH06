@@ -31,7 +31,10 @@ frame-level differential methodology for \thgame.  An experimental canonical
 digest projection is emitted by the runtime and independently checked by C++
 and Python.  Four locally pinned six-stage replays complete under the
 compatibility runner, and repeated complete canonical runs produce
-byte-identical traces.  A hash-bound static audit attributes 5,980 x87
+byte-identical traces.  An address-bound Wine experiment additionally matches
+the shipped executable and Linux reference for 2,000 frames on a 23-field raw
+projection, while observing ambient x87 control word \code{0x007f} at every
+post-calc anchor.  A hash-bound static audit attributes 5,980 x87
 instructions to mapped game functions and identifies direct transcendental,
 conversion-helper, store-boundary, and control-profile obligations.  These
 are followed by a pinned x87/SoftFloat counterexample search in which
@@ -57,10 +60,10 @@ including 80 increment/decrement operations that bypass the readonly guard.
 Extraction and runtime-decoder binding remain open.  A sealed Linux probe
 observes 2,081 collected items without a range violation, but does not promote
 that corpus result into a proof.
-These results establish same-host self-consistency and an arithmetic proof
+These results establish a first narrow retail anchor and an arithmetic proof
 surface only; exact x87
-transcendental semantics, presentation-dependent state, and an
-original-executable exporter remain open equivalence gates.  This living paper
+transcendental semantics, presentation-dependent state, and a complete
+retail canonical-subsystem exporter remain open equivalence gates.  This living paper
 records the research questions, implementation evidence, negative results, and
 changes in proof boundary as the project develops.
 \end{abstract}

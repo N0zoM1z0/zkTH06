@@ -13,6 +13,11 @@ As of 9 August 2026, the following components are implemented:
   \item bounded, complete-mask input injection through the original callback;
   \item deterministic JSON diagnostics and explicit terminal reasons;
   \item a retail-data manifest and local SHA-256 verifier;
+  \item an address-bound Wine/GDB retail exporter that verifies the pinned
+  machine-code anchors, removes a pre-game Wine timing artifact, drives an
+  isolated single-replay menu, and samples raw state immediately after
+  \code{Chain::RunCalcChain}, plus a first-mismatch comparator and path-free
+  evidence report;
   \item experimental canonical projection revision 0.2 with explicit endian
   and raw-float encoding, stable slot identities, relative script offsets,
   domain-separated subsystem and frame hashes, and real runtime serializers
@@ -27,10 +32,11 @@ As of 9 August 2026, the following components are implemented:
   helper calls through the authoritative mapping, emits a path-free JSON
   summary, extracts all 244 mapped comparison/status/branch chains and bounded
   helper-result consumers, and has proprietary-input-free synthetic tests;
-  \item checked Lean decodes of target control word \code{0x027f} and the D3DX
-  toward-zero profile \code{0x0e7f}; their narrow theorems cover precision,
-  rounding, exception-mask fields, and corresponding SoftFloat configuration
-  values, but neither arithmetic operations nor loader-established entry state;
+  \item checked Lean decodes of the CRT wrapper control word \code{0x027f} and
+  the D3DX toward-zero profile \code{0x0e7f}; their narrow theorems cover
+  precision, rounding, exception-mask fields, and corresponding SoftFloat
+  configuration values, but neither arithmetic operations nor the newly
+  observed ambient retail profile \code{0x007f};
   \item a reproducible, commit-pinned SoftFloat Release 3e differential probe
   for results and six x87 exception bits across five basic operations, two
   store widths, \code{frndint}, and two signed \code{fistp} widths, using
@@ -80,7 +86,8 @@ As of 9 August 2026, the following components are implemented:
 The current compatibility path intentionally restores each replay stage
 snapshot because that mirrors shipped playback and enables oracle development.
 It is not yet canonical proof playback.  No zkVM guest is frozen or claimed to
-be implemented.  Projection revision 0.2 commits only to selected fields.  A
-field-level mismatch snapshot remains open, and the state audit has already
-identified inactive Effect residue and dynamic screen-effect jobs that prevent
-claiming projection closure.
+be implemented.  The retail exporter currently covers a 23-field root
+projection, while canonical projection revision 0.2 contains eleven broader
+subsystems.  Bringing that complete schema to the retail boundary remains
+open, and the state audit has already identified inactive Effect residue and
+dynamic screen-effect jobs that prevent claiming projection closure.

@@ -7,10 +7,11 @@ Touhou Koumakyou v1.02h gameplay state machine from a canonical initial state to
 an accepted result. Before freezing a zkVM guest, the project must first make
 that state machine agree frame-for-frame with the shipped 32-bit Windows game.
 
-> **Evidence boundary:** deterministic Linux replay execution is working, but
-> equivalence with the shipped executable has not yet been established. The
-> current runner is an instrumented reference harness, not final proof
-> semantics.
+> **Evidence boundary:** an address-bound Wine probe now matches the shipped
+> executable and Linux reference for a 23-field raw gameplay projection over
+> the first 2,000 frames of one tracked replay. This is finite differential
+> evidence, not whole-state equivalence. The current runner remains an
+> instrumented reference harness, not final proof semantics.
 
 A first owner-local Lean model now machine-checks why active-only Effect slots
 violate one-step noninterference and how a narrow dormant reuse shadow repairs
@@ -62,6 +63,8 @@ kept as a supporting snapshot rather than as this repository's history:
 - `formal/` records the refinement theorem and machine-checking obligations;
 - `arithmetic/` contains exact-arithmetic experiments and their evidence
   boundaries;
+- `evidence/` contains compact, proprietary-byte-free summaries of sealed
+  local retail/reference comparisons;
 - `docs/` records the differential methodology and milestone evidence;
 - `paper/` is the living English LaTeX research paper and decision history;
 - `tools/` contains format and comparison tooling owned by zkTH06;
@@ -104,6 +107,9 @@ inputs were produced by a human or without external tools.
   exporter and report the first differing subsystem and field.
 - Pass Normal no-miss/no-bomb, death/bomb, dialogue, all shot types, Lunatic,
   spell-heavy and Extra cases.
+
+The first 2,000-frame Normal anchor is complete for its 23-field projection.
+The full canonical subsystem projection and broader replay matrix remain open.
 
 ### M1 — canonical gameplay kernel
 
@@ -180,6 +186,27 @@ The target executable is Japanese TH06 v1.02h with SHA-256:
 
 Never commit or redistribute the supplied game directory, generated traces, or
 third-party replay corpus.
+
+With a verified local retail directory and a windowed launcher configuration,
+the address-bound smoke/differential probe is:
+
+```sh
+python3 tools/run_retail_anchor.py \
+  --retail-dir /path/to/th06 \
+  --replay replays/samples/th6_ud002677.rpy \
+  --output local/retail-anchor.jsonl --frames 2000
+
+(cd /path/to/th06 && /path/to/zkTH06/reference/th06 --headless \
+  --replay /path/to/zkTH06/replays/samples/th6_ud002677.rpy \
+  --max-ticks 2000 --trace /path/to/zkTH06/local/reference-anchor.jsonl)
+
+python3 tools/compare_retail_anchor.py \
+  local/retail-anchor.jsonl local/reference-anchor.jsonl
+```
+
+The probe requires Wine, Xvfb, GDB, passwordless local `sudo` for ptrace, and a
+Japanese UTF-8 locale. It verifies the executable/DAT hashes before launch and
+keeps the commercial files in an isolated temporary runtime directory.
 
 ## License
 

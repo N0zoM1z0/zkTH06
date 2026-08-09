@@ -213,5 +213,21 @@ non-ECL writes, and guest refinement remain explicit.  The methodological
 change is durable: future writer inventories must include data-driven pointer
 resolution, not only syntactic assignments.
 
+\paragraph{Phase T: establish a retail anchor before enlarging the slice.}
+Running the shipped executable under Wine exposed two harness effects before it
+exposed a gameplay mismatch: the host-uptime interpretation of
+\code{timeGetTime} caused a pre-game catch-up loop, and XTest events did not
+reach DirectInput.  Both interventions were moved into a hash- and
+address-checked probe, restricted to pre-game timing normalization and zero
+physical input that ReplayManager overwrites.  The first 2,000 post-calc frames
+then matched the Linux reference on a 23-field raw projection, including Player
+binary32 bits and RNG evolution.  This result changes the project gate from
+``no original execution evidence'' to ``a narrow retail anchor exists.''  It
+licenses work on the first sliced-kernel boundary while keeping full canonical
+subsystem export, replay diversity, noninterference, and formal code binding
+open.  The same run also observed ambient control word \code{0x007f} at every
+anchor, falsifying the working idea that the CRT's embedded \code{0x027f} could
+serve as one global gameplay profile.
+
 Future changes to the central claim or state boundary should be appended here
 with the evidence that motivated them.
