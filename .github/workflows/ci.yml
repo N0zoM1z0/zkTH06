@@ -53,6 +53,8 @@ jobs:
           python3 tests/test_item_score_corpus.py
           python3 tests/test_item_score_probe.py
           python3 tests/test_player_position_audit.py
+          python3 tests/test_player_motion_openvm_evidence.py
+          python3 tests/test_player_motion_openvm_input.py
           python3 tests/test_player_motion_vector.py
           python3 tests/test_retail_anchor.py
           python3 tests/test_x87_audit.py
@@ -65,4 +67,4 @@ jobs:
 
       - name: Test the sliced gameplay kernel
         working-directory: zkvm
-        run: cargo test --workspace --locked
+        run: cargo +1.91.1 test --workspace --locked

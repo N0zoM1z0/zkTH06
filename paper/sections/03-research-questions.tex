@@ -25,13 +25,14 @@
   refinement justifies removing state or substituting integer arithmetic?
 
   \item[RQ6: Proof decomposition.]
-  After semantic equivalence and refinement soundness are established, which
-  state layout, arithmetic model, frame
-  chunking, and recursive aggregation strategy makes a spell, stage, and full
-  six-stage run practical in a zkVM?
+  For each explicitly bounded slice, and after full semantic equivalence and
+  refinement soundness for broader claims, which state layout, arithmetic
+  model, frame chunking, and recursive aggregation strategy makes a spell,
+  stage, and full six-stage run practical in a zkVM?
 \end{description}
 
-RQ1--RQ5 are prerequisites for RQ6.  The project intentionally does not select
-a proof backend before the transition relation and its dominant costs are
-measured.  Corpus agreement may motivate a projection or arithmetic design,
-but cannot by itself discharge RQ5's universal claim.
+RQ1--RQ5 remain prerequisites for a whole-game answer to RQ6.  The first
+OpenVM experiment selects a backend only for a retail-anchored player-motion
+slice whose witness and result are hash-bound; it does not preselect the final
+whole-game architecture.  Corpus agreement may motivate a projection or
+arithmetic design, but cannot by itself discharge RQ5's universal claim.

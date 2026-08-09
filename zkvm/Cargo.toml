@@ -1,5 +1,6 @@
 [workspace]
 members = ["player-motion"]
+exclude = ["player-motion-openvm"]
 resolver = "2"
 
 [workspace.package]

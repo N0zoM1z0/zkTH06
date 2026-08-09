@@ -20,5 +20,19 @@ raw binary32 positions only; it contains no executable, DAT, or replay bytes.
 It is a regression oracle for the narrow player-position kernel, not an
 independent proof of its arithmetic or source correspondence.
 
+`openvm-player-motion-1999-v1.json` records the first real backend milestone.
+The adjacent OpenVM v2.0.1 application proof, verifying key, executable, and
+expected executable-commitment descriptor are tracked so verification needs
+neither retail data nor proving hardware.  The guest executes all 1,999
+transitions and publishes
+`SHA256(domain || private workload || computed final x/y)`; direct SDK decoding
+confirmed that the proof's 32 authenticated public bytes equal the independently
+computed statement digest.  The manifest binds every artifact and guest source
+by SHA-256 and records meter/prove/verify results.  This proves the exact sliced
+program and hash-bound workload/result, not derivation of its eleven environment
+words from a complete TH06 state.  The optional pinned SDK utility under
+`tools/openvm-proof-inspect/` makes the public-value comparison reproducible;
+it complements rather than replaces cryptographic proof verification.
+
 The raw retail/reference JSONL files, debugger logs, executable, DAT archives,
 and generated Wine directory stay under ignored local storage.

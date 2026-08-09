@@ -1,0 +1,13 @@
+[workspace]
+
+[package]
+name = "zkth06-openvm-proof-inspect"
+version = "0.1.0"
+edition = "2021"
+license = "GPL-3.0-only"
+rust-version = "1.91.1"
+publish = false
+
+[dependencies]
+openvm-sdk = { git = "https://github.com/openvm-org/openvm.git", tag = "v2.0.1", default-features = false }
+p3-field = "=0.4.3"

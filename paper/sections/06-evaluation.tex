@@ -89,6 +89,64 @@ not prove the integer rounding algorithm, per-instruction control state,
 instruction/source correspondence, reachable-domain invariant, or projection
 noninterference.
 
+\subsection{Hash-bound OpenVM application proof}
+
+The shared microkernel compiles under OpenVM v2.0.1 for
+\code{riscv32im-risc0-zkvm-elf}.  The guest validates a private 95,976-byte
+workload, executes the 1,999 chained transitions, and uses the SHA-256 extension
+to publish a digest of the domain separator, complete workload, and computed
+final x/y bits.  Independent host construction, pure execution, metered
+execution, and direct SDK deserialization of the application proof all yield
+the same public digest:
+\begin{center}
+\small\ttfamily
+21e195a5a5a123c01d9f48c876949340f6922e55215ced83d74dd06a988f84e6.
+\end{center}
+
+Table~\ref{tab:openvm-motion-meter} reports the CPU meter.  Work differs across
+prefixes because many early frames take the time/player gates or contain no
+movement, but the large-prefix cost is approximately linear.  The full
+hash-bound workload executes 6,205,625 guest instructions and costs an
+estimated 254,156,116 cells.
+
+\begin{table}[h]
+  \centering
+  \small
+  \begin{tabular}{@{}rrr@{}}
+    \toprule
+    Transitions & Guest instructions & Metered cells \\
+    \midrule
+    1     & 3,595     & 152,867 \\
+    10    & 24,836    & 1,031,394 \\
+    100   & 251,352   & 10,366,661 \\
+    1,000 & 3,157,630 & 129,282,130 \\
+    1,999 & 6,205,625 & 254,156,116 \\
+    \bottomrule
+  \end{tabular}
+  \caption{OpenVM v2.0.1 player-motion meter results with full SHA-256
+  workload/result binding.}
+  \label{tab:openvm-motion-meter}
+\end{table}
+
+On one AMD EPYC 9654 host with 192 logical CPUs, application proving completes
+in 75.65 seconds, uses 2,545.45 user CPU seconds, and peaks at 50,308,612 KiB
+resident memory.  Exact-commitment verification of the 872,364-byte proof takes
+0.12 seconds and peaks at 49,092 KiB.  Verification with the expected guest
+commitment succeeds; changing its last bit fails with an explicit executable-
+commit mismatch.  The proof's authenticated public-value bytes were decoded
+through the pinned SDK and match the digest above.  The proof, 241,614-byte
+verifying key, 252,122-byte vm executable, and hash/source manifest are tracked
+and verify without retail data or proving hardware.
+
+The rejected reconnaissance statement cost 230,560,805 cells for the full
+prefix.  Full transcript/result binding adds 10.2339\% and was retained because
+the cheaper form admitted an uncommitted existential witness.  This experiment
+establishes a real proof and an exact code/workload/result binding for the
+slice.  It does not establish that the eleven private environment words follow
+from prior TH06 state, nor does it evaluate zero-knowledge/privacy; the vector
+is already public.  No whole-game or formal-refinement claim follows from this
+backend measurement.
+
 \subsection{Canonical projection experiment}
 
 Two independent complete revision-0.2 traces of the Normal Reimu A NN/NB run

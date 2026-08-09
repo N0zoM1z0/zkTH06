@@ -104,6 +104,24 @@ implementation, and callback states that can respawn-write position are
 rejected.  This fail-closed subset makes incompleteness visible to the proof
 statement instead of silently substituting host floating-point behavior.
 
+The first backend adapter compiles this same crate for OpenVM v2.0.1's RV32IM
+target with integer, I/O, and SHA-256 extensions~\cite{openvm-v2}.  Its private
+input is a versioned payload containing the initial position and consecutive
+input/environment records.  After chaining the transition, the guest exposes
+all 32 available public-value bytes as
+\[
+  D = \operatorname{SHA256}(\texttt{domain}\mathbin\Vert W
+      \mathbin\Vert x_{\mathrm{final}}^{\mathrm{LE}}
+      \mathbin\Vert y_{\mathrm{final}}^{\mathrm{LE}}),
+\]
+where $W$ is the byte-exact validated workload.  Thus the public statement
+binds both the complete private transcript and the result computed from it.
+An earlier adapter exposed start, end, and length without committing $W$; it
+was retained only as local reconnaissance because it proved merely that some
+witness transcript reached the endpoint.  Hash binding does not solve the next
+refinement obligation: the eleven per-step environment words remain supplied
+by $W$ rather than derived inside the guest from enclosing TH06 state.
+
 Berkeley SoftFloat Release 3e is used as an independent executable oracle for
 the first arithmetic-boundary experiments~\cite{hauser-softfloat3e}.  Its
 \code{extF80\_roundingPrecision = 64} setting denotes precision equivalent to

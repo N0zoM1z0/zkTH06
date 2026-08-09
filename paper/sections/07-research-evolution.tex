@@ -242,5 +242,22 @@ again: zkVM cost and code-binding work can start on a real executable slice,
 while formal arithmetic correctness, noninterference, broader replays, and the
 complete guest remain open rather than being implied by the finite match.
 
+\paragraph{Phase V: reject an uncommitted witness and bind the first real
+backend statement.}
+The initial OpenVM adapter published initial position, final position, and
+transition count.  Although its application proof verified and was bound to
+the intended executable, the environment transcript was private and
+uncommitted; the actual statement was only that some 1,999-step witness reached
+the endpoint.  Before freezing evidence, the adapter was changed to hash a
+domain separator, every validated workload byte, and the guest-computed final
+position, exposing the full SHA-256 digest as its public value.  Direct proof
+deserialization confirms that the authenticated bytes equal the independently
+computed digest.  The stronger statement raises the full-prefix meter result
+from 230,560,805 to 254,156,116 cells, a 10.2339\% overhead.  This change keeps
+the research route soundness-first: the first backend milestone is now a real,
+reproducible OpenVM proof of a fixed sliced workload/result, while derivation of
+the movement environment from complete gameplay state becomes the explicit
+next boundary rather than hidden witness trust.
+
 Future changes to the central claim or state boundary should be appended here
 with the evidence that motivated them.

@@ -16,8 +16,11 @@ that state machine agree frame-for-frame with the shipped 32-bit Windows game.
 The first proof-oriented executable slice is now present under `zkvm/`: an
 integer-only implementation of the PC24 player-position update whose inputs and
 outputs remain raw binary32 bits. It matches 1,999 consecutive transitions
-derived from the retail anchor. This freezes a narrow, fail-closed experiment,
-not a complete gameplay guest or a formal refinement theorem.
+derived from the retail anchor. An OpenVM v2.0.1 RV32IM guest executes the same
+crate and publishes a full SHA-256 commitment to its private workload and
+computed endpoint. Its tracked application proof verifies against the exact
+guest commitment. This freezes a narrow, fail-closed backend slice, not a
+complete gameplay guest or a formal refinement theorem.
 
 A first owner-local Lean model now machine-checks why active-only Effect slots
 violate one-step noninterference and how a narrow dormant reuse shadow repairs
@@ -66,7 +69,7 @@ The zkTH06 work lives at the repository root. The reconstructed game engine is
 kept as a supporting snapshot rather than as this repository's history:
 
 - `zkvm/` contains the first sliced kernel and defines the future guest/public-
-  input boundary;
+  input boundary, including the OpenVM adapter;
 - `formal/` records the refinement theorem and machine-checking obligations;
 - `arithmetic/` contains exact-arithmetic experiments and their evidence
   boundaries;
@@ -134,6 +137,15 @@ remain open.
 - Prove one spell, then Stage 6, then a complete stage.
 - Chunk or recursively aggregate a full six-stage run only after the smaller
   statements pass differential tests.
+
+The first 1,999-transition micro-slice is now proven with OpenVM v2.0.1. Its
+hash-bound statement costs 254,156,116 metered cells; local application proving
+took 75.65 seconds with 50,308,612 KiB peak RSS, and verification took 0.12
+seconds. The tracked proof, verifying key, vm executable, source bindings, and
+explicit claim boundary are in
+[`evidence/openvm-player-motion-1999-v1.json`](evidence/openvm-player-motion-1999-v1.json).
+The next soundness gate is deriving the private movement environment from the
+enclosing canonical TH06 state rather than accepting it as witness data.
 
 The source audit and compatibility risks are in
 [`docs/initial-analysis.md`](docs/initial-analysis.md). Current corpus results

@@ -59,6 +59,11 @@ Last updated: 2026-08-09
   explicit round-to-nearest-even, and fails closed outside its finite
   normal/zero and alive/invulnerable domain. A compact retail-derived vector
   checks 1,999 consecutive transitions bit for bit.
+- A standalone OpenVM v2.0.1 RV32IM guest that calls that same crate, uses the
+  native SHA-256 extension to bind the complete private workload and computed
+  endpoint into all 32 public-value bytes, and has a tracked application proof,
+  verifying key, vm executable, exact commitment descriptor, and path-free
+  performance/source-binding manifest.
 
 Compatibility playback intentionally restores every per-stage replay snapshot,
 matching shipped playback. It is an oracle-development mode, not the future
@@ -124,6 +129,60 @@ and its adjacent JSON file. This validates one reached trace and makes the
 kernel concrete enough for proof and zkVM cost work; it does not prove the
 integer arithmetic, PC24 control history, instruction/source binding,
 projection noninterference, or unreachable-domain invariants.
+
+## First OpenVM proof gate
+
+The backend statement is deliberately narrower than a replay claim. The guest
+reads the initial x/y words followed by 1,999 private input/environment records,
+chains the shared Rust transition, and reveals exactly
+
+```text
+SHA256("zkTH06/openvm/player-motion/v1\0" || input_payload ||
+       final_x_bits_le || final_y_bits_le).
+```
+
+The host builder independently obtains statement digest
+`21e195a5...988f84e6`; pure execution, every metered run, and direct SDK decoding
+of the generated proof expose those same 32 bytes for the full workload. This
+design replaced an initial reconnaissance adapter that revealed only
+start/end/count: that statement admitted an uncommitted existential transcript.
+Full SHA-256 binding increases the 1,999-step meter result from 230,560,805 to
+254,156,116 cells, a 10.2339% cost accepted to preserve the statement boundary.
+
+| Transitions | Guest instructions | Metered cells |
+| ---: | ---: | ---: |
+| 1 | 3,595 | 152,867 |
+| 10 | 24,836 | 1,031,394 |
+| 100 | 251,352 | 10,366,661 |
+| 1,000 | 3,157,630 | 129,282,130 |
+| 1,999 | 6,205,625 | 254,156,116 |
+
+On the recorded 192-logical-CPU AMD EPYC 9654 host, `cargo openvm prove app`
+completed in 75.65 seconds with 50,308,612 KiB peak RSS. Exact executable-
+commitment verification completed in 0.12 seconds with 49,092 KiB peak RSS; a
+one-bit-wrong expected commitment was rejected. The 872,364-byte proof and its
+241,614-byte verifying key are tracked, and this command verifies them without
+retail data or proving hardware:
+
+```sh
+cargo openvm verify app \
+  --manifest-path zkvm/player-motion-openvm/Cargo.toml \
+  --proof evidence/openvm-player-motion-1999-v1.app.proof \
+  --app-vk evidence/openvm-player-motion-v1.app.vk \
+  --app-commit evidence/openvm-player-motion-v1.app-commit.json
+cargo +1.91.1 run --release --locked \
+  --manifest-path tools/openvm-proof-inspect/Cargo.toml -- \
+  evidence/openvm-player-motion-1999-v1.app.proof \
+  21e195a5a5a123c01d9f48c876949340f6922e55215ced83d74dd06a988f84e6
+```
+
+This closes real-backend execution, proof generation, exact guest commitment,
+and a fixed workload/result commitment for the first slice. It does not derive
+the eleven movement-environment words from prior TH06 state; until the enclosing
+transition does so, a prover can commit a different internally valid workload.
+It also establishes no whole-game equivalence, formal arithmetic theorem, or
+zero-knowledge/privacy result. Those limits are recorded in
+[`evidence/openvm-player-motion-1999-v1.json`](../evidence/openvm-player-motion-1999-v1.json).
 
 ## Local corpus result
 

@@ -82,6 +82,11 @@ As of 9 August 2026, the following components are implemented:
   integer-only dyadic arithmetic implements PC24 multiply, add, comparison, and
   clamp semantics with explicit ties-to-even rounding and fail-closed domain
   checks, plus a hash-bound 1,999-transition retail-derived vector;
+  \item a standalone OpenVM v2.0.1 RV32IM adapter using that exact crate and
+  the SHA-256 extension, together with a tracked vm executable, application
+  proof, verifying key, executable-commit descriptor, deterministic workload
+  builder, and a manifest binding source/artifact hashes, authenticated public
+  values, five meter points, proving resources, and negative verification;
   \item Linux CI that builds the reference runner and cross-checks both replay
   validators on three valid and three deliberately malformed cases, while also
   requiring canonical-record corruption to fail closed.
@@ -89,9 +94,10 @@ As of 9 August 2026, the following components are implemented:
 
 The current compatibility path intentionally restores each replay stage
 snapshot because that mirrors shipped playback and enables oracle development.
-It is not yet canonical proof playback.  No complete zkVM guest is frozen or
-claimed to be implemented; the player-position crate is only the first
-microkernel.  The retail exporter currently covers a 34-field root projection,
+It is not yet canonical proof playback.  The first backend micro-slice is
+frozen and proven, but no complete gameplay guest is claimed: its movement
+environment is still witness-supplied.  The retail exporter currently covers
+a 34-field root projection,
 while canonical projection revision 0.2 contains eleven broader
 subsystems.  Bringing that complete schema to the retail boundary remains
 open, and the state audit has already identified inactive Effect residue and

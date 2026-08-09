@@ -13,7 +13,13 @@ executable proof target.  It avoids native floating point, implements explicit
 integer PC24 rounding, fails closed outside its stated domain, and matches all
 1,999 consecutive transitions derived from the retail prefix.  This remains a
 narrow translation-validation result, not a formal arithmetic or refinement
-theorem and not a complete zkVM guest.
+theorem and not a complete gameplay guest.  It is, however, now a real zkVM
+target: an OpenVM v2.0.1 RV32IM adapter calls the same crate, commits its complete
+private workload and computed endpoint with SHA-256, and produces a tracked
+application proof bound to the exact executable.  The 1,999-step statement
+costs 254,156,116 metered cells, proves in 75.65 seconds at roughly 48.0 GiB
+peak resident memory, and verifies in 0.12 seconds.  An earlier uncommitted-
+transcript design was rejected despite being 10.2339\% cheaper.
 
 An experimental shared binary protocol now emits real per-frame subsystem and
 root digests with raw floating-point bits, stable identities, and fail-closed
@@ -21,9 +27,10 @@ decoding.  Complete repeated Linux runs are byte-identical, and the first broad
 ANM experiment already exposed the distinction between allocated memory and
 future-live semantic state.  The retail probe already turns a mismatch in its
 narrow root projection into a reproducible first-frame/first-field diagnosis.
-The next concrete milestone is to bind and prove this first sliced boundary
-while resolving the known reuse and dynamic-job omissions and enlarging the
-shipped-executable canonical subsystem schema.
+The next concrete milestone is to derive the currently private movement
+environment from enclosing committed gameplay state, while resolving the known
+reuse and dynamic-job omissions and enlarging the shipped-executable canonical
+subsystem schema.
 
 A first static arithmetic census now makes the floating-point gate concrete:
 the mapped game surface contains thousands of x87 operations, 26 inline
@@ -70,4 +77,5 @@ That evidence will guide the projection, but it cannot prove a slice sound.
 The intended end state additionally requires a machine-checked commuting
 transition and noninterference argument, exact or refined arithmetic semantics,
 and a reviewed binding from those definitions to both executables.  Only then
-can zkVM performance results support the intended claim.
+can broader zkVM performance results support the intended replay claim; the
+current result supports only its explicitly hash-bound micro-slice.

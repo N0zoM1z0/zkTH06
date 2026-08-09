@@ -1,0 +1,185 @@
+{
+  "type": "zkth06.openvm-player-motion-proof",
+  "schema_version": 1,
+  "date_utc": "2026-08-09",
+  "backend": {
+    "name": "OpenVM",
+    "cargo_openvm_version": "2.0.1",
+    "cargo_openvm_revision": "b820b25baab6c5d9b055f64e0286b6b1058e707c",
+    "guest_target": "riscv32im-risc0-zkvm-elf",
+    "guest_toolchain": "nightly-2026-01-18",
+    "guest_rustc": "rustc 1.94.0-nightly (fe98ddcfc 2026-01-17)",
+    "vm_extensions": [
+      "rv32i",
+      "rv32m",
+      "io",
+      "sha2"
+    ]
+  },
+  "workload": {
+    "source_vector": "player-motion-002677-2000-v1.bin",
+    "source_vector_bytes": 136052,
+    "source_vector_sha256": "e3be92572824160c980842754a8821dfdcc44a8673f5b492c1c272a8d7263ac2",
+    "retail_target_executable_sha256": "9f76483c46256804792399296619c1274363c31cd8f1775fafb55106fb852245",
+    "replay_sha256": "01bc11b9226932bddeeeff675f1741b89b129f4c8820b3b1cf185a1cb19ad10f",
+    "retail_trace_sha256": "e71f518a8bf6765c5e1920532c0bedd4d48aba6d960a0fdc67f22d1e5eff9543",
+    "transitions": 1999,
+    "input_payload_bytes": 95976,
+    "input_payload_sha256": "394b01589b0a88edce10cd7689ab290f2a1a502c410a15cfc364285b20356a6c",
+    "expected_final_x_bits": 1124577352,
+    "expected_final_y_bits": 1118370860,
+    "statement_domain_ascii": "zkTH06/openvm/player-motion/v1",
+    "statement_domain_nul_terminated": true,
+    "expected_statement_sha256": "21e195a5a5a123c01d9f48c876949340f6922e55215ced83d74dd06a988f84e6",
+    "statement_preimage": "domain || input_payload || final_x_bits_le || final_y_bits_le"
+  },
+  "source_bindings": {
+    "zkvm/player-motion-openvm/Cargo.lock": "f5917e12086e1f9a9d0e3b81ea91ceaec5e96de0f8d060f86656e5362ae3a76b",
+    "zkvm/player-motion-openvm/Cargo.toml": "5f1e881578f054c9def934d24111f80841706d32638c6021a0b6fc1a7b594473",
+    "zkvm/player-motion-openvm/openvm.toml": "66176cd349514666978faed7a789df0653eced83be1a2bcc70b0b5cc2c06ffcc",
+    "zkvm/player-motion-openvm/src/main.rs": "7260fa578c78c672c51d0785ef25f34527bdcfc03e2d371d264f5aa4365efd2b",
+    "zkvm/player-motion/Cargo.toml": "8c859effb9b0f39bb84531819b12b4cb0bd8864fa9c7035308e49a46ead9ce48",
+    "zkvm/player-motion/src/lib.rs": "1b9445361eee76ef42dc2d11c056a447c0c3b58442d5f8d84e05a3ef80c75ff5",
+    "tools/build_player_motion_openvm_input.py": "abde1da5a4150c944b240ec693fe894106945349cf57ecda27d1796d823b596a"
+  },
+  "artifacts": {
+    "guest_elf": {
+      "bytes": 32156,
+      "sha256": "83570b762883536a1f4b3807eb0e13216ff3fe2c2872d6b32014f55b700cbd76",
+      "tracked": false
+    },
+    "vm_executable": {
+      "path": "openvm-player-motion-v1.vmexe",
+      "bytes": 252122,
+      "sha256": "6b879a5300ca81d66becd461cf515cce3e9fd8ac8d5a72d2c11e96dcd4502978",
+      "app_exe_commit": "0x0080fb79712697b105f491e31cc591715f0f04f1e09412470a0dd6457286687f"
+    },
+    "app_proving_key": {
+      "bytes": 242775,
+      "sha256": "4e50cc10cecc2d74728d09fce80e583ddd3ff86602ce38e6e3107a77e18a86bf",
+      "tracked": false,
+      "reason": "deterministically regenerable and not required for verification"
+    },
+    "app_verifying_key": {
+      "path": "openvm-player-motion-v1.app.vk",
+      "bytes": 241614,
+      "sha256": "09b509a234f028b4f251779a26adf4d87b66d40e07174f0f5e3a2d9782de958b"
+    },
+    "app_commit_descriptor": {
+      "path": "openvm-player-motion-v1.app-commit.json",
+      "bytes": 182,
+      "sha256": "c0638c65fa467281ae525d596a56d8236ab1705d8ce0c2593f5ff41225892119",
+      "note": "OpenVM v2.0.1 verify app consumes app_exe_commit only; the shared schema's unused app_vm_commit is canonical zero"
+    },
+    "app_proof": {
+      "path": "openvm-player-motion-1999-v1.app.proof",
+      "bytes": 872364,
+      "sha256": "075d691d47313e676952c7dc733730910b1bea713fb5879b36e667a42260310e"
+    }
+  },
+  "meter": [
+    {
+      "transitions": 1,
+      "instructions": 3595,
+      "cells": 152867,
+      "statement_sha256": "0d69ff1440588d3eb5b4fa3aa312b87c1bc4e556f5fbd6381384788d1587ac5f"
+    },
+    {
+      "transitions": 10,
+      "instructions": 24836,
+      "cells": 1031394,
+      "statement_sha256": "05b6af468267fe06503d6e2cf54171b25aaa11f7da5cf7cc3b4b99d94b97341e"
+    },
+    {
+      "transitions": 100,
+      "instructions": 251352,
+      "cells": 10366661,
+      "statement_sha256": "17422fc881cac4c636e2e6e5be420b968369f0fa73232655e5e80a3468be7b45"
+    },
+    {
+      "transitions": 1000,
+      "instructions": 3157630,
+      "cells": 129282130,
+      "statement_sha256": "bcbaa3a34db3749f8d3a9e45540440f5a6fc9dd925a35a7bc96445bf68d549e5"
+    },
+    {
+      "transitions": 1999,
+      "instructions": 6205625,
+      "cells": 254156116,
+      "statement_sha256": "21e195a5a5a123c01d9f48c876949340f6922e55215ced83d74dd06a988f84e6"
+    }
+  ],
+  "public_values_audit": {
+    "method": "OpenVM v2.0.1 SDK deserialization as ContinuationVmProof<SC>",
+    "tool_source_bindings": {
+      "tools/openvm-proof-inspect/Cargo.lock": "cb328a765cb2214d7b6284c9eb769cb952815242e356a12f656aa8a40fef332a",
+      "tools/openvm-proof-inspect/Cargo.toml": "5707b336099df1467ce2a7121439c1c46ce7eef0d0a18f9801b4979fbc1ff964",
+      "tools/openvm-proof-inspect/src/main.rs": "524b728225089418f27b147374f64534948c79c1d673a5dbee07a916cce732ec"
+    },
+    "decoded_bytes": [
+      33,
+      225,
+      149,
+      165,
+      165,
+      161,
+      35,
+      192,
+      29,
+      159,
+      72,
+      200,
+      118,
+      148,
+      147,
+      64,
+      246,
+      146,
+      46,
+      85,
+      33,
+      92,
+      237,
+      131,
+      215,
+      77,
+      208,
+      106,
+      152,
+      143,
+      132,
+      230
+    ],
+    "matches_expected_statement_sha256": true
+  },
+  "proving": {
+    "elapsed_seconds": 75.65,
+    "user_cpu_seconds": 2545.45,
+    "system_cpu_seconds": 268.63,
+    "cpu_utilization_percent": 3719,
+    "max_rss_kib": 50308612,
+    "exit_status": 0
+  },
+  "verification": {
+    "elapsed_seconds": 0.12,
+    "user_cpu_seconds": 0.1,
+    "system_cpu_seconds": 0.22,
+    "max_rss_kib": 49092,
+    "expected_executable_commit_accepted": true,
+    "one_bit_wrong_executable_commit_rejected": true
+  },
+  "host": {
+    "kernel": "Linux 5.15.0-185-generic x86_64",
+    "cpu_model": "AMD EPYC 9654 96-Core Processor",
+    "logical_cpus": 192,
+    "memory_bytes": 810864480256
+  },
+  "design_iteration": {
+    "unbound_reconnaissance_cells": 230560805,
+    "hash_bound_cells": 254156116,
+    "hash_binding_overhead_percent": 10.2339,
+    "decision": "discard the uncommitted existential transcript statement and retain the full-SHA-256-bound statement"
+  },
+  "privacy_claim": "not evaluated; the committed source vector is already public and this milestone measures integrity, soundness surface, and cost",
+  "claim_boundary": "valid OpenVM application proof for the exact committed guest and a SHA-256-bound finite retail-derived player-motion workload/result; not a proof that witness environment words are derived from complete TH06 state, not whole-game equivalence, and not a formal proof of the Rust arithmetic"
+}
