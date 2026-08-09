@@ -15,12 +15,29 @@ from dataclasses import dataclass
 from pathlib import Path
 
 
-SCHEMA_VERSION = 2
+SCHEMA_VERSION = 3
 INSTRUCTION_RE = re.compile(r"^\s*([0-9a-fA-F]+):\s+([A-Za-z][A-Za-z0-9]*)\s*(.*)$")
 MEMORY_WIDTH_RE = re.compile(r"\b(BYTE|WORD|DWORD|QWORD|TBYTE) PTR\b")
 XMM_REGISTER_RE = re.compile(r"\bxmm(?:[0-9]|1[0-5])\b", re.IGNORECASE)
-EAX_REGISTER_RE = re.compile(r"\b(?:eax|ax|ah|al)\b", re.IGNORECASE)
-EDX_REGISTER_RE = re.compile(r"\b(?:edx|dx|dh|dl)\b", re.IGNORECASE)
+INTEGER_REGISTER_RE = re.compile(
+    r"\b(?:eax|ax|ah|al|edx|dx|dh|dl)\b", re.IGNORECASE
+)
+
+REGISTER_BITS = {
+    "eax": ("eax", 0xFFFFFFFF),
+    "ax": ("eax", 0x0000FFFF),
+    "ah": ("eax", 0x0000FF00),
+    "al": ("eax", 0x000000FF),
+    "edx": ("edx", 0xFFFFFFFF),
+    "dx": ("edx", 0x0000FFFF),
+    "dh": ("edx", 0x0000FF00),
+    "dl": ("edx", 0x000000FF),
+}
+WRITE_ONLY_DESTINATION_MNEMONICS = frozenset(
+    {"fstsw", "fnstsw", "lea", "mov", "movsx", "movzx", "pop"}
+)
+NON_WRITING_DESTINATION_MNEMONICS = frozenset({"cmp", "push", "test"})
+RETURN_SCAN_INSTRUCTION_LIMIT = 32
 
 CONTROL_MNEMONICS = frozenset(
     {
@@ -233,52 +250,145 @@ def _destination_register(instruction: Instruction) -> str | None:
     return destination if re.fullmatch(r"e?[abcd]x|[abcd][hl]", destination) else None
 
 
+def _mentioned_result_aliases(text: str) -> list[str]:
+    return [match.group(0).lower() for match in INTEGER_REGISTER_RE.finditer(text)]
+
+
+def _explicit_read_aliases(instruction: Instruction) -> list[str]:
+    """Return explicit EDX:EAX-family reads for a small Intel-syntax subset.
+
+    This is intentionally a syntactic recognizer, not an x86 decoder.  It
+    handles the write-only forms and zeroing idioms present in the audited
+    post-call windows and records its bounded scope in the emitted report.
+    """
+    mnemonic = instruction.mnemonic
+    operands = [part.strip() for part in instruction.operands.split(",")]
+    destination = _destination_register(instruction)
+
+    if mnemonic == "cdq":
+        return ["eax"]
+    if mnemonic in {"div", "idiv", "mul"} and len(operands) == 1:
+        return _mentioned_result_aliases(instruction.operands) + ["eax", "edx"]
+    if mnemonic == "imul" and len(operands) == 1:
+        return _mentioned_result_aliases(instruction.operands) + ["eax"]
+
+    if (
+        mnemonic in {"sub", "xor"}
+        and len(operands) == 2
+        and operands[0].lower() == operands[1].lower()
+    ):
+        return []
+
+    write_only = mnemonic in WRITE_ONLY_DESTINATION_MNEMONICS or mnemonic.startswith("set")
+    if write_only and destination is not None:
+        return _mentioned_result_aliases(",".join(operands[1:]))
+    return _mentioned_result_aliases(instruction.operands)
+
+
+def _explicit_write_alias(instruction: Instruction) -> str | None:
+    mnemonic = instruction.mnemonic
+    destination = _destination_register(instruction)
+    if mnemonic == "cdq":
+        return "edx"
+    if (
+        destination is None
+        or destination not in REGISTER_BITS
+        or mnemonic in NON_WRITING_DESTINATION_MNEMONICS
+    ):
+        return None
+    if mnemonic.startswith("j") or mnemonic.startswith("ret"):
+        return None
+    return destination
+
+
+def _observer_dict(instruction: Instruction, aliases: list[str]) -> dict[str, object]:
+    return {
+        "address": f"0x{instruction.address:08x}",
+        "mnemonic": instruction.mnemonic,
+        "aliases": aliases,
+    }
+
+
+def _return_register_observation_details(
+    instructions: list[Instruction],
+    call_index: int,
+    function_index: "FunctionIndex",
+) -> dict[str, object]:
+    """Scan one bounded straight-line suffix for explicit EDX:EAX data use.
+
+    Bit masks distinguish a full EAX observation from an AL-only observation.
+    Branches, returns, subsequent calls, and function boundaries terminate the
+    scan.  Unknown implicit-register semantics are deliberately outside this
+    evidence; this helper must not be treated as formal data-flow analysis.
+    """
+    function = function_index.find(instructions[call_index].address)
+    live = {"eax": 0xFFFFFFFF, "edx": 0xFFFFFFFF}
+    observed = {"eax": 0, "edx": 0}
+    first_observer: dict[str, dict[str, object] | None] = {"eax": None, "edx": None}
+    termination = "instruction-limit"
+    termination_address: str | None = None
+
+    followers = instructions[call_index + 1 : call_index + 1 + RETURN_SCAN_INSTRUCTION_LIMIT]
+    for instruction in followers:
+        if function_index.find(instruction.address) != function:
+            termination = "function-boundary"
+            termination_address = f"0x{instruction.address:08x}"
+            break
+        if instruction.mnemonic == "call":
+            termination = "subsequent-call"
+            termination_address = f"0x{instruction.address:08x}"
+            break
+
+        aliases_by_root: dict[str, list[str]] = {"eax": [], "edx": []}
+        for alias in _explicit_read_aliases(instruction):
+            root, mask = REGISTER_BITS[alias]
+            if live[root] & mask:
+                observed[root] |= live[root] & mask
+                aliases_by_root[root].append(alias)
+        for root in ("eax", "edx"):
+            if aliases_by_root[root] and first_observer[root] is None:
+                first_observer[root] = _observer_dict(instruction, aliases_by_root[root])
+
+        written_alias = _explicit_write_alias(instruction)
+        if written_alias is not None:
+            root, mask = REGISTER_BITS[written_alias]
+            live[root] &= ~mask
+
+        if instruction.mnemonic.startswith("j") or instruction.mnemonic.startswith("ret"):
+            termination = "control-flow-boundary"
+            termination_address = f"0x{instruction.address:08x}"
+            break
+        if live["eax"] == 0 and live["edx"] == 0:
+            termination = "resolved"
+            termination_address = f"0x{instruction.address:08x}"
+            break
+    else:
+        if len(followers) < RETURN_SCAN_INSTRUCTION_LIMIT:
+            termination = "end-of-disassembly"
+
+    return {
+        "scan_instruction_limit": RETURN_SCAN_INSTRUCTION_LIMIT,
+        "eax_observed_mask": f"0x{observed['eax']:08x}",
+        "edx_observed_mask": f"0x{observed['edx']:08x}",
+        "eax_live_mask_at_stop": f"0x{live['eax']:08x}",
+        "edx_live_mask_at_stop": f"0x{live['edx']:08x}",
+        "first_eax_observer": first_observer["eax"],
+        "first_edx_observer": first_observer["edx"],
+        "termination": termination,
+        "termination_address": termination_address,
+    }
+
+
 def _return_register_observation(
     instructions: list[Instruction],
     call_index: int,
     function_index: "FunctionIndex",
 ) -> tuple[bool, bool]:
-    """Conservatively scan one straight-line suffix for EDX:EAX consumption."""
-    function = function_index.find(instructions[call_index].address)
-    eax_live = True
-    edx_live = True
-    eax_observed = False
-    edx_observed = False
-    write_only = {"lea", "mov", "movsx", "movzx", "pop"}
-
-    for instruction in instructions[call_index + 1 : call_index + 33]:
-        if function_index.find(instruction.address) != function:
-            break
-        destination = _destination_register(instruction)
-        reads_eax = EAX_REGISTER_RE.search(instruction.operands) is not None
-        reads_edx = EDX_REGISTER_RE.search(instruction.operands) is not None
-        if instruction.mnemonic in write_only:
-            if destination in {"eax", "ax", "ah", "al"}:
-                reads_eax = False
-            if destination in {"edx", "dx", "dh", "dl"}:
-                reads_edx = False
-        if instruction.mnemonic in {"sub", "xor"}:
-            operands = [part.strip().lower() for part in instruction.operands.split(",")]
-            if len(operands) == 2 and operands[0] == operands[1]:
-                reads_eax = reads_eax and operands[0] not in {"eax", "ax", "ah", "al"}
-                reads_edx = reads_edx and operands[0] not in {"edx", "dx", "dh", "dl"}
-
-        if eax_live and reads_eax:
-            eax_observed = True
-            eax_live = False
-        if edx_live and reads_edx:
-            edx_observed = True
-            edx_live = False
-
-        if destination == "eax" or instruction.mnemonic == "call":
-            eax_live = False
-        if destination == "edx" or instruction.mnemonic == "call":
-            edx_live = False
-        if instruction.mnemonic.startswith("j") or instruction.mnemonic.startswith("ret"):
-            break
-        if not eax_live and not edx_live:
-            break
-    return eax_observed, edx_observed
+    details = _return_register_observation_details(instructions, call_index, function_index)
+    return (
+        details["eax_observed_mask"] != "0x00000000",
+        details["edx_observed_mask"] != "0x00000000",
+    )
 
 
 def x87_helper_calls_from_th06(
@@ -316,27 +426,48 @@ def x87_helper_calls_from_th06(
                 "predecessor_mnemonics": Counter(),
                 "bounded_eax_observed_count": 0,
                 "bounded_edx_observed_count": 0,
+                "eax_observed_masks": Counter(),
+                "edx_observed_masks": Counter(),
             },
         )
         helper["direct_call_count"] += 1
-        if instruction_index:
-            helper["predecessor_mnemonics"][instructions[instruction_index - 1].mnemonic] += 1
-        eax_observed, edx_observed = _return_register_observation(
+        predecessor = instructions[instruction_index - 1] if instruction_index else None
+        if predecessor is not None:
+            helper["predecessor_mnemonics"][predecessor.mnemonic] += 1
+        observation = _return_register_observation_details(
             instructions, instruction_index, function_index
         )
+        eax_observed = observation["eax_observed_mask"] != "0x00000000"
+        edx_observed = observation["edx_observed_mask"] != "0x00000000"
         helper["bounded_eax_observed_count"] += eax_observed
         helper["bounded_edx_observed_count"] += edx_observed
+        helper["eax_observed_masks"][observation["eax_observed_mask"]] += 1
+        helper["edx_observed_masks"][observation["edx_observed_mask"]] += 1
         caller_entry = helper["callers"].setdefault(
             caller.name,
             {"name": caller.name, "direct_call_count": 0, "sites": []},
         )
         caller_entry["direct_call_count"] += 1
-        caller_entry["sites"].append(f"0x{instruction.address:08x}")
+        caller_entry["sites"].append(
+            {
+                "address": f"0x{instruction.address:08x}",
+                "function_offset": instruction.address - caller.start,
+                "predecessor": None
+                if predecessor is None
+                else {
+                    "address": f"0x{predecessor.address:08x}",
+                    "mnemonic": predecessor.mnemonic,
+                },
+                "result_observation": observation,
+            }
+        )
 
     helper_rows: list[dict[str, object]] = []
     for helper in helpers.values():
         helper["callers"] = sorted(helper["callers"].values(), key=lambda row: row["name"])
         helper["predecessor_mnemonics"] = dict(sorted(helper["predecessor_mnemonics"].items()))
+        helper["eax_observed_masks"] = dict(sorted(helper["eax_observed_masks"].items()))
+        helper["edx_observed_masks"] = dict(sorted(helper["edx_observed_masks"].items()))
         helper_rows.append(helper)
     helper_rows.sort(key=lambda row: (-row["direct_call_count"], row["start"]))
     return {
@@ -568,6 +699,8 @@ def summarize(result: dict[str, object]) -> dict[str, object]:
                     "predecessor_mnemonics": helper["predecessor_mnemonics"],
                     "bounded_eax_observed_count": helper["bounded_eax_observed_count"],
                     "bounded_edx_observed_count": helper["bounded_edx_observed_count"],
+                    "eax_observed_masks": helper["eax_observed_masks"],
+                    "edx_observed_masks": helper["edx_observed_masks"],
                     "callers": [
                         {
                             "name": caller["name"],
@@ -575,6 +708,14 @@ def summarize(result: dict[str, object]) -> dict[str, object]:
                         }
                         for caller in helper["callers"]
                     ],
+                    "sites": sorted(
+                        [
+                            {"function": caller["name"], **site}
+                            for caller in helper["callers"]
+                            for site in caller["sites"]
+                        ],
+                        key=lambda site: site["address"],
+                    ),
                 }
                 for helper in helper_summary["helpers"]
             ],

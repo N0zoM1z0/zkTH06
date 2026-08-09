@@ -119,5 +119,19 @@ new invariant obligation that every reachable caller input lies in signed i32.
 Thus simplification is admitted by a range theorem, not by the apparent intent
 of the reconstructed cast or by passing samples.
 
+\paragraph{Phase N: turn aggregate evidence into conservative per-address
+obligations.}
+The first helper-use summary stored only whether some EAX-family token appeared
+in a bounded suffix and consequently described one consumer as AL-only.  A
+bit-mask-level re-audit found two: one in Stage update and one in the bullet
+added callback; the other 75 consume full EAX.  It also exposed that EDX is
+still live at 42 branch/call stopping points.  The design therefore no longer
+uses the bounded scan as a dead-result claim.  A hash-bound ledger now records
+all 321 comparison/helper addresses, tool and input identities, exact local
+observation masks, and explicitly open slice/range fields.  This changed the
+next milestone from ``bind addresses'' in the abstract to discharging each
+address with either a retained-operation refinement or an omitted-path
+noninterference theorem.
+
 Future changes to the central claim or state boundary should be appended here
 with the evidence that motivated them.

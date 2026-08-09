@@ -18,9 +18,11 @@
   \code{\_\_ftol2} probe covers full register results only for canonical finite
   signed-i64 inputs.  Load exceptions, arbitrary/noncanonical NaNs, remainder,
   exceptional helper inputs, the helper's reachable signed-i32 range, address
-  binding, and transcendental behavior remain open.  The address-indexed exact
-  baseline, code binding, and any fixed-point refinement have not yet been
-  implemented or proved.
+  binding, and transcendental behavior remain open.  A hash-bound ledger now
+  indexes 321 comparison/helper addresses, but every slice disposition and
+  helper range is still open; its bounded scan also leaves EDX live at 42
+  stopping points.  The complete address-indexed semantics, code binding, and
+  any fixed-point refinement have not yet been implemented or proved.
   \item \textbf{Draw-chain effects.}  Headless mode skips drawing, but some draw
   callbacks write flags, ANM fields, laser positions, or other state that may be
   read later.  Each removal needs dependency analysis and corpus validation.

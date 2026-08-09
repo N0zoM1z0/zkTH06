@@ -156,8 +156,10 @@ The static audit identifies 77 calls from mapped game functions to the helper
 at virtual address `0x0045ba78`. The instruction immediately before each call
 is x87: 60 `fld`, seven `fmul`, four `fdiv`, two `fadd`, two `fsubp`, and two
 `fsubr`. A bounded straight-line use scan observes EAX at all 77 sites and EDX
-at none; one consumer narrows further to AL. This is a static consumer fact,
-not yet a dynamic range proof.
+at none; 75 sites observe all of EAX and two observe only AL. The scan stops at
+branches or later calls and leaves EDX live at 42 stopping points, so this is a
+bounded syntactic fact rather than whole-control-flow dead-result analysis or a
+dynamic range proof.
 
 [`run_ftol2_probe.py`](../tools/run_ftol2_probe.py) verifies the retail
 executable hash, resolves the helper through the PE section table, and checks
@@ -196,6 +198,35 @@ requires a reachable-state invariant that every call input lies in the signed
 32-bit result domain. Until that invariant and the code-to-model binding are
 proved, the exact extracted helper remains the oracle.
 
+## Address-level obligation ledger
+
+[`obligations-v1.json`](obligations-v1.json) turns the aggregate census into a
+reviewable proof-work queue. It records all 244 comparison addresses and all 77
+mapped `__ftol2` call addresses, their mapped owner/offset, the minimum semantic
+classification needed by the current Lean models, and conservative open-status
+fields. It deliberately excludes executable bytes and full disassembly operand
+strings.
+
+[`arithmetic_obligations.py`](../tools/arithmetic_obligations.py) accepts only
+the pinned executable/mapping/implemented hashes, invokes the same audit, and
+seals canonical JSON with a content digest. The tracked ledger also records
+the generator and audit-tool hashes. A local owner of the retail image can
+check byte-for-byte reproduction with:
+
+```sh
+python3 tools/arithmetic_obligations.py \
+  local/original-th06/東方紅魔郷.exe \
+  --mapping repos/th06/config/mapping.csv \
+  --implemented repos/th06/config/implemented.csv \
+  --check arithmetic/obligations-v1.json
+```
+
+Public CI only runs the proprietary-input-free structural/digest test. The
+ledger makes no reachability or refinement claim: every site is still marked
+`unclassified`, and every conversion range remains `unproved`. The schema,
+discharge discipline, and corrected two-site AL result are detailed in
+[`docs/arithmetic-obligations.md`](../docs/arithmetic-obligations.md).
+
 ## Soundness boundary
 
 The experiment supports a candidate implementation choice; it does not close
@@ -221,8 +252,9 @@ the arithmetic proof. In particular:
   dynamic reachability, original instruction extraction, or connection to a
   future Lean definition and zkVM guest.
 
-The intended next step is to bind these operations to audited original
-addresses, prove the `__ftol2` call-site range invariant, cover load/remainder
-semantics, and choose an exact transcendental profile. The exact implementation
-remains the fallback whenever a fixed-point refinement theorem cannot be
-proved.
+The address binding work queue is now explicit, but none of its entries is
+discharged. The intended next step is to classify retained versus sliced sites,
+prove the `__ftol2` call-site range and full-control-flow result-use invariants,
+cover load/remainder semantics, and choose an exact transcendental profile.
+The exact implementation remains the fallback whenever a fixed-point
+refinement theorem cannot be proved.

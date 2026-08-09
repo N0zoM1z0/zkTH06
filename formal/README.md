@@ -35,8 +35,16 @@ nearest-integer carry/borrow correction recovers truncation toward zero in all
 sign/rounding-position cases. It also proves the EDX:EAX split/join identity
 and that a low-32-bit observer is independent of EDX. The unproved premises
 remain substantial: raw ext80 decoding, signed-range safety at every reachable
-call, correspondence with the 117 extracted bytes, and the static observation
-that mapped game code never consumes EDX.
+call, correspondence with the 117 extracted bytes, and replacement of the
+bounded no-EDX-observer scan with complete control-flow evidence.
+
+The address-level bridge to these definitions is
+[`arithmetic/obligations-v1.json`](../arithmetic/obligations-v1.json). Its 244
+comparison records name one of the eleven `X87Compare` truth-table theorems;
+its 77 helper records name the `X87Ftol2` projection/correction contracts. The
+ledger is deliberately not imported as a Lean axiom or theorem. All site slice
+statuses and helper range claims remain open until a later generated semantics
+or translation-validation layer produces checked correspondence evidence.
 
 ## Checked Effect reuse result
 

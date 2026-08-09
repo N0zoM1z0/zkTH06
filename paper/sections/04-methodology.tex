@@ -116,7 +116,9 @@ canonical finite ext80 inputs as exact dyadic rationals and compares the full
 EDX:EAX result with truncation toward zero.  This experiment is restricted to
 signed-i64-representable inputs.  The proposed gameplay slice additionally
 requires a reachable-state proof that each mapped call produces a signed-i32
-result, because the audited callers observe only EAX or AL.
+result.  A bit-mask scan finds 75 full-EAX and two AL-only observers, but no
+EDX observer before its bounded branch/call termination; EDX is still live at
+42 such stopping points, so complete control-flow use remains an obligation.
 
 The fidelity representation is address-indexed.  Each retained arithmetic
 operation records its pinned original address, x87 stack/control inputs,
@@ -127,6 +129,15 @@ reproduced MSVC 7 register allocation and spills.  The target executable hash,
 arithmetic-profile version, initial control word, and transcendental-model
 identifier are committed by the statement.  This lane may be expensive, but
 it provides the semantic oracle and proof-cost baseline.
+
+As an intermediate binding artifact, a canonical JSON ledger records the 244
+mapped comparison addresses and 77 mapped \code{\_\_ftol2} call addresses.  It
+contains no executable bytes or full operand strings, but binds each address
+to the pinned image/mapping hashes, a mapped owner and offset, an evidence
+class, and the relevant Lean model contract.  Every slice disposition remains
+\code{unclassified}; every helper range remains \code{unproved}.  Thus the
+ledger is a quantified work queue for later translation validation and
+noninterference proofs, not a premise silently promoted from static analysis.
 
 The optimization lane uses field-specific fixed-point formats, explicit
 overflow and rounding, integer phase angles, and deterministic trigonometric

@@ -159,8 +159,11 @@ ABIs, not interchangeable calls to a host conversion routine.
 At all 77 mapped `__ftol2` calls, the preceding instruction is x87: 60 `fld`,
 seven `fmul`, four `fdiv`, two `fadd`, two `fsubp`, and two `fsubr`. A bounded
 straight-line result-use scan observes EAX at all 77 sites and EDX at none; one
-site consumes only AL. This supports a low-32-bit gameplay projection but does
-not prove that every reachable conversion is in range.
+site was initially reported as AL-only. A bit-mask re-audit corrects that count
+to two AL-only sites and 75 full-EAX sites. Because the scan stops at a branch
+or subsequent call and leaves EDX live at 42 stopping points, it supports only
+a candidate low-32-bit projection; it proves neither complete result deadness
+nor that every reachable conversion is in range.
 
 ## Control-word evidence
 
@@ -323,11 +326,16 @@ diagnostic compatibility code, not authoritative proof semantics.
 ## Proof-oriented arithmetic architecture
 
 The fidelity lane will use an address-indexed arithmetic IR extracted from the
-pinned binary/mapping pair. An operation record names its original address,
-x87 stack inputs, control word, opcode, destination width, and next use/store
-boundary. Helper calls such as `__ftol2` and D3DX conversions are explicit IR
-operations. The public statement commits to the executable digest, arithmetic
-profile version, initial control word, and transcendental model identifier.
+pinned binary/mapping pair. Its first public index is the hash-bound
+[`arithmetic/obligations-v1.json`](../arithmetic/obligations-v1.json) ledger: it
+names all 244 comparison and 77 `__ftol2` addresses, points their observations
+to the current Lean contracts, and leaves every slice/range status explicitly
+open. It contains no executable bytes or full disassembly operands. A later IR
+operation record must additionally name x87 stack inputs, control word, opcode,
+destination width, and next use/store boundary. Helper calls such as `__ftol2`
+and D3DX conversions remain explicit IR operations. The public statement
+commits to the executable digest, ledger/profile version, initial control word,
+and transcendental model identifier.
 
 This layout separates four arguments:
 
@@ -363,10 +371,11 @@ equivalence.
    replay corpus.
 3. Add field-level snapshots so the first arithmetic divergence identifies the
    owning field and original operation site.
-4. Bind comparison and conversion semantics to original instruction addresses;
-   prove the signed-i32 input invariant at all 77 `__ftol2` sites; and extend
-   the oracle through `fisttp`, `fld` denormal signaling, remainder, and
-   exceptional helper inputs where dynamically relevant.
+4. Discharge the address ledger: translation-validate retained comparison and
+   conversion blocks, prove noninterference for omitted ones, establish
+   control-flow-complete result use and the signed-i32 input invariant at every
+   retained `__ftol2` site, and extend the oracle through `fisttp`, `fld`
+   denormal signaling, remainder, and exceptional inputs where relevant.
 5. Prove draw/D3DX noninterference one callback at a time. Only then may their
    x87 and XMM sites leave the arithmetic kernel.
 6. State and prove the chosen transcendental execution profile; corpus equality

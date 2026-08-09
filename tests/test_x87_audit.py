@@ -51,6 +51,29 @@ def main() -> int:
         register_use, 0, x87_audit.FunctionIndex(register_map)
     ) == (False, True)
 
+    partial_use = x87_audit.parse_disassembly(
+        """
+  500000: call   0x500100
+  500005: mov    ecx,DWORD PTR [ebp+0x8]
+  500008: mov    BYTE PTR [ecx],al
+  50000a: mov    eax,DWORD PTR [ebp-0x4]
+  50000d: mov    edx,DWORD PTR [ebp-0x8]
+"""
+    )
+    partial_details = x87_audit._return_register_observation_details(
+        partial_use, 0, x87_audit.FunctionIndex(register_map)
+    )
+    assert partial_details["eax_observed_mask"] == "0x000000ff"
+    assert partial_details["edx_observed_mask"] == "0x00000000"
+    assert partial_details["eax_live_mask_at_stop"] == "0x00000000"
+    assert partial_details["edx_live_mask_at_stop"] == "0x00000000"
+    assert partial_details["first_eax_observer"] == {
+        "address": "0x00500008",
+        "mnemonic": "mov",
+        "aliases": ["al"],
+    }
+    assert partial_details["termination"] == "resolved"
+
     with tempfile.TemporaryDirectory(prefix="zkth06-x87-") as directory:
         mapping = Path(directory) / "mapping.csv"
         mapping.write_text(
@@ -96,20 +119,42 @@ def main() -> int:
             "start": "0x00401040",
             "direct_call_count": 1,
             "predecessor_mnemonics": {"fldcw": 1},
-            "bounded_eax_observed_count": 1,
+            "bounded_eax_observed_count": 0,
             "bounded_edx_observed_count": 0,
+            "eax_observed_masks": {"0x00000000": 1},
+            "edx_observed_masks": {"0x00000000": 1},
             "callers": [
                 {
                     "name": "th06::First",
                     "direct_call_count": 1,
-                    "sites": ["0x00401012"],
+                    "sites": [
+                        {
+                            "address": "0x00401012",
+                            "function_offset": 0x12,
+                            "predecessor": {
+                                "address": "0x0040100e",
+                                "mnemonic": "fldcw",
+                            },
+                            "result_observation": {
+                                "scan_instruction_limit": 32,
+                                "eax_observed_mask": "0x00000000",
+                                "edx_observed_mask": "0x00000000",
+                                "eax_live_mask_at_stop": "0xffff0000",
+                                "edx_live_mask_at_stop": "0xffffffff",
+                                "first_eax_observer": None,
+                                "first_edx_observer": None,
+                                "termination": "control-flow-boundary",
+                                "termination_address": "0x0040101f",
+                            },
+                        }
+                    ],
                 }
             ],
         }
     ]
     summary = x87_audit.summarize(
         {
-            "schema_version": 1,
+            "schema_version": x87_audit.SCHEMA_VERSION,
             "executable": {"sha256": "exe"},
             "mapping": {"sha256": "map", "function_count": 3},
             "implemented": {"sha256": "impl", "function_count": 1},
@@ -139,6 +184,9 @@ def main() -> int:
         }
     ]
     assert summary["mapped_th06_functions"]["store_memory_widths"] == {"dword": 2}
+    helper_summary = summary["direct_x87_helper_calls_from_th06"]["helpers"][0]
+    assert helper_summary["eax_observed_masks"] == {"0x00000000": 1}
+    assert helper_summary["sites"][0]["function"] == "th06::First"
     print("validated x87 disassembly parsing and function attribution")
     return 0
 

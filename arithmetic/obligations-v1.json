@@ -1,0 +1,5261 @@
+{
+  "schema_version": 1,
+  "kind": "zkth06.arithmetic-obligations",
+  "target": {
+    "title": "Touhou Koumakyou 1.02h Japanese",
+    "executable_sha256": "9f76483c46256804792399296619c1274363c31cd8f1775fafb55106fb852245",
+    "mapping_sha256": "0f20300d5b107b36c933a7f7dc448407ee5f01c5cd7faad132d406c023163191",
+    "implemented_sha256": "07b448de3503a285f3464f618c7c384607050c0fff81e0642aa13968fcb61311"
+  },
+  "generator": {
+    "path": "tools/arithmetic_obligations.py",
+    "sha256": "d0af101d2ed965e629d895894d47af8f9f066f298c431306dd3c5cae76e03bad",
+    "x87_audit_path": "tools/x87_audit.py",
+    "x87_audit_sha256": "93c6aee778f489c92788dc7dfc6c51749fa5f20d075305a4190616d9b5d46290",
+    "x87_audit_schema_version": 3,
+    "disassembler": "GNU objdump (GNU Binutils for Ubuntu) 2.38"
+  },
+  "evidence_levels": {
+    "static": "Deterministic decode and bounded syntactic use scan of the pinned image; not reachability, control-flow-complete data flow, or a decoding proof.",
+    "empirical": "Deterministic counterexample search on one recorded host/toolchain; not universal arithmetic equivalence.",
+    "proved_model_fact": "Lean theorem about the stated model only; not yet a binary/source/guest binding.",
+    "open": "A premise required by the eventual refinement theorem."
+  },
+  "model_contracts": {
+    "comparison_relation_order": [
+      "greater",
+      "less",
+      "equal",
+      "unordered"
+    ],
+    "comparison_consumers": {
+      "fnstsw ax; and eax,0x100; je": {
+        "filter": "andEax100",
+        "branch": "je",
+        "truth_table": [
+          true,
+          false,
+          true,
+          false
+        ],
+        "lean_theorem": "ZkTH06.X87Compare.and_100_je_table"
+      },
+      "fnstsw ax; and eax,0x100; jne": {
+        "filter": "andEax100",
+        "branch": "jne",
+        "truth_table": [
+          false,
+          true,
+          false,
+          true
+        ],
+        "lean_theorem": "ZkTH06.X87Compare.and_100_jne_table"
+      },
+      "fnstsw ax; and eax,0x4100; je": {
+        "filter": "andEax4100",
+        "branch": "je",
+        "truth_table": [
+          true,
+          false,
+          false,
+          false
+        ],
+        "lean_theorem": "ZkTH06.X87Compare.and_4100_je_table"
+      },
+      "fnstsw ax; and eax,0x4100; jne": {
+        "filter": "andEax4100",
+        "branch": "jne",
+        "truth_table": [
+          false,
+          true,
+          true,
+          true
+        ],
+        "lean_theorem": "ZkTH06.X87Compare.and_4100_jne_table"
+      },
+      "fnstsw ax; test ah,0x1; jne": {
+        "filter": "testAh1",
+        "branch": "jne",
+        "truth_table": [
+          false,
+          true,
+          false,
+          true
+        ],
+        "lean_theorem": "ZkTH06.X87Compare.test_1_jne_table"
+      },
+      "fnstsw ax; test ah,0x41; jne": {
+        "filter": "testAh41",
+        "branch": "jne",
+        "truth_table": [
+          false,
+          true,
+          true,
+          true
+        ],
+        "lean_theorem": "ZkTH06.X87Compare.test_41_jne_table"
+      },
+      "fnstsw ax; test ah,0x41; jp": {
+        "filter": "testAh41",
+        "branch": "jp",
+        "truth_table": [
+          true,
+          false,
+          false,
+          true
+        ],
+        "lean_theorem": "ZkTH06.X87Compare.test_41_jp_table"
+      },
+      "fnstsw ax; test ah,0x44; jnp": {
+        "filter": "testAh44",
+        "branch": "jnp",
+        "truth_table": [
+          false,
+          false,
+          true,
+          false
+        ],
+        "lean_theorem": "ZkTH06.X87Compare.test_44_jnp_table"
+      },
+      "fnstsw ax; test ah,0x44; jp": {
+        "filter": "testAh44",
+        "branch": "jp",
+        "truth_table": [
+          true,
+          true,
+          false,
+          true
+        ],
+        "lean_theorem": "ZkTH06.X87Compare.test_44_jp_table"
+      },
+      "fnstsw ax; test ah,0x5; jnp": {
+        "filter": "testAh5",
+        "branch": "jnp",
+        "truth_table": [
+          false,
+          true,
+          false,
+          false
+        ],
+        "lean_theorem": "ZkTH06.X87Compare.test_5_jnp_table"
+      },
+      "fnstsw ax; test ah,0x5; jp": {
+        "filter": "testAh5",
+        "branch": "jp",
+        "truth_table": [
+          true,
+          false,
+          true,
+          true
+        ],
+        "lean_theorem": "ZkTH06.X87Compare.test_5_jp_table"
+      }
+    },
+    "ftol2": {
+      "projection": "ZkTH06.X87Ftol2.observedLow32",
+      "correction_theorem": "ZkTH06.X87Ftol2.correction_recovers_truncation",
+      "register_theorem": "ZkTH06.X87Ftol2.high_half_irrelevant_to_observed_projection"
+    }
+  },
+  "obligation_classes": [
+    {
+      "id": "x87-fcomp-status-branch-v1",
+      "site_count": 244,
+      "evidence": [
+        {
+          "level": "static",
+          "claim": "Every recorded mapped site decodes as fcomp m32fp/m64fp followed immediately by fnstsw AX, an observed mask, and a conditional branch."
+        },
+        {
+          "level": "empirical",
+          "claim": "The pinned SoftFloat probe matched 4,000,220 x87/SoftFloat comparison condition/status tuples with zero mismatch.",
+          "probe_sha256": "b062a031b5866b7e86514db17d162ecbdf9398b0a5d0c5530dfcf6c4889ffe71"
+        },
+        {
+          "level": "proved_model_fact",
+          "claim": "Lean evaluates the eleven recorded masks/branches over greater, less, equal, and unordered.",
+          "definition": "ZkTH06.X87Compare.branchTaken"
+        }
+      ],
+      "open_obligations": [
+        "Prove or translation-validate the pinned bytes and local control flow at each address.",
+        "Bind x87 stack operands, memory widths, condition codes, and exception state to the model.",
+        "Prove the admitted control-word/stack/tag invariant for every reachable site.",
+        "Prove the zk arithmetic gadget implements the modeled relation and exception priority.",
+        "Classify each branch as retained or prove its effect noninterfering with projected state."
+      ]
+    },
+    {
+      "id": "x87-ftol2-low-result-v1",
+      "site_count": 77,
+      "evidence": [
+        {
+          "level": "static",
+          "claim": "Every recorded mapped call has an x87 predecessor and an explicit bounded EAX/AL observer; no EDX observer appears before the recorded straight-line termination boundary."
+        },
+        {
+          "level": "empirical",
+          "claim": "The exact 117-byte helper matched 1,000,014 canonical finite, signed-i64-representable inputs, including full EDX:EAX and stack balance.",
+          "helper_address": "0x0045ba78",
+          "helper_size": 117,
+          "helper_sha256": "5333b186c02836974c6f792303aeb2c00d856316b93ccbbe65f51def6ae661b4"
+        },
+        {
+          "level": "proved_model_fact",
+          "claim": "Lean checks the correction-to-truncation cases and low-32-bit projection.",
+          "definitions": [
+            "ZkTH06.X87Ftol2.correction_recovers_truncation",
+            "ZkTH06.X87Ftol2.high_half_irrelevant_to_observed_projection"
+          ]
+        }
+      ],
+      "open_obligations": [
+        "Prove or translation-validate that every call reaches the hashed helper body.",
+        "Replace the bounded syntactic scan with control-flow-complete register-use analysis.",
+        "Classify each call as retained or prove it noninterfering with projected state.",
+        "For retained calls, prove every reachable input is finite and truncates to signed i32.",
+        "Bind raw ext80 decoding, x87 stack effects, correction code, and guest conversion semantics."
+      ]
+    }
+  ],
+  "counts": {
+    "comparison_sites": 244,
+    "comparison_operand_widths": {
+      "dword": 236,
+      "qword": 8
+    },
+    "comparison_consumer_signatures": {
+      "fnstsw ax; and eax,0x100; je": 1,
+      "fnstsw ax; and eax,0x100; jne": 32,
+      "fnstsw ax; and eax,0x4100; je": 18,
+      "fnstsw ax; and eax,0x4100; jne": 22,
+      "fnstsw ax; test ah,0x1; jne": 13,
+      "fnstsw ax; test ah,0x41; jne": 7,
+      "fnstsw ax; test ah,0x41; jp": 38,
+      "fnstsw ax; test ah,0x44; jnp": 11,
+      "fnstsw ax; test ah,0x44; jp": 18,
+      "fnstsw ax; test ah,0x5; jnp": 16,
+      "fnstsw ax; test ah,0x5; jp": 68
+    },
+    "ftol2_sites": 77,
+    "ftol2_predecessor_mnemonics": {
+      "fadd": 2,
+      "fdiv": 4,
+      "fld": 60,
+      "fmul": 7,
+      "fsubp": 2,
+      "fsubr": 2
+    },
+    "ftol2_eax_observed_masks": {
+      "0x000000ff": 2,
+      "0xffffffff": 75
+    },
+    "ftol2_edx_observed_sites": 0,
+    "ftol2_scan_terminations": {
+      "control-flow-boundary": 15,
+      "resolved": 28,
+      "subsequent-call": 34
+    }
+  },
+  "sites": {
+    "comparisons": [
+      {
+        "id": "cmp-00403eb2",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00403eb2",
+        "function": "th06::Stage::OnUpdate",
+        "function_offset": 1698,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; and eax,0x100; jne",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00404a92",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00404a92",
+        "function": "th06::Stage::RenderObjects",
+        "function_offset": 290,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; and eax,0x100; jne",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00404acb",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00404acb",
+        "function": "th06::Stage::RenderObjects",
+        "function_offset": 347,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x41; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00404b2e",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00404b2e",
+        "function": "th06::Stage::RenderObjects",
+        "function_offset": 446,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; and eax,0x100; jne",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00404b67",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00404b67",
+        "function": "th06::Stage::RenderObjects",
+        "function_offset": 503,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x41; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00404bca",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00404bca",
+        "function": "th06::Stage::RenderObjects",
+        "function_offset": 602,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; and eax,0x100; jne",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00404c03",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00404c03",
+        "function": "th06::Stage::RenderObjects",
+        "function_offset": 659,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x41; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00404c66",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00404c66",
+        "function": "th06::Stage::RenderObjects",
+        "function_offset": 758,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; and eax,0x100; jne",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00404c9f",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00404c9f",
+        "function": "th06::Stage::RenderObjects",
+        "function_offset": 815,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x41; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00404d4b",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00404d4b",
+        "function": "th06::Stage::RenderObjects",
+        "function_offset": 987,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; and eax,0x100; jne",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00404d85",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00404d85",
+        "function": "th06::Stage::RenderObjects",
+        "function_offset": 1045,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x41; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00404de7",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00404de7",
+        "function": "th06::Stage::RenderObjects",
+        "function_offset": 1143,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; and eax,0x100; jne",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00404e21",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00404e21",
+        "function": "th06::Stage::RenderObjects",
+        "function_offset": 1201,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x41; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00404e83",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00404e83",
+        "function": "th06::Stage::RenderObjects",
+        "function_offset": 1299,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; and eax,0x100; jne",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00404ebd",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00404ebd",
+        "function": "th06::Stage::RenderObjects",
+        "function_offset": 1357,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x41; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00404f1f",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00404f1f",
+        "function": "th06::Stage::RenderObjects",
+        "function_offset": 1455,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; and eax,0x100; jne",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00404f59",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00404f59",
+        "function": "th06::Stage::RenderObjects",
+        "function_offset": 1513,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x41; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00405014",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00405014",
+        "function": "th06::Stage::RenderObjects",
+        "function_offset": 1700,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x44; jnp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-0040503f",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x0040503f",
+        "function": "th06::Stage::RenderObjects",
+        "function_offset": 1743,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x44; jnp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-0040507d",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x0040507d",
+        "function": "th06::Stage::RenderObjects",
+        "function_offset": 1805,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x44; jnp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-004055ec",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x004055ec",
+        "function": "th06::BombData::BombReimuACalc",
+        "function_offset": 908,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; and eax,0x4100; jne",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-0040569f",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x0040569f",
+        "function": "th06::BombData::BombReimuACalc",
+        "function_offset": 1087,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x5; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00405713",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00405713",
+        "function": "th06::BombData::BombReimuACalc",
+        "function_offset": 1203,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; and eax,0x4100; jne",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00405757",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00405757",
+        "function": "th06::BombData::BombReimuACalc",
+        "function_offset": 1271,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x5; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00406085",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00406085",
+        "function": "th06::BombData::DarkenViewport",
+        "function_offset": 101,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; and eax,0x100; jne",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00406110",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00406110",
+        "function": "th06::BombData::DarkenViewport",
+        "function_offset": 240,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x5; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00407a0f",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00407a0f",
+        "function": "th06::EclManager::RunEcl",
+        "function_offset": 1391,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x44; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00407a28",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00407a28",
+        "function": "th06::EclManager::RunEcl",
+        "function_offset": 1416,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x5; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-0040834c",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x0040834c",
+        "function": "th06::EclManager::RunEcl",
+        "function_offset": 3756,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x44; jnp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-004083a7",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x004083a7",
+        "function": "th06::EclManager::RunEcl",
+        "function_offset": 3847,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x5; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-0040844c",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x0040844c",
+        "function": "th06::EclManager::RunEcl",
+        "function_offset": 4012,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x5; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00409232",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00409232",
+        "function": "th06::EclManager::RunEcl",
+        "function_offset": 7570,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; and eax,0x4100; jne",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-0040924a",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x0040924a",
+        "function": "th06::EclManager::RunEcl",
+        "function_offset": 7594,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; and eax,0x4100; jne",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-0040927c",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x0040927c",
+        "function": "th06::EclManager::RunEcl",
+        "function_offset": 7644,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x5; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-004092b3",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x004092b3",
+        "function": "th06::EclManager::RunEcl",
+        "function_offset": 7699,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x5; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-004092cd",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x004092cd",
+        "function": "th06::EclManager::RunEcl",
+        "function_offset": 7725,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x5; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-004092e3",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x004092e3",
+        "function": "th06::EclManager::RunEcl",
+        "function_offset": 7747,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; and eax,0x100; jne",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00409315",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00409315",
+        "function": "th06::EclManager::RunEcl",
+        "function_offset": 7797,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; and eax,0x4100; jne",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-0040932d",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x0040932d",
+        "function": "th06::EclManager::RunEcl",
+        "function_offset": 7821,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x41; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00409364",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00409364",
+        "function": "th06::EclManager::RunEcl",
+        "function_offset": 7876,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; and eax,0x4100; jne",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-0040937c",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x0040937c",
+        "function": "th06::EclManager::RunEcl",
+        "function_offset": 7900,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x5; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-004093af",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x004093af",
+        "function": "th06::EclManager::RunEcl",
+        "function_offset": 7951,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x5; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-004093c5",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x004093c5",
+        "function": "th06::EclManager::RunEcl",
+        "function_offset": 7973,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; and eax,0x4100; jne",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-0040a153",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x0040a153",
+        "function": "th06::EclManager::RunEcl",
+        "function_offset": 11443,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; and eax,0x100; jne",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-0040a6c0",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x0040a6c0",
+        "function": "th06::EclManager::RunEcl",
+        "function_offset": 12832,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x5; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-0040a6e2",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x0040a6e2",
+        "function": "th06::EclManager::RunEcl",
+        "function_offset": 12866,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; and eax,0x4100; jne",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-0040c23e",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x0040c23e",
+        "function": "th06::EnemyEclInstr::ExInsStage56Func4",
+        "function_offset": 190,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; and eax,0x100; jne",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-0040c2ff",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x0040c2ff",
+        "function": "th06::EnemyEclInstr::ExInsStage56Func4",
+        "function_offset": 383,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; and eax,0x4100; jne",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-0040c428",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x0040c428",
+        "function": "th06::EnemyEclInstr::ExInsStage56Func4",
+        "function_offset": 680,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; and eax,0x100; jne",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-0040c4e9",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x0040c4e9",
+        "function": "th06::EnemyEclInstr::ExInsStage56Func4",
+        "function_offset": 873,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; and eax,0x4100; jne",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-0040cb44",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x0040cb44",
+        "function": "th06::EnemyEclInstr::ExInsBatWingEffect",
+        "function_offset": 84,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; and eax,0x100; jne",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-0040ccdd",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x0040ccdd",
+        "function": "th06::EnemyEclInstr::ExInsBatWingEffect",
+        "function_offset": 493,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x5; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-0040d48b",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x0040d48b",
+        "function": "th06::EnemyEclInstr::ExInsStage6Func8",
+        "function_offset": 139,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; and eax,0x100; jne",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-0040d5e6",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x0040d5e6",
+        "function": "th06::EnemyEclInstr::ExInsStage6Func9",
+        "function_offset": 182,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x5; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-0040d600",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x0040d600",
+        "function": "th06::EnemyEclInstr::ExInsStage6Func9",
+        "function_offset": 208,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x44; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-0040d6f1",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x0040d6f1",
+        "function": "th06::EnemyEclInstr::ExInsStage6Func9",
+        "function_offset": 449,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; and eax,0x4100; jne",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-0040d826",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x0040d826",
+        "function": "th06::EnemyEclInstr::ExInsStage6Func11",
+        "function_offset": 182,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x5; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-0040d840",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x0040d840",
+        "function": "th06::EnemyEclInstr::ExInsStage6Func11",
+        "function_offset": 208,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x44; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-0040dd69",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x0040dd69",
+        "function": "th06::EnemyEclInstr::ExInsStageXFunc14",
+        "function_offset": 169,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; and eax,0x4100; jne",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-0040de8e",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x0040de8e",
+        "function": "th06::EnemyEclInstr::ExInsStageXFunc15",
+        "function_offset": 142,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; and eax,0x100; jne",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-0040df6d",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x0040df6d",
+        "function": "th06::EnemyEclInstr::ExInsStageXFunc15",
+        "function_offset": 365,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x5; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-0040df87",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x0040df87",
+        "function": "th06::EnemyEclInstr::ExInsStageXFunc15",
+        "function_offset": 391,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x44; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-0040e012",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x0040e012",
+        "function": "th06::EnemyEclInstr::ExInsStageXFunc15",
+        "function_offset": 530,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x5; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-0040ea41",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x0040ea41",
+        "function": "th06::EffectManager::EffectUpdateCallback4",
+        "function_offset": 289,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x5; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-004105aa",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x004105aa",
+        "function": "th06::Ending::ParseEndFile",
+        "function_offset": 3562,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x41; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00411813",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00411813",
+        "function": "th06::EnemyManager::RunEclTimeline",
+        "function_offset": 739,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x41; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-0041183e",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x0041183e",
+        "function": "th06::EnemyManager::RunEclTimeline",
+        "function_offset": 782,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x41; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-0041186a",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x0041186a",
+        "function": "th06::EnemyManager::RunEclTimeline",
+        "function_offset": 826,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x41; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00411902",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00411902",
+        "function": "th06::EnemyManager::RunEclTimeline",
+        "function_offset": 978,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x41; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-0041192a",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x0041192a",
+        "function": "th06::EnemyManager::RunEclTimeline",
+        "function_offset": 1018,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x41; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00411953",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00411953",
+        "function": "th06::EnemyManager::RunEclTimeline",
+        "function_offset": 1059,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x41; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-004119e2",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x004119e2",
+        "function": "th06::EnemyManager::RunEclTimeline",
+        "function_offset": 1202,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x41; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00411a0d",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00411a0d",
+        "function": "th06::EnemyManager::RunEclTimeline",
+        "function_offset": 1245,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x41; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00411a39",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00411a39",
+        "function": "th06::EnemyManager::RunEclTimeline",
+        "function_offset": 1289,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x41; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00411ae8",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00411ae8",
+        "function": "th06::EnemyManager::RunEclTimeline",
+        "function_offset": 1464,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x41; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00411b10",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00411b10",
+        "function": "th06::EnemyManager::RunEclTimeline",
+        "function_offset": 1504,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x41; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00411b3f",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00411b3f",
+        "function": "th06::EnemyManager::RunEclTimeline",
+        "function_offset": 1551,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x41; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-0041226d",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x0041226d",
+        "function": "th06::Enemy::ClampPos",
+        "function_offset": 45,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x5; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-0041229a",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x0041229a",
+        "function": "th06::Enemy::ClampPos",
+        "function_offset": 90,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; and eax,0x4100; jne",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-004122c7",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x004122c7",
+        "function": "th06::Enemy::ClampPos",
+        "function_offset": 135,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x5; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-004122f4",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x004122f4",
+        "function": "th06::Enemy::ClampPos",
+        "function_offset": 180,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; and eax,0x4100; jne",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-004128a2",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x004128a2",
+        "function": "th06::EnemyManager::OnUpdate",
+        "function_offset": 1218,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x5; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00412ebf",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00412ebf",
+        "function": "th06::Enemy::UpdateEffects",
+        "function_offset": 111,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x5; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00413ac2",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00413ac2",
+        "function": "th06::BulletManager::SpawnSingleBullet",
+        "function_offset": 1298,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x41; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00413b0e",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00413b0e",
+        "function": "th06::BulletManager::SpawnSingleBullet",
+        "function_offset": 1374,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x41; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00413c04",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00413c04",
+        "function": "th06::BulletManager::SpawnSingleBullet",
+        "function_offset": 1620,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x41; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00413c50",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00413c50",
+        "function": "th06::BulletManager::SpawnSingleBullet",
+        "function_offset": 1696,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x41; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00413d46",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00413d46",
+        "function": "th06::BulletManager::SpawnSingleBullet",
+        "function_offset": 1942,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x41; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00413d92",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00413d92",
+        "function": "th06::BulletManager::SpawnSingleBullet",
+        "function_offset": 2018,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x41; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00413e69",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00413e69",
+        "function": "th06::BulletManager::SpawnSingleBullet",
+        "function_offset": 2233,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x41; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00413eb5",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00413eb5",
+        "function": "th06::BulletManager::SpawnSingleBullet",
+        "function_offset": 2309,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x41; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00413f6e",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00413f6e",
+        "function": "th06::BulletManager::SpawnSingleBullet",
+        "function_offset": 2494,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x41; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00414076",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00414076",
+        "function": "th06::BulletManager::SpawnSingleBullet",
+        "function_offset": 2758,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; and eax,0x100; jne",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-004140e9",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x004140e9",
+        "function": "th06::BulletManager::SpawnSingleBullet",
+        "function_offset": 2873,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; and eax,0x100; jne",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-004142c2",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x004142c2",
+        "function": "th06::BulletManager::RemoveAllBullets",
+        "function_offset": 354,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; and eax,0x4100; jne",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-0041452a",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x0041452a",
+        "function": "th06::BulletManager::DespawnBullets",
+        "function_offset": 458,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; and eax,0x4100; jne",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-004156cd",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x004156cd",
+        "function": "th06::BulletManager::OnUpdate",
+        "function_offset": 3325,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x5; jnp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-004156e3",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x004156e3",
+        "function": "th06::BulletManager::OnUpdate",
+        "function_offset": 3347,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; and eax,0x100; jne",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00415732",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00415732",
+        "function": "th06::BulletManager::OnUpdate",
+        "function_offset": 3426,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x5; jnp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00415748",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00415748",
+        "function": "th06::BulletManager::OnUpdate",
+        "function_offset": 3448,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; and eax,0x100; jne",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00415869",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00415869",
+        "function": "th06::BulletManager::OnUpdate",
+        "function_offset": 3737,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x5; jnp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-0041587f",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x0041587f",
+        "function": "th06::BulletManager::OnUpdate",
+        "function_offset": 3759,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; and eax,0x100; jne",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-004158ce",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x004158ce",
+        "function": "th06::BulletManager::OnUpdate",
+        "function_offset": 3838,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x5; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00415e6b",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00415e6b",
+        "function": "th06::BulletManager::OnUpdate",
+        "function_offset": 5275,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; and eax,0x4100; jne",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00415e9e",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00415e9e",
+        "function": "th06::BulletManager::OnUpdate",
+        "function_offset": 5326,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x5; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-0041642b",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x0041642b",
+        "function": "th06::BulletManager::OnUpdate",
+        "function_offset": 6747,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; and eax,0x100; jne",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-0041661f",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x0041661f",
+        "function": "th06::BulletManager::OnDraw",
+        "function_offset": 287,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x5; jnp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00416635",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00416635",
+        "function": "th06::BulletManager::OnDraw",
+        "function_offset": 309,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x44; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00416718",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00416718",
+        "function": "th06::BulletManager::OnDraw",
+        "function_offset": 536,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x5; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00416fea",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00416fea",
+        "function": "th06::BulletManager::AddedCallback",
+        "function_offset": 650,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x41; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00417040",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00417040",
+        "function": "th06::BulletManager::AddedCallback",
+        "function_offset": 736,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x41; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-0041715c",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x0041715c",
+        "function": "th06::BulletManager::AddedCallback",
+        "function_offset": 1020,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x41; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-004197bf",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x004197bf",
+        "function": "th06::Gui::UpdateStageElements",
+        "function_offset": 512,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x41; jne",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-004197e4",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x004197e4",
+        "function": "th06::Gui::UpdateStageElements",
+        "function_offset": 549,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x5; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00419805",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00419805",
+        "function": "th06::Gui::UpdateStageElements",
+        "function_offset": 582,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x5; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-0041982a",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x0041982a",
+        "function": "th06::Gui::UpdateStageElements",
+        "function_offset": 619,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x41; jne",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00419f9d",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00419f9d",
+        "function": "th06::Gui::DrawGameScene",
+        "function_offset": 772,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x5; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-0041a003",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x0041a003",
+        "function": "th06::Gui::DrawGameScene",
+        "function_offset": 874,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x5; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-0041a026",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x0041a026",
+        "function": "th06::Gui::DrawGameScene",
+        "function_offset": 909,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x5; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-0041a0a3",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x0041a0a3",
+        "function": "th06::Gui::DrawGameScene",
+        "function_offset": 1034,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x5; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-0041a11a",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x0041a11a",
+        "function": "th06::Gui::DrawGameScene",
+        "function_offset": 1153,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x5; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-0041b5f4",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x0041b5f4",
+        "function": "th06::GameManager::IsInBounds",
+        "function_offset": 19,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x5; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-0041b611",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x0041b611",
+        "function": "th06::GameManager::IsInBounds",
+        "function_offset": 48,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x41; jne",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-0041b62e",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x0041b62e",
+        "function": "th06::GameManager::IsInBounds",
+        "function_offset": 77,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x5; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-0041b64b",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x0041b64b",
+        "function": "th06::GameManager::IsInBounds",
+        "function_offset": 106,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x41; jne",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-0041e867",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x0041e867",
+        "function": "th06::utils::AddNormalizeAngle",
+        "function_offset": 23,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; and eax,0x4100; jne",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-0041e89a",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x0041e89a",
+        "function": "th06::utils::AddNormalizeAngle",
+        "function_offset": 74,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x5; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-0041f724",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x0041f724",
+        "function": "th06::ItemManager::OnUpdate",
+        "function_offset": 644,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x5; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-0041f7ab",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x0041f7ab",
+        "function": "th06::ItemManager::OnUpdate",
+        "function_offset": 779,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x5; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-0041f893",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x0041f893",
+        "function": "th06::ItemManager::OnUpdate",
+        "function_offset": 1011,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x41; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-0041f8c4",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x0041f8c4",
+        "function": "th06::ItemManager::OnUpdate",
+        "function_offset": 1060,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x5; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-0041fd4c",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x0041fd4c",
+        "function": "th06::ItemManager::OnUpdate",
+        "function_offset": 2220,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x5; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00420220",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00420220",
+        "function": "th06::ItemManager::OnDraw",
+        "function_offset": 144,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x5; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-0042090e",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x0042090e",
+        "function": "th06::GameWindow::Render",
+        "function_offset": 558,
+        "instruction": "fcomp",
+        "operand_width": "qword",
+        "consumer_signature": "fnstsw ax; test ah,0x5; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00420951",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00420951",
+        "function": "th06::GameWindow::Render",
+        "function_offset": 625,
+        "instruction": "fcomp",
+        "operand_width": "qword",
+        "consumer_signature": "fnstsw ax; and eax,0x100; jne",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00420981",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00420981",
+        "function": "th06::GameWindow::Render",
+        "function_offset": 673,
+        "instruction": "fcomp",
+        "operand_width": "qword",
+        "consumer_signature": "fnstsw ax; and eax,0x100; je",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00420a16",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00420a16",
+        "function": "th06::GameWindow::Render",
+        "function_offset": 822,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x44; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00420aa9",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00420aa9",
+        "function": "th06::GameWindow::Render",
+        "function_offset": 969,
+        "instruction": "fcomp",
+        "operand_width": "qword",
+        "consumer_signature": "fnstsw ax; and eax,0x100; jne",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00420acb",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00420acb",
+        "function": "th06::GameWindow::Render",
+        "function_offset": 1003,
+        "instruction": "fcomp",
+        "operand_width": "qword",
+        "consumer_signature": "fnstsw ax; and eax,0x100; jne",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00424037",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00424037",
+        "function": "th06::Supervisor::DrawFpsCounter",
+        "function_offset": 248,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x5; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-0042405b",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x0042405b",
+        "function": "th06::Supervisor::DrawFpsCounter",
+        "function_offset": 284,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x5; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00424085",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00424085",
+        "function": "th06::Supervisor::DrawFpsCounter",
+        "function_offset": 326,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x5; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00424153",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00424153",
+        "function": "th06::ZunTimer::Increment",
+        "function_offset": 14,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x41; jne",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-004241b3",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x004241b3",
+        "function": "th06::ZunTimer::Increment",
+        "function_offset": 110,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x1; jne",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-004241f3",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x004241f3",
+        "function": "th06::ZunTimer::Decrement",
+        "function_offset": 14,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x41; jne",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00424253",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00424253",
+        "function": "th06::ZunTimer::Decrement",
+        "function_offset": 110,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x5; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00424295",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00424295",
+        "function": "th06::Supervisor::TickTimer",
+        "function_offset": 16,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x41; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-004242ba",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x004242ba",
+        "function": "th06::Supervisor::TickTimer",
+        "function_offset": 53,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x1; jne",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00424dd1",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00424dd1",
+        "function": "th06::Supervisor::FadeOutMusic",
+        "function_offset": 79,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x44; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00424dfa",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00424dfa",
+        "function": "th06::Supervisor::FadeOutMusic",
+        "function_offset": 120,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x41; jne",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-004265f4",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x004265f4",
+        "function": "th06::Player::CalcDamageToEnemy",
+        "function_offset": 324,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; and eax,0x4100; je",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00426603",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00426603",
+        "function": "th06::Player::CalcDamageToEnemy",
+        "function_offset": 339,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; and eax,0x4100; je",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00426612",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00426612",
+        "function": "th06::Player::CalcDamageToEnemy",
+        "function_offset": 354,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x5; jnp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-0042661f",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x0042661f",
+        "function": "th06::Player::CalcDamageToEnemy",
+        "function_offset": 367,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x5; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00426923",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00426923",
+        "function": "th06::Player::CalcDamageToEnemy",
+        "function_offset": 1139,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x41; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00426b33",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00426b33",
+        "function": "th06::Player::CalcDamageToEnemy",
+        "function_offset": 1667,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; and eax,0x4100; je",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00426b42",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00426b42",
+        "function": "th06::Player::CalcDamageToEnemy",
+        "function_offset": 1682,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x5; jnp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00426b4f",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00426b4f",
+        "function": "th06::Player::CalcDamageToEnemy",
+        "function_offset": 1695,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; and eax,0x4100; je",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00426b5e",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00426b5e",
+        "function": "th06::Player::CalcDamageToEnemy",
+        "function_offset": 1710,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x5; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00426ccf",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00426ccf",
+        "function": "th06::Player::CalcKillBoxCollision",
+        "function_offset": 143,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x44; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00426d33",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00426d33",
+        "function": "th06::Player::CalcKillBoxCollision",
+        "function_offset": 243,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; and eax,0x4100; je",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00426d42",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00426d42",
+        "function": "th06::Player::CalcKillBoxCollision",
+        "function_offset": 258,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x5; jnp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00426d4f",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00426d4f",
+        "function": "th06::Player::CalcKillBoxCollision",
+        "function_offset": 271,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; and eax,0x4100; je",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00426d5e",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00426d5e",
+        "function": "th06::Player::CalcKillBoxCollision",
+        "function_offset": 286,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x5; jnp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00426d7d",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00426d7d",
+        "function": "th06::Player::CalcKillBoxCollision",
+        "function_offset": 317,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; and eax,0x4100; je",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00426d92",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00426d92",
+        "function": "th06::Player::CalcKillBoxCollision",
+        "function_offset": 338,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; and eax,0x4100; je",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00426da7",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00426da7",
+        "function": "th06::Player::CalcKillBoxCollision",
+        "function_offset": 359,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x5; jnp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00426dba",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00426dba",
+        "function": "th06::Player::CalcKillBoxCollision",
+        "function_offset": 378,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x5; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00426e98",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00426e98",
+        "function": "th06::Player::CheckGraze",
+        "function_offset": 168,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x44; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00426efc",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00426efc",
+        "function": "th06::Player::CheckGraze",
+        "function_offset": 268,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; and eax,0x4100; je",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00426f0b",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00426f0b",
+        "function": "th06::Player::CheckGraze",
+        "function_offset": 283,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x5; jnp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00426f18",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00426f18",
+        "function": "th06::Player::CheckGraze",
+        "function_offset": 296,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; and eax,0x4100; je",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00426f27",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00426f27",
+        "function": "th06::Player::CheckGraze",
+        "function_offset": 311,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x5; jnp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00426f6b",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00426f6b",
+        "function": "th06::Player::CheckGraze",
+        "function_offset": 379,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; and eax,0x4100; je",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00426f80",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00426f80",
+        "function": "th06::Player::CheckGraze",
+        "function_offset": 400,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x5; jnp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00426f93",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00426f93",
+        "function": "th06::Player::CheckGraze",
+        "function_offset": 419,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; and eax,0x4100; je",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00426fa8",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00426fa8",
+        "function": "th06::Player::CheckGraze",
+        "function_offset": 440,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x5; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-0042712b",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x0042712b",
+        "function": "th06::Player::CalcItemBoxCollision",
+        "function_offset": 347,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; and eax,0x4100; je",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00427143",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00427143",
+        "function": "th06::Player::CalcItemBoxCollision",
+        "function_offset": 371,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x5; jnp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00427159",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00427159",
+        "function": "th06::Player::CalcItemBoxCollision",
+        "function_offset": 393,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; and eax,0x4100; je",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00427171",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00427171",
+        "function": "th06::Player::CalcItemBoxCollision",
+        "function_offset": 417,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x5; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00427507",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00427507",
+        "function": "th06::Player::CalcLaserHitbox",
+        "function_offset": 887,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; and eax,0x4100; je",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00427516",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00427516",
+        "function": "th06::Player::CalcLaserHitbox",
+        "function_offset": 902,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x5; jnp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00427523",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00427523",
+        "function": "th06::Player::CalcLaserHitbox",
+        "function_offset": 915,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; and eax,0x4100; je",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00427532",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00427532",
+        "function": "th06::Player::CalcLaserHitbox",
+        "function_offset": 930,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x5; jnp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00427581",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00427581",
+        "function": "th06::Player::CalcLaserHitbox",
+        "function_offset": 1009,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; and eax,0x4100; je",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00427590",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00427590",
+        "function": "th06::Player::CalcLaserHitbox",
+        "function_offset": 1024,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x5; jnp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-0042759d",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x0042759d",
+        "function": "th06::Player::CalcLaserHitbox",
+        "function_offset": 1037,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; and eax,0x4100; je",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-004275ac",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x004275ac",
+        "function": "th06::Player::CalcLaserHitbox",
+        "function_offset": 1052,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x5; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00427bda",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00427bda",
+        "function": "th06::Player::HandlePlayerInputs",
+        "function_offset": 890,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x5; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00427bf3",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00427bf3",
+        "function": "th06::Player::HandlePlayerInputs",
+        "function_offset": 915,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; and eax,0x100; jne",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00427c41",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00427c41",
+        "function": "th06::Player::HandlePlayerInputs",
+        "function_offset": 993,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x44; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00427c5a",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00427c5a",
+        "function": "th06::Player::HandlePlayerInputs",
+        "function_offset": 1018,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x5; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00427ca4",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00427ca4",
+        "function": "th06::Player::HandlePlayerInputs",
+        "function_offset": 1092,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; and eax,0x4100; jne",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00427cbf",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00427cbf",
+        "function": "th06::Player::HandlePlayerInputs",
+        "function_offset": 1119,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x41; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00427d0a",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00427d0a",
+        "function": "th06::Player::HandlePlayerInputs",
+        "function_offset": 1194,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x44; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00427d23",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00427d23",
+        "function": "th06::Player::HandlePlayerInputs",
+        "function_offset": 1219,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; and eax,0x4100; jne",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00427e03",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00427e03",
+        "function": "th06::Player::HandlePlayerInputs",
+        "function_offset": 1443,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x5; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00427e35",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00427e35",
+        "function": "th06::Player::HandlePlayerInputs",
+        "function_offset": 1493,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x5; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00427e66",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00427e66",
+        "function": "th06::Player::HandlePlayerInputs",
+        "function_offset": 1542,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x5; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00427e99",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00427e99",
+        "function": "th06::Player::HandlePlayerInputs",
+        "function_offset": 1593,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x5; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-004286af",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x004286af",
+        "function": "th06::Player::AngleFromPlayer",
+        "function_offset": 47,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x44; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-004286bf",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x004286bf",
+        "function": "th06::Player::AngleFromPlayer",
+        "function_offset": 63,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x44; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-0042872f",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x0042872f",
+        "function": "th06::Player::AngleToPlayer",
+        "function_offset": 47,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x44; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-0042873f",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x0042873f",
+        "function": "th06::Player::AngleToPlayer",
+        "function_offset": 63,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x44; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-0042928b",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x0042928b",
+        "function": "th06::Player::UpdatePlayerBullets",
+        "function_offset": 219,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; and eax,0x4100; jne",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-0042933a",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x0042933a",
+        "function": "th06::Player::UpdatePlayerBullets",
+        "function_offset": 394,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x5; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-0042939a",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x0042939a",
+        "function": "th06::Player::UpdatePlayerBullets",
+        "function_offset": 490,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; and eax,0x4100; jne",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-004293cd",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x004293cd",
+        "function": "th06::Player::UpdatePlayerBullets",
+        "function_offset": 541,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x5; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00429425",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00429425",
+        "function": "th06::Player::UpdatePlayerBullets",
+        "function_offset": 629,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x5; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-0042a24c",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x0042a24c",
+        "function": "th06::ReplayManager::RegisterChain",
+        "function_offset": 12,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x5; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-0042ac20",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x0042ac20",
+        "function": "th06::ReplayManager::SaveReplay",
+        "function_offset": 240,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x5; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-0042ac39",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x0042ac39",
+        "function": "th06::ReplayManager::SaveReplay",
+        "function_offset": 265,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; and eax,0x100; jne",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-0042c36b",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x0042c36b",
+        "function": "th06::ResultScreen::HandleReplaySaveKeyboard",
+        "function_offset": 151,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x5; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-0042d668",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x0042d668",
+        "function": "th06::ResultScreen::DrawFinalStats",
+        "function_offset": 782,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x5; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-0042d67f",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x0042d67f",
+        "function": "th06::ResultScreen::DrawFinalStats",
+        "function_offset": 805,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x1; jne",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-0042d6cc",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x0042d6cc",
+        "function": "th06::ResultScreen::DrawFinalStats",
+        "function_offset": 882,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x5; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-0042e560",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x0042e560",
+        "function": "th06::ResultScreen::OnDraw",
+        "function_offset": 282,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x5; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00432ccf",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00432ccf",
+        "function": "th06::AnmManager::Draw",
+        "function_offset": 15,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x44; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-004331e2",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x004331e2",
+        "function": "th06::AnmManager::Draw3",
+        "function_offset": 146,
+        "instruction": "fcomp",
+        "operand_width": "qword",
+        "consumer_signature": "fnstsw ax; test ah,0x44; jnp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-0043321b",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x0043321b",
+        "function": "th06::AnmManager::Draw3",
+        "function_offset": 203,
+        "instruction": "fcomp",
+        "operand_width": "qword",
+        "consumer_signature": "fnstsw ax; test ah,0x44; jnp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00433255",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00433255",
+        "function": "th06::AnmManager::Draw3",
+        "function_offset": 261,
+        "instruction": "fcomp",
+        "operand_width": "qword",
+        "consumer_signature": "fnstsw ax; test ah,0x44; jnp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-004335d8",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x004335d8",
+        "function": "th06::AnmManager::Draw2",
+        "function_offset": 72,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x44; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-004335eb",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x004335eb",
+        "function": "th06::AnmManager::Draw2",
+        "function_offset": 91,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x44; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-004335fe",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x004335fe",
+        "function": "th06::AnmManager::Draw2",
+        "function_offset": 110,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x44; jnp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00434249",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00434249",
+        "function": "th06::AnmManager::ExecuteScript",
+        "function_offset": 2281,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; and eax,0x100; jne",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00434272",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00434272",
+        "function": "th06::AnmManager::ExecuteScript",
+        "function_offset": 2322,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x5; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-004342ae",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x004342ae",
+        "function": "th06::AnmManager::ExecuteScript",
+        "function_offset": 2382,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; and eax,0x100; jne",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-004342d7",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x004342d7",
+        "function": "th06::AnmManager::ExecuteScript",
+        "function_offset": 2423,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x5; jp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-0043433e",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x0043433e",
+        "function": "th06::AnmManager::ExecuteScript",
+        "function_offset": 2526,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x44; jnp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00434374",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00434374",
+        "function": "th06::AnmManager::ExecuteScript",
+        "function_offset": 2580,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x44; jnp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-004343ac",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x004343ac",
+        "function": "th06::AnmManager::ExecuteScript",
+        "function_offset": 2636,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x44; jnp",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-004346a7",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x004346a7",
+        "function": "th06::AnmManager::ExecuteScript",
+        "function_offset": 3399,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; and eax,0x100; jne",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00434821",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00434821",
+        "function": "th06::AnmManager::ExecuteScript",
+        "function_offset": 3777,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; and eax,0x100; jne",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00435889",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00435889",
+        "function": "th06::MainMenu::OnUpdate",
+        "function_offset": 234,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x1; jne",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00436ea0",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00436ea0",
+        "function": "th06::MainMenu::OnUpdate",
+        "function_offset": 5889,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x1; jne",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00436ebe",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00436ebe",
+        "function": "th06::MainMenu::OnUpdate",
+        "function_offset": 5919,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x1; jne",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00436edc",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00436edc",
+        "function": "th06::MainMenu::OnUpdate",
+        "function_offset": 5949,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x1; jne",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00436efa",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00436efa",
+        "function": "th06::MainMenu::OnUpdate",
+        "function_offset": 5979,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x1; jne",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00436f18",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00436f18",
+        "function": "th06::MainMenu::OnUpdate",
+        "function_offset": 6009,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x1; jne",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00436f33",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00436f33",
+        "function": "th06::MainMenu::OnUpdate",
+        "function_offset": 6036,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x1; jne",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00436f4e",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00436f4e",
+        "function": "th06::MainMenu::OnUpdate",
+        "function_offset": 6063,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x1; jne",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00436f69",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00436f69",
+        "function": "th06::MainMenu::OnUpdate",
+        "function_offset": 6090,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x1; jne",
+        "slice_disposition": "unclassified"
+      },
+      {
+        "id": "cmp-00436f84",
+        "class": "x87-fcomp-status-branch-v1",
+        "address": "0x00436f84",
+        "function": "th06::MainMenu::OnUpdate",
+        "function_offset": 6117,
+        "instruction": "fcomp",
+        "operand_width": "dword",
+        "consumer_signature": "fnstsw ax; test ah,0x1; jne",
+        "slice_disposition": "unclassified"
+      }
+    ],
+    "ftol2_calls": [
+      {
+        "id": "ftol2-00401791",
+        "class": "x87-ftol2-low-result-v1",
+        "call_address": "0x00401791",
+        "function": "th06::AsciiManager::DrawStrings",
+        "function_offset": 225,
+        "predecessor": {
+          "address": "0x0040178b",
+          "mnemonic": "fld"
+        },
+        "bounded_result_observation": {
+          "scan_instruction_limit": 32,
+          "eax_observed_mask": "0xffffffff",
+          "edx_observed_mask": "0x00000000",
+          "eax_live_mask_at_stop": "0xffffffff",
+          "edx_live_mask_at_stop": "0xffffffff",
+          "first_eax_observer": {
+            "address": "0x00401796",
+            "mnemonic": "mov",
+            "aliases": [
+              "eax"
+            ]
+          },
+          "first_edx_observer": null,
+          "termination": "subsequent-call",
+          "termination_address": "0x004017a1"
+        },
+        "slice_disposition": "unclassified",
+        "reachable_signed_i32_range": "unproved"
+      },
+      {
+        "id": "ftol2-004017a1",
+        "class": "x87-ftol2-low-result-v1",
+        "call_address": "0x004017a1",
+        "function": "th06::AsciiManager::DrawStrings",
+        "function_offset": 241,
+        "predecessor": {
+          "address": "0x0040179b",
+          "mnemonic": "fld"
+        },
+        "bounded_result_observation": {
+          "scan_instruction_limit": 32,
+          "eax_observed_mask": "0xffffffff",
+          "edx_observed_mask": "0x00000000",
+          "eax_live_mask_at_stop": "0xffffffff",
+          "edx_live_mask_at_stop": "0xffffffff",
+          "first_eax_observer": {
+            "address": "0x004017a6",
+            "mnemonic": "mov",
+            "aliases": [
+              "eax"
+            ]
+          },
+          "first_edx_observer": null,
+          "termination": "subsequent-call",
+          "termination_address": "0x004017b1"
+        },
+        "slice_disposition": "unclassified",
+        "reachable_signed_i32_range": "unproved"
+      },
+      {
+        "id": "ftol2-004017b1",
+        "class": "x87-ftol2-low-result-v1",
+        "call_address": "0x004017b1",
+        "function": "th06::AsciiManager::DrawStrings",
+        "function_offset": 257,
+        "predecessor": {
+          "address": "0x004017ab",
+          "mnemonic": "fld"
+        },
+        "bounded_result_observation": {
+          "scan_instruction_limit": 32,
+          "eax_observed_mask": "0xffffffff",
+          "edx_observed_mask": "0x00000000",
+          "eax_live_mask_at_stop": "0xffffffff",
+          "edx_live_mask_at_stop": "0xffffffff",
+          "first_eax_observer": {
+            "address": "0x004017b6",
+            "mnemonic": "mov",
+            "aliases": [
+              "eax"
+            ]
+          },
+          "first_edx_observer": null,
+          "termination": "subsequent-call",
+          "termination_address": "0x004017c1"
+        },
+        "slice_disposition": "unclassified",
+        "reachable_signed_i32_range": "unproved"
+      },
+      {
+        "id": "ftol2-004017c1",
+        "class": "x87-ftol2-low-result-v1",
+        "call_address": "0x004017c1",
+        "function": "th06::AsciiManager::DrawStrings",
+        "function_offset": 273,
+        "predecessor": {
+          "address": "0x004017bb",
+          "mnemonic": "fld"
+        },
+        "bounded_result_observation": {
+          "scan_instruction_limit": 32,
+          "eax_observed_mask": "0xffffffff",
+          "edx_observed_mask": "0x00000000",
+          "eax_live_mask_at_stop": "0x00000000",
+          "edx_live_mask_at_stop": "0x00000000",
+          "first_eax_observer": {
+            "address": "0x004017c6",
+            "mnemonic": "mov",
+            "aliases": [
+              "eax"
+            ]
+          },
+          "first_edx_observer": null,
+          "termination": "resolved",
+          "termination_address": "0x004017d7"
+        },
+        "slice_disposition": "unclassified",
+        "reachable_signed_i32_range": "unproved"
+      },
+      {
+        "id": "ftol2-00402766",
+        "class": "x87-ftol2-low-result-v1",
+        "call_address": "0x00402766",
+        "function": "th06::StageMenu::OnDrawGameMenu",
+        "function_offset": 38,
+        "predecessor": {
+          "address": "0x00402760",
+          "mnemonic": "fld"
+        },
+        "bounded_result_observation": {
+          "scan_instruction_limit": 32,
+          "eax_observed_mask": "0xffffffff",
+          "edx_observed_mask": "0x00000000",
+          "eax_live_mask_at_stop": "0xffffffff",
+          "edx_live_mask_at_stop": "0xffffffff",
+          "first_eax_observer": {
+            "address": "0x0040276b",
+            "mnemonic": "mov",
+            "aliases": [
+              "eax"
+            ]
+          },
+          "first_edx_observer": null,
+          "termination": "subsequent-call",
+          "termination_address": "0x00402776"
+        },
+        "slice_disposition": "unclassified",
+        "reachable_signed_i32_range": "unproved"
+      },
+      {
+        "id": "ftol2-00402776",
+        "class": "x87-ftol2-low-result-v1",
+        "call_address": "0x00402776",
+        "function": "th06::StageMenu::OnDrawGameMenu",
+        "function_offset": 54,
+        "predecessor": {
+          "address": "0x00402770",
+          "mnemonic": "fld"
+        },
+        "bounded_result_observation": {
+          "scan_instruction_limit": 32,
+          "eax_observed_mask": "0xffffffff",
+          "edx_observed_mask": "0x00000000",
+          "eax_live_mask_at_stop": "0xffffffff",
+          "edx_live_mask_at_stop": "0xffffffff",
+          "first_eax_observer": {
+            "address": "0x0040277b",
+            "mnemonic": "mov",
+            "aliases": [
+              "eax"
+            ]
+          },
+          "first_edx_observer": null,
+          "termination": "subsequent-call",
+          "termination_address": "0x00402786"
+        },
+        "slice_disposition": "unclassified",
+        "reachable_signed_i32_range": "unproved"
+      },
+      {
+        "id": "ftol2-00402786",
+        "class": "x87-ftol2-low-result-v1",
+        "call_address": "0x00402786",
+        "function": "th06::StageMenu::OnDrawGameMenu",
+        "function_offset": 70,
+        "predecessor": {
+          "address": "0x00402780",
+          "mnemonic": "fld"
+        },
+        "bounded_result_observation": {
+          "scan_instruction_limit": 32,
+          "eax_observed_mask": "0xffffffff",
+          "edx_observed_mask": "0x00000000",
+          "eax_live_mask_at_stop": "0xffffffff",
+          "edx_live_mask_at_stop": "0xffffffff",
+          "first_eax_observer": {
+            "address": "0x0040278b",
+            "mnemonic": "mov",
+            "aliases": [
+              "eax"
+            ]
+          },
+          "first_edx_observer": null,
+          "termination": "subsequent-call",
+          "termination_address": "0x00402796"
+        },
+        "slice_disposition": "unclassified",
+        "reachable_signed_i32_range": "unproved"
+      },
+      {
+        "id": "ftol2-00402796",
+        "class": "x87-ftol2-low-result-v1",
+        "call_address": "0x00402796",
+        "function": "th06::StageMenu::OnDrawGameMenu",
+        "function_offset": 86,
+        "predecessor": {
+          "address": "0x00402790",
+          "mnemonic": "fld"
+        },
+        "bounded_result_observation": {
+          "scan_instruction_limit": 32,
+          "eax_observed_mask": "0xffffffff",
+          "edx_observed_mask": "0x00000000",
+          "eax_live_mask_at_stop": "0x00000000",
+          "edx_live_mask_at_stop": "0x00000000",
+          "first_eax_observer": {
+            "address": "0x0040279b",
+            "mnemonic": "mov",
+            "aliases": [
+              "eax"
+            ]
+          },
+          "first_edx_observer": null,
+          "termination": "resolved",
+          "termination_address": "0x004027ad"
+        },
+        "slice_disposition": "unclassified",
+        "reachable_signed_i32_range": "unproved"
+      },
+      {
+        "id": "ftol2-00403080",
+        "class": "x87-ftol2-low-result-v1",
+        "call_address": "0x00403080",
+        "function": "th06::StageMenu::OnDrawRetryMenu",
+        "function_offset": 32,
+        "predecessor": {
+          "address": "0x0040307a",
+          "mnemonic": "fld"
+        },
+        "bounded_result_observation": {
+          "scan_instruction_limit": 32,
+          "eax_observed_mask": "0xffffffff",
+          "edx_observed_mask": "0x00000000",
+          "eax_live_mask_at_stop": "0xffffffff",
+          "edx_live_mask_at_stop": "0xffffffff",
+          "first_eax_observer": {
+            "address": "0x00403085",
+            "mnemonic": "mov",
+            "aliases": [
+              "eax"
+            ]
+          },
+          "first_edx_observer": null,
+          "termination": "subsequent-call",
+          "termination_address": "0x00403090"
+        },
+        "slice_disposition": "unclassified",
+        "reachable_signed_i32_range": "unproved"
+      },
+      {
+        "id": "ftol2-00403090",
+        "class": "x87-ftol2-low-result-v1",
+        "call_address": "0x00403090",
+        "function": "th06::StageMenu::OnDrawRetryMenu",
+        "function_offset": 48,
+        "predecessor": {
+          "address": "0x0040308a",
+          "mnemonic": "fld"
+        },
+        "bounded_result_observation": {
+          "scan_instruction_limit": 32,
+          "eax_observed_mask": "0xffffffff",
+          "edx_observed_mask": "0x00000000",
+          "eax_live_mask_at_stop": "0xffffffff",
+          "edx_live_mask_at_stop": "0xffffffff",
+          "first_eax_observer": {
+            "address": "0x00403095",
+            "mnemonic": "mov",
+            "aliases": [
+              "eax"
+            ]
+          },
+          "first_edx_observer": null,
+          "termination": "subsequent-call",
+          "termination_address": "0x004030a0"
+        },
+        "slice_disposition": "unclassified",
+        "reachable_signed_i32_range": "unproved"
+      },
+      {
+        "id": "ftol2-004030a0",
+        "class": "x87-ftol2-low-result-v1",
+        "call_address": "0x004030a0",
+        "function": "th06::StageMenu::OnDrawRetryMenu",
+        "function_offset": 64,
+        "predecessor": {
+          "address": "0x0040309a",
+          "mnemonic": "fld"
+        },
+        "bounded_result_observation": {
+          "scan_instruction_limit": 32,
+          "eax_observed_mask": "0xffffffff",
+          "edx_observed_mask": "0x00000000",
+          "eax_live_mask_at_stop": "0xffffffff",
+          "edx_live_mask_at_stop": "0xffffffff",
+          "first_eax_observer": {
+            "address": "0x004030a5",
+            "mnemonic": "mov",
+            "aliases": [
+              "eax"
+            ]
+          },
+          "first_edx_observer": null,
+          "termination": "subsequent-call",
+          "termination_address": "0x004030b0"
+        },
+        "slice_disposition": "unclassified",
+        "reachable_signed_i32_range": "unproved"
+      },
+      {
+        "id": "ftol2-004030b0",
+        "class": "x87-ftol2-low-result-v1",
+        "call_address": "0x004030b0",
+        "function": "th06::StageMenu::OnDrawRetryMenu",
+        "function_offset": 80,
+        "predecessor": {
+          "address": "0x004030aa",
+          "mnemonic": "fld"
+        },
+        "bounded_result_observation": {
+          "scan_instruction_limit": 32,
+          "eax_observed_mask": "0xffffffff",
+          "edx_observed_mask": "0x00000000",
+          "eax_live_mask_at_stop": "0x00000000",
+          "edx_live_mask_at_stop": "0x00000000",
+          "first_eax_observer": {
+            "address": "0x004030b5",
+            "mnemonic": "mov",
+            "aliases": [
+              "eax"
+            ]
+          },
+          "first_edx_observer": null,
+          "termination": "resolved",
+          "termination_address": "0x004030c7"
+        },
+        "slice_disposition": "unclassified",
+        "reachable_signed_i32_range": "unproved"
+      },
+      {
+        "id": "ftol2-004031fa",
+        "class": "x87-ftol2-low-result-v1",
+        "call_address": "0x004031fa",
+        "function": "th06::AsciiManager::DrawPopupsWithHwVertexProcessing",
+        "function_offset": 26,
+        "predecessor": {
+          "address": "0x004031f4",
+          "mnemonic": "fld"
+        },
+        "bounded_result_observation": {
+          "scan_instruction_limit": 32,
+          "eax_observed_mask": "0xffffffff",
+          "edx_observed_mask": "0x00000000",
+          "eax_live_mask_at_stop": "0xffffffff",
+          "edx_live_mask_at_stop": "0xffffffff",
+          "first_eax_observer": {
+            "address": "0x004031ff",
+            "mnemonic": "mov",
+            "aliases": [
+              "eax"
+            ]
+          },
+          "first_edx_observer": null,
+          "termination": "subsequent-call",
+          "termination_address": "0x0040320a"
+        },
+        "slice_disposition": "unclassified",
+        "reachable_signed_i32_range": "unproved"
+      },
+      {
+        "id": "ftol2-0040320a",
+        "class": "x87-ftol2-low-result-v1",
+        "call_address": "0x0040320a",
+        "function": "th06::AsciiManager::DrawPopupsWithHwVertexProcessing",
+        "function_offset": 42,
+        "predecessor": {
+          "address": "0x00403204",
+          "mnemonic": "fld"
+        },
+        "bounded_result_observation": {
+          "scan_instruction_limit": 32,
+          "eax_observed_mask": "0xffffffff",
+          "edx_observed_mask": "0x00000000",
+          "eax_live_mask_at_stop": "0xffffffff",
+          "edx_live_mask_at_stop": "0xffffffff",
+          "first_eax_observer": {
+            "address": "0x0040320f",
+            "mnemonic": "mov",
+            "aliases": [
+              "eax"
+            ]
+          },
+          "first_edx_observer": null,
+          "termination": "subsequent-call",
+          "termination_address": "0x0040321a"
+        },
+        "slice_disposition": "unclassified",
+        "reachable_signed_i32_range": "unproved"
+      },
+      {
+        "id": "ftol2-0040321a",
+        "class": "x87-ftol2-low-result-v1",
+        "call_address": "0x0040321a",
+        "function": "th06::AsciiManager::DrawPopupsWithHwVertexProcessing",
+        "function_offset": 58,
+        "predecessor": {
+          "address": "0x00403214",
+          "mnemonic": "fld"
+        },
+        "bounded_result_observation": {
+          "scan_instruction_limit": 32,
+          "eax_observed_mask": "0xffffffff",
+          "edx_observed_mask": "0x00000000",
+          "eax_live_mask_at_stop": "0xffffffff",
+          "edx_live_mask_at_stop": "0xffffffff",
+          "first_eax_observer": {
+            "address": "0x0040321f",
+            "mnemonic": "mov",
+            "aliases": [
+              "eax"
+            ]
+          },
+          "first_edx_observer": null,
+          "termination": "subsequent-call",
+          "termination_address": "0x0040322a"
+        },
+        "slice_disposition": "unclassified",
+        "reachable_signed_i32_range": "unproved"
+      },
+      {
+        "id": "ftol2-0040322a",
+        "class": "x87-ftol2-low-result-v1",
+        "call_address": "0x0040322a",
+        "function": "th06::AsciiManager::DrawPopupsWithHwVertexProcessing",
+        "function_offset": 74,
+        "predecessor": {
+          "address": "0x00403224",
+          "mnemonic": "fld"
+        },
+        "bounded_result_observation": {
+          "scan_instruction_limit": 32,
+          "eax_observed_mask": "0xffffffff",
+          "edx_observed_mask": "0x00000000",
+          "eax_live_mask_at_stop": "0x00000000",
+          "edx_live_mask_at_stop": "0x00000000",
+          "first_eax_observer": {
+            "address": "0x0040322f",
+            "mnemonic": "mov",
+            "aliases": [
+              "eax"
+            ]
+          },
+          "first_edx_observer": null,
+          "termination": "resolved",
+          "termination_address": "0x00403241"
+        },
+        "slice_disposition": "unclassified",
+        "reachable_signed_i32_range": "unproved"
+      },
+      {
+        "id": "ftol2-004033ca",
+        "class": "x87-ftol2-low-result-v1",
+        "call_address": "0x004033ca",
+        "function": "th06::AsciiManager::DrawPopupsWithoutHwVertexProcessing",
+        "function_offset": 26,
+        "predecessor": {
+          "address": "0x004033c4",
+          "mnemonic": "fld"
+        },
+        "bounded_result_observation": {
+          "scan_instruction_limit": 32,
+          "eax_observed_mask": "0xffffffff",
+          "edx_observed_mask": "0x00000000",
+          "eax_live_mask_at_stop": "0xffffffff",
+          "edx_live_mask_at_stop": "0xffffffff",
+          "first_eax_observer": {
+            "address": "0x004033cf",
+            "mnemonic": "mov",
+            "aliases": [
+              "eax"
+            ]
+          },
+          "first_edx_observer": null,
+          "termination": "subsequent-call",
+          "termination_address": "0x004033da"
+        },
+        "slice_disposition": "unclassified",
+        "reachable_signed_i32_range": "unproved"
+      },
+      {
+        "id": "ftol2-004033da",
+        "class": "x87-ftol2-low-result-v1",
+        "call_address": "0x004033da",
+        "function": "th06::AsciiManager::DrawPopupsWithoutHwVertexProcessing",
+        "function_offset": 42,
+        "predecessor": {
+          "address": "0x004033d4",
+          "mnemonic": "fld"
+        },
+        "bounded_result_observation": {
+          "scan_instruction_limit": 32,
+          "eax_observed_mask": "0xffffffff",
+          "edx_observed_mask": "0x00000000",
+          "eax_live_mask_at_stop": "0xffffffff",
+          "edx_live_mask_at_stop": "0xffffffff",
+          "first_eax_observer": {
+            "address": "0x004033df",
+            "mnemonic": "mov",
+            "aliases": [
+              "eax"
+            ]
+          },
+          "first_edx_observer": null,
+          "termination": "subsequent-call",
+          "termination_address": "0x004033ea"
+        },
+        "slice_disposition": "unclassified",
+        "reachable_signed_i32_range": "unproved"
+      },
+      {
+        "id": "ftol2-004033ea",
+        "class": "x87-ftol2-low-result-v1",
+        "call_address": "0x004033ea",
+        "function": "th06::AsciiManager::DrawPopupsWithoutHwVertexProcessing",
+        "function_offset": 58,
+        "predecessor": {
+          "address": "0x004033e4",
+          "mnemonic": "fld"
+        },
+        "bounded_result_observation": {
+          "scan_instruction_limit": 32,
+          "eax_observed_mask": "0xffffffff",
+          "edx_observed_mask": "0x00000000",
+          "eax_live_mask_at_stop": "0xffffffff",
+          "edx_live_mask_at_stop": "0xffffffff",
+          "first_eax_observer": {
+            "address": "0x004033ef",
+            "mnemonic": "mov",
+            "aliases": [
+              "eax"
+            ]
+          },
+          "first_edx_observer": null,
+          "termination": "subsequent-call",
+          "termination_address": "0x004033fa"
+        },
+        "slice_disposition": "unclassified",
+        "reachable_signed_i32_range": "unproved"
+      },
+      {
+        "id": "ftol2-004033fa",
+        "class": "x87-ftol2-low-result-v1",
+        "call_address": "0x004033fa",
+        "function": "th06::AsciiManager::DrawPopupsWithoutHwVertexProcessing",
+        "function_offset": 74,
+        "predecessor": {
+          "address": "0x004033f4",
+          "mnemonic": "fld"
+        },
+        "bounded_result_observation": {
+          "scan_instruction_limit": 32,
+          "eax_observed_mask": "0xffffffff",
+          "edx_observed_mask": "0x00000000",
+          "eax_live_mask_at_stop": "0x00000000",
+          "edx_live_mask_at_stop": "0x00000000",
+          "first_eax_observer": {
+            "address": "0x004033ff",
+            "mnemonic": "mov",
+            "aliases": [
+              "eax"
+            ]
+          },
+          "first_edx_observer": null,
+          "termination": "resolved",
+          "termination_address": "0x00403411"
+        },
+        "slice_disposition": "unclassified",
+        "reachable_signed_i32_range": "unproved"
+      },
+      {
+        "id": "ftol2-00403f4c",
+        "class": "x87-ftol2-low-result-v1",
+        "call_address": "0x00403f4c",
+        "function": "th06::Stage::OnUpdate",
+        "function_offset": 1852,
+        "predecessor": {
+          "address": "0x00403f46",
+          "mnemonic": "fadd"
+        },
+        "bounded_result_observation": {
+          "scan_instruction_limit": 32,
+          "eax_observed_mask": "0x000000ff",
+          "edx_observed_mask": "0x00000000",
+          "eax_live_mask_at_stop": "0xffffffff",
+          "edx_live_mask_at_stop": "0xffffffff",
+          "first_eax_observer": {
+            "address": "0x00403f57",
+            "mnemonic": "mov",
+            "aliases": [
+              "al"
+            ]
+          },
+          "first_edx_observer": null,
+          "termination": "control-flow-boundary",
+          "termination_address": "0x00403f5a"
+        },
+        "slice_disposition": "unclassified",
+        "reachable_signed_i32_range": "unproved"
+      },
+      {
+        "id": "ftol2-004060a0",
+        "class": "x87-ftol2-low-result-v1",
+        "call_address": "0x004060a0",
+        "function": "th06::BombData::DarkenViewport",
+        "function_offset": 128,
+        "predecessor": {
+          "address": "0x0040609d",
+          "mnemonic": "fld"
+        },
+        "bounded_result_observation": {
+          "scan_instruction_limit": 32,
+          "eax_observed_mask": "0xffffffff",
+          "edx_observed_mask": "0x00000000",
+          "eax_live_mask_at_stop": "0xffffffff",
+          "edx_live_mask_at_stop": "0x00000000",
+          "first_eax_observer": {
+            "address": "0x004060a5",
+            "mnemonic": "mov",
+            "aliases": [
+              "eax"
+            ]
+          },
+          "first_edx_observer": null,
+          "termination": "control-flow-boundary",
+          "termination_address": "0x004060ae"
+        },
+        "slice_disposition": "unclassified",
+        "reachable_signed_i32_range": "unproved"
+      },
+      {
+        "id": "ftol2-00406129",
+        "class": "x87-ftol2-low-result-v1",
+        "call_address": "0x00406129",
+        "function": "th06::BombData::DarkenViewport",
+        "function_offset": 265,
+        "predecessor": {
+          "address": "0x00406126",
+          "mnemonic": "fld"
+        },
+        "bounded_result_observation": {
+          "scan_instruction_limit": 32,
+          "eax_observed_mask": "0xffffffff",
+          "edx_observed_mask": "0x00000000",
+          "eax_live_mask_at_stop": "0xffffffff",
+          "edx_live_mask_at_stop": "0x00000000",
+          "first_eax_observer": {
+            "address": "0x0040612e",
+            "mnemonic": "mov",
+            "aliases": [
+              "eax"
+            ]
+          },
+          "first_edx_observer": null,
+          "termination": "control-flow-boundary",
+          "termination_address": "0x00406137"
+        },
+        "slice_disposition": "unclassified",
+        "reachable_signed_i32_range": "unproved"
+      },
+      {
+        "id": "ftol2-0040b38b",
+        "class": "x87-ftol2-low-result-v1",
+        "call_address": "0x0040b38b",
+        "function": "th06::EnemyEclInstr::GetVarFloat",
+        "function_offset": 11,
+        "predecessor": {
+          "address": "0x0040b389",
+          "mnemonic": "fld"
+        },
+        "bounded_result_observation": {
+          "scan_instruction_limit": 32,
+          "eax_observed_mask": "0xffffffff",
+          "edx_observed_mask": "0x00000000",
+          "eax_live_mask_at_stop": "0x00000000",
+          "edx_live_mask_at_stop": "0x00000000",
+          "first_eax_observer": {
+            "address": "0x0040b390",
+            "mnemonic": "mov",
+            "aliases": [
+              "eax"
+            ]
+          },
+          "first_edx_observer": null,
+          "termination": "resolved",
+          "termination_address": "0x0040b39b"
+        },
+        "slice_disposition": "unclassified",
+        "reachable_signed_i32_range": "unproved"
+      },
+      {
+        "id": "ftol2-0040ebcc",
+        "class": "x87-ftol2-low-result-v1",
+        "call_address": "0x0040ebcc",
+        "function": "th06::EffectManager::EffectUpdateCallback4",
+        "function_offset": 684,
+        "predecessor": {
+          "address": "0x0040ebc6",
+          "mnemonic": "fmul"
+        },
+        "bounded_result_observation": {
+          "scan_instruction_limit": 32,
+          "eax_observed_mask": "0xffffffff",
+          "edx_observed_mask": "0x00000000",
+          "eax_live_mask_at_stop": "0x00000000",
+          "edx_live_mask_at_stop": "0x00000000",
+          "first_eax_observer": {
+            "address": "0x0040ebd1",
+            "mnemonic": "shl",
+            "aliases": [
+              "eax"
+            ]
+          },
+          "first_edx_observer": null,
+          "termination": "resolved",
+          "termination_address": "0x0040ebeb"
+        },
+        "slice_disposition": "unclassified",
+        "reachable_signed_i32_range": "unproved"
+      },
+      {
+        "id": "ftol2-00410a84",
+        "class": "x87-ftol2-low-result-v1",
+        "call_address": "0x00410a84",
+        "function": "th06::Ending::OnDraw",
+        "function_offset": 20,
+        "predecessor": {
+          "address": "0x00410a81",
+          "mnemonic": "fld"
+        },
+        "bounded_result_observation": {
+          "scan_instruction_limit": 32,
+          "eax_observed_mask": "0xffffffff",
+          "edx_observed_mask": "0x00000000",
+          "eax_live_mask_at_stop": "0xffffffff",
+          "edx_live_mask_at_stop": "0xffffffff",
+          "first_eax_observer": {
+            "address": "0x00410a89",
+            "mnemonic": "push",
+            "aliases": [
+              "eax"
+            ]
+          },
+          "first_edx_observer": null,
+          "termination": "subsequent-call",
+          "termination_address": "0x00410a90"
+        },
+        "slice_disposition": "unclassified",
+        "reachable_signed_i32_range": "unproved"
+      },
+      {
+        "id": "ftol2-00410a90",
+        "class": "x87-ftol2-low-result-v1",
+        "call_address": "0x00410a90",
+        "function": "th06::Ending::OnDraw",
+        "function_offset": 32,
+        "predecessor": {
+          "address": "0x00410a8d",
+          "mnemonic": "fld"
+        },
+        "bounded_result_observation": {
+          "scan_instruction_limit": 32,
+          "eax_observed_mask": "0xffffffff",
+          "edx_observed_mask": "0x00000000",
+          "eax_live_mask_at_stop": "0xffffffff",
+          "edx_live_mask_at_stop": "0xffffffff",
+          "first_eax_observer": {
+            "address": "0x00410a95",
+            "mnemonic": "push",
+            "aliases": [
+              "eax"
+            ]
+          },
+          "first_edx_observer": null,
+          "termination": "subsequent-call",
+          "termination_address": "0x00410aa2"
+        },
+        "slice_disposition": "unclassified",
+        "reachable_signed_i32_range": "unproved"
+      },
+      {
+        "id": "ftol2-00416003",
+        "class": "x87-ftol2-low-result-v1",
+        "call_address": "0x00416003",
+        "function": "th06::BulletManager::OnUpdate",
+        "function_offset": 5683,
+        "predecessor": {
+          "address": "0x00415ffd",
+          "mnemonic": "fdiv"
+        },
+        "bounded_result_observation": {
+          "scan_instruction_limit": 32,
+          "eax_observed_mask": "0xffffffff",
+          "edx_observed_mask": "0x00000000",
+          "eax_live_mask_at_stop": "0xffffffff",
+          "edx_live_mask_at_stop": "0xffffffff",
+          "first_eax_observer": {
+            "address": "0x00416008",
+            "mnemonic": "mov",
+            "aliases": [
+              "eax"
+            ]
+          },
+          "first_edx_observer": null,
+          "termination": "control-flow-boundary",
+          "termination_address": "0x00416012"
+        },
+        "slice_disposition": "unclassified",
+        "reachable_signed_i32_range": "unproved"
+      },
+      {
+        "id": "ftol2-004162eb",
+        "class": "x87-ftol2-low-result-v1",
+        "call_address": "0x004162eb",
+        "function": "th06::BulletManager::OnUpdate",
+        "function_offset": 6427,
+        "predecessor": {
+          "address": "0x004162e5",
+          "mnemonic": "fdiv"
+        },
+        "bounded_result_observation": {
+          "scan_instruction_limit": 32,
+          "eax_observed_mask": "0xffffffff",
+          "edx_observed_mask": "0x00000000",
+          "eax_live_mask_at_stop": "0xffffffff",
+          "edx_live_mask_at_stop": "0xffffffff",
+          "first_eax_observer": {
+            "address": "0x004162f0",
+            "mnemonic": "mov",
+            "aliases": [
+              "eax"
+            ]
+          },
+          "first_edx_observer": null,
+          "termination": "control-flow-boundary",
+          "termination_address": "0x004162fa"
+        },
+        "slice_disposition": "unclassified",
+        "reachable_signed_i32_range": "unproved"
+      },
+      {
+        "id": "ftol2-00416fbc",
+        "class": "x87-ftol2-low-result-v1",
+        "call_address": "0x00416fbc",
+        "function": "th06::BulletManager::AddedCallback",
+        "function_offset": 604,
+        "predecessor": {
+          "address": "0x00416fb9",
+          "mnemonic": "fld"
+        },
+        "bounded_result_observation": {
+          "scan_instruction_limit": 32,
+          "eax_observed_mask": "0x000000ff",
+          "edx_observed_mask": "0x00000000",
+          "eax_live_mask_at_stop": "0x00000000",
+          "edx_live_mask_at_stop": "0x00000000",
+          "first_eax_observer": {
+            "address": "0x00416fcd",
+            "mnemonic": "mov",
+            "aliases": [
+              "al"
+            ]
+          },
+          "first_edx_observer": null,
+          "termination": "resolved",
+          "termination_address": "0x00416fdd"
+        },
+        "slice_disposition": "unclassified",
+        "reachable_signed_i32_range": "unproved"
+      },
+      {
+        "id": "ftol2-0041b137",
+        "class": "x87-ftol2-low-result-v1",
+        "call_address": "0x0041b137",
+        "function": "th06::Gui::DrawStageElements",
+        "function_offset": 836,
+        "predecessor": {
+          "address": "0x0041b131",
+          "mnemonic": "fld"
+        },
+        "bounded_result_observation": {
+          "scan_instruction_limit": 32,
+          "eax_observed_mask": "0xffffffff",
+          "edx_observed_mask": "0x00000000",
+          "eax_live_mask_at_stop": "0xffffffff",
+          "edx_live_mask_at_stop": "0xffffffff",
+          "first_eax_observer": {
+            "address": "0x0041b13c",
+            "mnemonic": "mov",
+            "aliases": [
+              "eax"
+            ]
+          },
+          "first_edx_observer": null,
+          "termination": "subsequent-call",
+          "termination_address": "0x0041b147"
+        },
+        "slice_disposition": "unclassified",
+        "reachable_signed_i32_range": "unproved"
+      },
+      {
+        "id": "ftol2-0041b147",
+        "class": "x87-ftol2-low-result-v1",
+        "call_address": "0x0041b147",
+        "function": "th06::Gui::DrawStageElements",
+        "function_offset": 852,
+        "predecessor": {
+          "address": "0x0041b141",
+          "mnemonic": "fld"
+        },
+        "bounded_result_observation": {
+          "scan_instruction_limit": 32,
+          "eax_observed_mask": "0xffffffff",
+          "edx_observed_mask": "0x00000000",
+          "eax_live_mask_at_stop": "0xffffffff",
+          "edx_live_mask_at_stop": "0xffffffff",
+          "first_eax_observer": {
+            "address": "0x0041b14c",
+            "mnemonic": "mov",
+            "aliases": [
+              "eax"
+            ]
+          },
+          "first_edx_observer": null,
+          "termination": "subsequent-call",
+          "termination_address": "0x0041b157"
+        },
+        "slice_disposition": "unclassified",
+        "reachable_signed_i32_range": "unproved"
+      },
+      {
+        "id": "ftol2-0041b157",
+        "class": "x87-ftol2-low-result-v1",
+        "call_address": "0x0041b157",
+        "function": "th06::Gui::DrawStageElements",
+        "function_offset": 868,
+        "predecessor": {
+          "address": "0x0041b151",
+          "mnemonic": "fld"
+        },
+        "bounded_result_observation": {
+          "scan_instruction_limit": 32,
+          "eax_observed_mask": "0xffffffff",
+          "edx_observed_mask": "0x00000000",
+          "eax_live_mask_at_stop": "0xffffffff",
+          "edx_live_mask_at_stop": "0xffffffff",
+          "first_eax_observer": {
+            "address": "0x0041b15c",
+            "mnemonic": "mov",
+            "aliases": [
+              "eax"
+            ]
+          },
+          "first_edx_observer": null,
+          "termination": "subsequent-call",
+          "termination_address": "0x0041b167"
+        },
+        "slice_disposition": "unclassified",
+        "reachable_signed_i32_range": "unproved"
+      },
+      {
+        "id": "ftol2-0041b167",
+        "class": "x87-ftol2-low-result-v1",
+        "call_address": "0x0041b167",
+        "function": "th06::Gui::DrawStageElements",
+        "function_offset": 884,
+        "predecessor": {
+          "address": "0x0041b161",
+          "mnemonic": "fld"
+        },
+        "bounded_result_observation": {
+          "scan_instruction_limit": 32,
+          "eax_observed_mask": "0xffffffff",
+          "edx_observed_mask": "0x00000000",
+          "eax_live_mask_at_stop": "0x00000000",
+          "edx_live_mask_at_stop": "0xffffffff",
+          "first_eax_observer": {
+            "address": "0x0041b16c",
+            "mnemonic": "mov",
+            "aliases": [
+              "eax"
+            ]
+          },
+          "first_edx_observer": null,
+          "termination": "subsequent-call",
+          "termination_address": "0x0041b183"
+        },
+        "slice_disposition": "unclassified",
+        "reachable_signed_i32_range": "unproved"
+      },
+      {
+        "id": "ftol2-0041b7d4",
+        "class": "x87-ftol2-low-result-v1",
+        "call_address": "0x0041b7d4",
+        "function": "th06::GameManager::OnUpdate",
+        "function_offset": 369,
+        "predecessor": {
+          "address": "0x0041b7ce",
+          "mnemonic": "fld"
+        },
+        "bounded_result_observation": {
+          "scan_instruction_limit": 32,
+          "eax_observed_mask": "0xffffffff",
+          "edx_observed_mask": "0x00000000",
+          "eax_live_mask_at_stop": "0x00000000",
+          "edx_live_mask_at_stop": "0xffffffff",
+          "first_eax_observer": {
+            "address": "0x0041b7d9",
+            "mnemonic": "mov",
+            "aliases": [
+              "eax"
+            ]
+          },
+          "first_edx_observer": null,
+          "termination": "subsequent-call",
+          "termination_address": "0x0041b7e7"
+        },
+        "slice_disposition": "unclassified",
+        "reachable_signed_i32_range": "unproved"
+      },
+      {
+        "id": "ftol2-0041b7e7",
+        "class": "x87-ftol2-low-result-v1",
+        "call_address": "0x0041b7e7",
+        "function": "th06::GameManager::OnUpdate",
+        "function_offset": 388,
+        "predecessor": {
+          "address": "0x0041b7e1",
+          "mnemonic": "fld"
+        },
+        "bounded_result_observation": {
+          "scan_instruction_limit": 32,
+          "eax_observed_mask": "0xffffffff",
+          "edx_observed_mask": "0x00000000",
+          "eax_live_mask_at_stop": "0x00000000",
+          "edx_live_mask_at_stop": "0xffffffff",
+          "first_eax_observer": {
+            "address": "0x0041b7ec",
+            "mnemonic": "mov",
+            "aliases": [
+              "eax"
+            ]
+          },
+          "first_edx_observer": null,
+          "termination": "subsequent-call",
+          "termination_address": "0x0041b7fa"
+        },
+        "slice_disposition": "unclassified",
+        "reachable_signed_i32_range": "unproved"
+      },
+      {
+        "id": "ftol2-0041b7fa",
+        "class": "x87-ftol2-low-result-v1",
+        "call_address": "0x0041b7fa",
+        "function": "th06::GameManager::OnUpdate",
+        "function_offset": 407,
+        "predecessor": {
+          "address": "0x0041b7f4",
+          "mnemonic": "fld"
+        },
+        "bounded_result_observation": {
+          "scan_instruction_limit": 32,
+          "eax_observed_mask": "0xffffffff",
+          "edx_observed_mask": "0x00000000",
+          "eax_live_mask_at_stop": "0x00000000",
+          "edx_live_mask_at_stop": "0xffffffff",
+          "first_eax_observer": {
+            "address": "0x0041b7ff",
+            "mnemonic": "mov",
+            "aliases": [
+              "eax"
+            ]
+          },
+          "first_edx_observer": null,
+          "termination": "subsequent-call",
+          "termination_address": "0x0041b80d"
+        },
+        "slice_disposition": "unclassified",
+        "reachable_signed_i32_range": "unproved"
+      },
+      {
+        "id": "ftol2-0041b80d",
+        "class": "x87-ftol2-low-result-v1",
+        "call_address": "0x0041b80d",
+        "function": "th06::GameManager::OnUpdate",
+        "function_offset": 426,
+        "predecessor": {
+          "address": "0x0041b807",
+          "mnemonic": "fld"
+        },
+        "bounded_result_observation": {
+          "scan_instruction_limit": 32,
+          "eax_observed_mask": "0xffffffff",
+          "edx_observed_mask": "0x00000000",
+          "eax_live_mask_at_stop": "0xffffffff",
+          "edx_live_mask_at_stop": "0xffffffff",
+          "first_eax_observer": {
+            "address": "0x0041b812",
+            "mnemonic": "mov",
+            "aliases": [
+              "eax"
+            ]
+          },
+          "first_edx_observer": null,
+          "termination": "subsequent-call",
+          "termination_address": "0x0041b831"
+        },
+        "slice_disposition": "unclassified",
+        "reachable_signed_i32_range": "unproved"
+      },
+      {
+        "id": "ftol2-0041fb14",
+        "class": "x87-ftol2-low-result-v1",
+        "call_address": "0x0041fb14",
+        "function": "th06::ItemManager::OnUpdate",
+        "function_offset": 1652,
+        "predecessor": {
+          "address": "0x0041fb0e",
+          "mnemonic": "fld"
+        },
+        "bounded_result_observation": {
+          "scan_instruction_limit": 32,
+          "eax_observed_mask": "0xffffffff",
+          "edx_observed_mask": "0x00000000",
+          "eax_live_mask_at_stop": "0xffffffff",
+          "edx_live_mask_at_stop": "0xffffffff",
+          "first_eax_observer": {
+            "address": "0x0041fb19",
+            "mnemonic": "cmp",
+            "aliases": [
+              "eax"
+            ]
+          },
+          "first_edx_observer": null,
+          "termination": "control-flow-boundary",
+          "termination_address": "0x0041fb1e"
+        },
+        "slice_disposition": "unclassified",
+        "reachable_signed_i32_range": "unproved"
+      },
+      {
+        "id": "ftol2-0041fb35",
+        "class": "x87-ftol2-low-result-v1",
+        "call_address": "0x0041fb35",
+        "function": "th06::ItemManager::OnUpdate",
+        "function_offset": 1685,
+        "predecessor": {
+          "address": "0x0041fb2f",
+          "mnemonic": "fld"
+        },
+        "bounded_result_observation": {
+          "scan_instruction_limit": 32,
+          "eax_observed_mask": "0xffffffff",
+          "edx_observed_mask": "0x00000000",
+          "eax_live_mask_at_stop": "0x00000000",
+          "edx_live_mask_at_stop": "0x00000000",
+          "first_eax_observer": {
+            "address": "0x0041fb3a",
+            "mnemonic": "sub",
+            "aliases": [
+              "eax"
+            ]
+          },
+          "first_edx_observer": null,
+          "termination": "resolved",
+          "termination_address": "0x0041fb4f"
+        },
+        "slice_disposition": "unclassified",
+        "reachable_signed_i32_range": "unproved"
+      },
+      {
+        "id": "ftol2-0041fb91",
+        "class": "x87-ftol2-low-result-v1",
+        "call_address": "0x0041fb91",
+        "function": "th06::ItemManager::OnUpdate",
+        "function_offset": 1777,
+        "predecessor": {
+          "address": "0x0041fb8b",
+          "mnemonic": "fld"
+        },
+        "bounded_result_observation": {
+          "scan_instruction_limit": 32,
+          "eax_observed_mask": "0xffffffff",
+          "edx_observed_mask": "0x00000000",
+          "eax_live_mask_at_stop": "0xffffffff",
+          "edx_live_mask_at_stop": "0xffffffff",
+          "first_eax_observer": {
+            "address": "0x0041fb96",
+            "mnemonic": "cmp",
+            "aliases": [
+              "eax"
+            ]
+          },
+          "first_edx_observer": null,
+          "termination": "control-flow-boundary",
+          "termination_address": "0x0041fb9b"
+        },
+        "slice_disposition": "unclassified",
+        "reachable_signed_i32_range": "unproved"
+      },
+      {
+        "id": "ftol2-0041fbb2",
+        "class": "x87-ftol2-low-result-v1",
+        "call_address": "0x0041fbb2",
+        "function": "th06::ItemManager::OnUpdate",
+        "function_offset": 1810,
+        "predecessor": {
+          "address": "0x0041fbac",
+          "mnemonic": "fld"
+        },
+        "bounded_result_observation": {
+          "scan_instruction_limit": 32,
+          "eax_observed_mask": "0xffffffff",
+          "edx_observed_mask": "0x00000000",
+          "eax_live_mask_at_stop": "0x00000000",
+          "edx_live_mask_at_stop": "0x00000000",
+          "first_eax_observer": {
+            "address": "0x0041fbb7",
+            "mnemonic": "sub",
+            "aliases": [
+              "eax"
+            ]
+          },
+          "first_edx_observer": null,
+          "termination": "resolved",
+          "termination_address": "0x0041fbc2"
+        },
+        "slice_disposition": "unclassified",
+        "reachable_signed_i32_range": "unproved"
+      },
+      {
+        "id": "ftol2-0041fc11",
+        "class": "x87-ftol2-low-result-v1",
+        "call_address": "0x0041fc11",
+        "function": "th06::ItemManager::OnUpdate",
+        "function_offset": 1905,
+        "predecessor": {
+          "address": "0x0041fc0b",
+          "mnemonic": "fld"
+        },
+        "bounded_result_observation": {
+          "scan_instruction_limit": 32,
+          "eax_observed_mask": "0xffffffff",
+          "edx_observed_mask": "0x00000000",
+          "eax_live_mask_at_stop": "0xffffffff",
+          "edx_live_mask_at_stop": "0xffffffff",
+          "first_eax_observer": {
+            "address": "0x0041fc16",
+            "mnemonic": "cmp",
+            "aliases": [
+              "eax"
+            ]
+          },
+          "first_edx_observer": null,
+          "termination": "control-flow-boundary",
+          "termination_address": "0x0041fc1b"
+        },
+        "slice_disposition": "unclassified",
+        "reachable_signed_i32_range": "unproved"
+      },
+      {
+        "id": "ftol2-0041fc32",
+        "class": "x87-ftol2-low-result-v1",
+        "call_address": "0x0041fc32",
+        "function": "th06::ItemManager::OnUpdate",
+        "function_offset": 1938,
+        "predecessor": {
+          "address": "0x0041fc2c",
+          "mnemonic": "fld"
+        },
+        "bounded_result_observation": {
+          "scan_instruction_limit": 32,
+          "eax_observed_mask": "0xffffffff",
+          "edx_observed_mask": "0x00000000",
+          "eax_live_mask_at_stop": "0x00000000",
+          "edx_live_mask_at_stop": "0x00000000",
+          "first_eax_observer": {
+            "address": "0x0041fc37",
+            "mnemonic": "sub",
+            "aliases": [
+              "eax"
+            ]
+          },
+          "first_edx_observer": null,
+          "termination": "resolved",
+          "termination_address": "0x0041fc4f"
+        },
+        "slice_disposition": "unclassified",
+        "reachable_signed_i32_range": "unproved"
+      },
+      {
+        "id": "ftol2-0041fc8e",
+        "class": "x87-ftol2-low-result-v1",
+        "call_address": "0x0041fc8e",
+        "function": "th06::ItemManager::OnUpdate",
+        "function_offset": 2030,
+        "predecessor": {
+          "address": "0x0041fc88",
+          "mnemonic": "fld"
+        },
+        "bounded_result_observation": {
+          "scan_instruction_limit": 32,
+          "eax_observed_mask": "0xffffffff",
+          "edx_observed_mask": "0x00000000",
+          "eax_live_mask_at_stop": "0xffffffff",
+          "edx_live_mask_at_stop": "0xffffffff",
+          "first_eax_observer": {
+            "address": "0x0041fc93",
+            "mnemonic": "cmp",
+            "aliases": [
+              "eax"
+            ]
+          },
+          "first_edx_observer": null,
+          "termination": "control-flow-boundary",
+          "termination_address": "0x0041fc98"
+        },
+        "slice_disposition": "unclassified",
+        "reachable_signed_i32_range": "unproved"
+      },
+      {
+        "id": "ftol2-0041fcaf",
+        "class": "x87-ftol2-low-result-v1",
+        "call_address": "0x0041fcaf",
+        "function": "th06::ItemManager::OnUpdate",
+        "function_offset": 2063,
+        "predecessor": {
+          "address": "0x0041fca9",
+          "mnemonic": "fld"
+        },
+        "bounded_result_observation": {
+          "scan_instruction_limit": 32,
+          "eax_observed_mask": "0xffffffff",
+          "edx_observed_mask": "0x00000000",
+          "eax_live_mask_at_stop": "0x00000000",
+          "edx_live_mask_at_stop": "0x00000000",
+          "first_eax_observer": {
+            "address": "0x0041fcb4",
+            "mnemonic": "sub",
+            "aliases": [
+              "eax"
+            ]
+          },
+          "first_edx_observer": null,
+          "termination": "resolved",
+          "termination_address": "0x0041fcbf"
+        },
+        "slice_disposition": "unclassified",
+        "reachable_signed_i32_range": "unproved"
+      },
+      {
+        "id": "ftol2-00420298",
+        "class": "x87-ftol2-low-result-v1",
+        "call_address": "0x00420298",
+        "function": "th06::ItemManager::OnDraw",
+        "function_offset": 264,
+        "predecessor": {
+          "address": "0x00420292",
+          "mnemonic": "fdiv"
+        },
+        "bounded_result_observation": {
+          "scan_instruction_limit": 32,
+          "eax_observed_mask": "0xffffffff",
+          "edx_observed_mask": "0x00000000",
+          "eax_live_mask_at_stop": "0xffffffff",
+          "edx_live_mask_at_stop": "0xffffffff",
+          "first_eax_observer": {
+            "address": "0x004202a2",
+            "mnemonic": "sub",
+            "aliases": [
+              "eax"
+            ]
+          },
+          "first_edx_observer": null,
+          "termination": "control-flow-boundary",
+          "termination_address": "0x004202ab"
+        },
+        "slice_disposition": "unclassified",
+        "reachable_signed_i32_range": "unproved"
+      },
+      {
+        "id": "ftol2-00422755",
+        "class": "x87-ftol2-low-result-v1",
+        "call_address": "0x00422755",
+        "function": "th06::MidiOutput::OnTimerElapsed",
+        "function_offset": 213,
+        "predecessor": {
+          "address": "0x0042274f",
+          "mnemonic": "fmul"
+        },
+        "bounded_result_observation": {
+          "scan_instruction_limit": 32,
+          "eax_observed_mask": "0xffffffff",
+          "edx_observed_mask": "0x00000000",
+          "eax_live_mask_at_stop": "0xffffffff",
+          "edx_live_mask_at_stop": "0xffffffff",
+          "first_eax_observer": {
+            "address": "0x0042275d",
+            "mnemonic": "cmp",
+            "aliases": [
+              "eax"
+            ]
+          },
+          "first_edx_observer": null,
+          "termination": "control-flow-boundary",
+          "termination_address": "0x00422763"
+        },
+        "slice_disposition": "unclassified",
+        "reachable_signed_i32_range": "unproved"
+      },
+      {
+        "id": "ftol2-0042277e",
+        "class": "x87-ftol2-low-result-v1",
+        "call_address": "0x0042277e",
+        "function": "th06::MidiOutput::OnTimerElapsed",
+        "function_offset": 254,
+        "predecessor": {
+          "address": "0x00422778",
+          "mnemonic": "fmul"
+        },
+        "bounded_result_observation": {
+          "scan_instruction_limit": 32,
+          "eax_observed_mask": "0xffffffff",
+          "edx_observed_mask": "0x00000000",
+          "eax_live_mask_at_stop": "0x00000000",
+          "edx_live_mask_at_stop": "0x00000000",
+          "first_eax_observer": {
+            "address": "0x00422786",
+            "mnemonic": "mov",
+            "aliases": [
+              "eax"
+            ]
+          },
+          "first_edx_observer": null,
+          "termination": "resolved",
+          "termination_address": "0x0042278f"
+        },
+        "slice_disposition": "unclassified",
+        "reachable_signed_i32_range": "unproved"
+      },
+      {
+        "id": "ftol2-00422ec4",
+        "class": "x87-ftol2-low-result-v1",
+        "call_address": "0x00422ec4",
+        "function": "th06::MidiOutput::ProcessMsg",
+        "function_offset": 1476,
+        "predecessor": {
+          "address": "0x00422ebe",
+          "mnemonic": "fmul"
+        },
+        "bounded_result_observation": {
+          "scan_instruction_limit": 32,
+          "eax_observed_mask": "0xffffffff",
+          "edx_observed_mask": "0x00000000",
+          "eax_live_mask_at_stop": "0xffffffff",
+          "edx_live_mask_at_stop": "0xffffffff",
+          "first_eax_observer": {
+            "address": "0x00422ec9",
+            "mnemonic": "mov",
+            "aliases": [
+              "eax"
+            ]
+          },
+          "first_edx_observer": null,
+          "termination": "control-flow-boundary",
+          "termination_address": "0x00422ed0"
+        },
+        "slice_disposition": "unclassified",
+        "reachable_signed_i32_range": "unproved"
+      },
+      {
+        "id": "ftol2-004232d6",
+        "class": "x87-ftol2-low-result-v1",
+        "call_address": "0x004232d6",
+        "function": "th06::MidiOutput::FadeOutSetVolume",
+        "function_offset": 118,
+        "predecessor": {
+          "address": "0x004232d0",
+          "mnemonic": "fmul"
+        },
+        "bounded_result_observation": {
+          "scan_instruction_limit": 32,
+          "eax_observed_mask": "0xffffffff",
+          "edx_observed_mask": "0x00000000",
+          "eax_live_mask_at_stop": "0x00000000",
+          "edx_live_mask_at_stop": "0xffffffff",
+          "first_eax_observer": {
+            "address": "0x004232db",
+            "mnemonic": "add",
+            "aliases": [
+              "eax"
+            ]
+          },
+          "first_edx_observer": null,
+          "termination": "control-flow-boundary",
+          "termination_address": "0x004232e5"
+        },
+        "slice_disposition": "unclassified",
+        "reachable_signed_i32_range": "unproved"
+      },
+      {
+        "id": "ftol2-00424da9",
+        "class": "x87-ftol2-low-result-v1",
+        "call_address": "0x00424da9",
+        "function": "th06::Supervisor::FadeOutMusic",
+        "function_offset": 39,
+        "predecessor": {
+          "address": "0x00424da6",
+          "mnemonic": "fmul"
+        },
+        "bounded_result_observation": {
+          "scan_instruction_limit": 32,
+          "eax_observed_mask": "0xffffffff",
+          "edx_observed_mask": "0x00000000",
+          "eax_live_mask_at_stop": "0xffffffff",
+          "edx_live_mask_at_stop": "0xffffffff",
+          "first_eax_observer": {
+            "address": "0x00424dae",
+            "mnemonic": "push",
+            "aliases": [
+              "eax"
+            ]
+          },
+          "first_edx_observer": null,
+          "termination": "subsequent-call",
+          "termination_address": "0x00424db5"
+        },
+        "slice_disposition": "unclassified",
+        "reachable_signed_i32_range": "unproved"
+      },
+      {
+        "id": "ftol2-00424e74",
+        "class": "x87-ftol2-low-result-v1",
+        "call_address": "0x00424e74",
+        "function": "th06::SoundPlayer::FadeOut",
+        "function_offset": 51,
+        "predecessor": {
+          "address": "0x00424e6e",
+          "mnemonic": "fmul"
+        },
+        "bounded_result_observation": {
+          "scan_instruction_limit": 32,
+          "eax_observed_mask": "0xffffffff",
+          "edx_observed_mask": "0x00000000",
+          "eax_live_mask_at_stop": "0x00000000",
+          "edx_live_mask_at_stop": "0xffffffff",
+          "first_eax_observer": {
+            "address": "0x00424e7c",
+            "mnemonic": "mov",
+            "aliases": [
+              "eax"
+            ]
+          },
+          "first_edx_observer": null,
+          "termination": "control-flow-boundary",
+          "termination_address": "0x00424e8c"
+        },
+        "slice_disposition": "unclassified",
+        "reachable_signed_i32_range": "unproved"
+      },
+      {
+        "id": "ftol2-00428cc8",
+        "class": "x87-ftol2-low-result-v1",
+        "call_address": "0x00428cc8",
+        "function": "th06::Player::OnUpdate",
+        "function_offset": 1032,
+        "predecessor": {
+          "address": "0x00428cc2",
+          "mnemonic": "fsubr"
+        },
+        "bounded_result_observation": {
+          "scan_instruction_limit": 32,
+          "eax_observed_mask": "0xffffffff",
+          "edx_observed_mask": "0x00000000",
+          "eax_live_mask_at_stop": "0x00000000",
+          "edx_live_mask_at_stop": "0x00000000",
+          "first_eax_observer": {
+            "address": "0x00428ccd",
+            "mnemonic": "shl",
+            "aliases": [
+              "eax"
+            ]
+          },
+          "first_edx_observer": null,
+          "termination": "resolved",
+          "termination_address": "0x00428cd5"
+        },
+        "slice_disposition": "unclassified",
+        "reachable_signed_i32_range": "unproved"
+      },
+      {
+        "id": "ftol2-0042f842",
+        "class": "x87-ftol2-low-result-v1",
+        "call_address": "0x0042f842",
+        "function": "th06::ScreenEffect::CalcFadeIn",
+        "function_offset": 66,
+        "predecessor": {
+          "address": "0x0042f83c",
+          "mnemonic": "fsubr"
+        },
+        "bounded_result_observation": {
+          "scan_instruction_limit": 32,
+          "eax_observed_mask": "0xffffffff",
+          "edx_observed_mask": "0x00000000",
+          "eax_live_mask_at_stop": "0x00000000",
+          "edx_live_mask_at_stop": "0x00000000",
+          "first_eax_observer": {
+            "address": "0x0042f84a",
+            "mnemonic": "mov",
+            "aliases": [
+              "eax"
+            ]
+          },
+          "first_edx_observer": null,
+          "termination": "resolved",
+          "termination_address": "0x0042f84d"
+        },
+        "slice_disposition": "unclassified",
+        "reachable_signed_i32_range": "unproved"
+      },
+      {
+        "id": "ftol2-0042fcbc",
+        "class": "x87-ftol2-low-result-v1",
+        "call_address": "0x0042fcbc",
+        "function": "th06::ScreenEffect::CalcFadeOut",
+        "function_offset": 60,
+        "predecessor": {
+          "address": "0x0042fcb9",
+          "mnemonic": "fdiv"
+        },
+        "bounded_result_observation": {
+          "scan_instruction_limit": 32,
+          "eax_observed_mask": "0xffffffff",
+          "edx_observed_mask": "0x00000000",
+          "eax_live_mask_at_stop": "0x00000000",
+          "edx_live_mask_at_stop": "0x00000000",
+          "first_eax_observer": {
+            "address": "0x0042fcc4",
+            "mnemonic": "mov",
+            "aliases": [
+              "eax"
+            ]
+          },
+          "first_edx_observer": null,
+          "termination": "resolved",
+          "termination_address": "0x0042fcc7"
+        },
+        "slice_disposition": "unclassified",
+        "reachable_signed_i32_range": "unproved"
+      },
+      {
+        "id": "ftol2-0043473f",
+        "class": "x87-ftol2-low-result-v1",
+        "call_address": "0x0043473f",
+        "function": "th06::AnmManager::ExecuteScript",
+        "function_offset": 3551,
+        "predecessor": {
+          "address": "0x00434739",
+          "mnemonic": "fadd"
+        },
+        "bounded_result_observation": {
+          "scan_instruction_limit": 32,
+          "eax_observed_mask": "0xffffffff",
+          "edx_observed_mask": "0x00000000",
+          "eax_live_mask_at_stop": "0xffffffff",
+          "edx_live_mask_at_stop": "0xffffffff",
+          "first_eax_observer": {
+            "address": "0x00434744",
+            "mnemonic": "mov",
+            "aliases": [
+              "eax"
+            ]
+          },
+          "first_edx_observer": null,
+          "termination": "control-flow-boundary",
+          "termination_address": "0x0043474b"
+        },
+        "slice_disposition": "unclassified",
+        "reachable_signed_i32_range": "unproved"
+      },
+      {
+        "id": "ftol2-00434bc8",
+        "class": "x87-ftol2-low-result-v1",
+        "call_address": "0x00434bc8",
+        "function": "th06::AnmManager::DrawVmTextFmt",
+        "function_offset": 104,
+        "predecessor": {
+          "address": "0x00434bc5",
+          "mnemonic": "fld"
+        },
+        "bounded_result_observation": {
+          "scan_instruction_limit": 32,
+          "eax_observed_mask": "0xffffffff",
+          "edx_observed_mask": "0x00000000",
+          "eax_live_mask_at_stop": "0x00000000",
+          "edx_live_mask_at_stop": "0x00000000",
+          "first_eax_observer": {
+            "address": "0x00434bcd",
+            "mnemonic": "push",
+            "aliases": [
+              "eax"
+            ]
+          },
+          "first_edx_observer": null,
+          "termination": "resolved",
+          "termination_address": "0x00434bd1"
+        },
+        "slice_disposition": "unclassified",
+        "reachable_signed_i32_range": "unproved"
+      },
+      {
+        "id": "ftol2-00434bda",
+        "class": "x87-ftol2-low-result-v1",
+        "call_address": "0x00434bda",
+        "function": "th06::AnmManager::DrawVmTextFmt",
+        "function_offset": 122,
+        "predecessor": {
+          "address": "0x00434bd7",
+          "mnemonic": "fld"
+        },
+        "bounded_result_observation": {
+          "scan_instruction_limit": 32,
+          "eax_observed_mask": "0xffffffff",
+          "edx_observed_mask": "0x00000000",
+          "eax_live_mask_at_stop": "0xffffffff",
+          "edx_live_mask_at_stop": "0x00000000",
+          "first_eax_observer": {
+            "address": "0x00434bdf",
+            "mnemonic": "push",
+            "aliases": [
+              "eax"
+            ]
+          },
+          "first_edx_observer": null,
+          "termination": "subsequent-call",
+          "termination_address": "0x00434bec"
+        },
+        "slice_disposition": "unclassified",
+        "reachable_signed_i32_range": "unproved"
+      },
+      {
+        "id": "ftol2-00434bec",
+        "class": "x87-ftol2-low-result-v1",
+        "call_address": "0x00434bec",
+        "function": "th06::AnmManager::DrawVmTextFmt",
+        "function_offset": 140,
+        "predecessor": {
+          "address": "0x00434be9",
+          "mnemonic": "fld"
+        },
+        "bounded_result_observation": {
+          "scan_instruction_limit": 32,
+          "eax_observed_mask": "0xffffffff",
+          "edx_observed_mask": "0x00000000",
+          "eax_live_mask_at_stop": "0x00000000",
+          "edx_live_mask_at_stop": "0xffffffff",
+          "first_eax_observer": {
+            "address": "0x00434bf1",
+            "mnemonic": "push",
+            "aliases": [
+              "eax"
+            ]
+          },
+          "first_edx_observer": null,
+          "termination": "subsequent-call",
+          "termination_address": "0x00434bfe"
+        },
+        "slice_disposition": "unclassified",
+        "reachable_signed_i32_range": "unproved"
+      },
+      {
+        "id": "ftol2-00434bfe",
+        "class": "x87-ftol2-low-result-v1",
+        "call_address": "0x00434bfe",
+        "function": "th06::AnmManager::DrawVmTextFmt",
+        "function_offset": 158,
+        "predecessor": {
+          "address": "0x00434bfb",
+          "mnemonic": "fld"
+        },
+        "bounded_result_observation": {
+          "scan_instruction_limit": 32,
+          "eax_observed_mask": "0xffffffff",
+          "edx_observed_mask": "0x00000000",
+          "eax_live_mask_at_stop": "0x00000000",
+          "edx_live_mask_at_stop": "0x00000000",
+          "first_eax_observer": {
+            "address": "0x00434c03",
+            "mnemonic": "push",
+            "aliases": [
+              "eax"
+            ]
+          },
+          "first_edx_observer": null,
+          "termination": "resolved",
+          "termination_address": "0x00434c07"
+        },
+        "slice_disposition": "unclassified",
+        "reachable_signed_i32_range": "unproved"
+      },
+      {
+        "id": "ftol2-00434cc7",
+        "class": "x87-ftol2-low-result-v1",
+        "call_address": "0x00434cc7",
+        "function": "th06::AnmManager::DrawStringFormat",
+        "function_offset": 135,
+        "predecessor": {
+          "address": "0x00434cc4",
+          "mnemonic": "fld"
+        },
+        "bounded_result_observation": {
+          "scan_instruction_limit": 32,
+          "eax_observed_mask": "0xffffffff",
+          "edx_observed_mask": "0x00000000",
+          "eax_live_mask_at_stop": "0xffffffff",
+          "edx_live_mask_at_stop": "0x00000000",
+          "first_eax_observer": {
+            "address": "0x00434ccc",
+            "mnemonic": "push",
+            "aliases": [
+              "eax"
+            ]
+          },
+          "first_edx_observer": null,
+          "termination": "subsequent-call",
+          "termination_address": "0x00434cd9"
+        },
+        "slice_disposition": "unclassified",
+        "reachable_signed_i32_range": "unproved"
+      },
+      {
+        "id": "ftol2-00434cd9",
+        "class": "x87-ftol2-low-result-v1",
+        "call_address": "0x00434cd9",
+        "function": "th06::AnmManager::DrawStringFormat",
+        "function_offset": 153,
+        "predecessor": {
+          "address": "0x00434cd6",
+          "mnemonic": "fld"
+        },
+        "bounded_result_observation": {
+          "scan_instruction_limit": 32,
+          "eax_observed_mask": "0xffffffff",
+          "edx_observed_mask": "0x00000000",
+          "eax_live_mask_at_stop": "0x00000000",
+          "edx_live_mask_at_stop": "0xffffffff",
+          "first_eax_observer": {
+            "address": "0x00434cde",
+            "mnemonic": "push",
+            "aliases": [
+              "eax"
+            ]
+          },
+          "first_edx_observer": null,
+          "termination": "subsequent-call",
+          "termination_address": "0x00434ceb"
+        },
+        "slice_disposition": "unclassified",
+        "reachable_signed_i32_range": "unproved"
+      },
+      {
+        "id": "ftol2-00434ceb",
+        "class": "x87-ftol2-low-result-v1",
+        "call_address": "0x00434ceb",
+        "function": "th06::AnmManager::DrawStringFormat",
+        "function_offset": 171,
+        "predecessor": {
+          "address": "0x00434ce8",
+          "mnemonic": "fld"
+        },
+        "bounded_result_observation": {
+          "scan_instruction_limit": 32,
+          "eax_observed_mask": "0xffffffff",
+          "edx_observed_mask": "0x00000000",
+          "eax_live_mask_at_stop": "0x00000000",
+          "edx_live_mask_at_stop": "0x00000000",
+          "first_eax_observer": {
+            "address": "0x00434cf0",
+            "mnemonic": "push",
+            "aliases": [
+              "eax"
+            ]
+          },
+          "first_edx_observer": null,
+          "termination": "resolved",
+          "termination_address": "0x00434cf4"
+        },
+        "slice_disposition": "unclassified",
+        "reachable_signed_i32_range": "unproved"
+      },
+      {
+        "id": "ftol2-00434cfd",
+        "class": "x87-ftol2-low-result-v1",
+        "call_address": "0x00434cfd",
+        "function": "th06::AnmManager::DrawStringFormat",
+        "function_offset": 189,
+        "predecessor": {
+          "address": "0x00434cfa",
+          "mnemonic": "fld"
+        },
+        "bounded_result_observation": {
+          "scan_instruction_limit": 32,
+          "eax_observed_mask": "0xffffffff",
+          "edx_observed_mask": "0x00000000",
+          "eax_live_mask_at_stop": "0x00000000",
+          "edx_live_mask_at_stop": "0x00000000",
+          "first_eax_observer": {
+            "address": "0x00434d02",
+            "mnemonic": "push",
+            "aliases": [
+              "eax"
+            ]
+          },
+          "first_edx_observer": null,
+          "termination": "resolved",
+          "termination_address": "0x00434d0c"
+        },
+        "slice_disposition": "unclassified",
+        "reachable_signed_i32_range": "unproved"
+      },
+      {
+        "id": "ftol2-00434d86",
+        "class": "x87-ftol2-low-result-v1",
+        "call_address": "0x00434d86",
+        "function": "th06::AnmManager::DrawStringFormat",
+        "function_offset": 326,
+        "predecessor": {
+          "address": "0x00434d84",
+          "mnemonic": "fsubp"
+        },
+        "bounded_result_observation": {
+          "scan_instruction_limit": 32,
+          "eax_observed_mask": "0xffffffff",
+          "edx_observed_mask": "0x00000000",
+          "eax_live_mask_at_stop": "0x00000000",
+          "edx_live_mask_at_stop": "0x00000000",
+          "first_eax_observer": {
+            "address": "0x00434d8b",
+            "mnemonic": "mov",
+            "aliases": [
+              "eax"
+            ]
+          },
+          "first_edx_observer": null,
+          "termination": "resolved",
+          "termination_address": "0x00434d96"
+        },
+        "slice_disposition": "unclassified",
+        "reachable_signed_i32_range": "unproved"
+      },
+      {
+        "id": "ftol2-00434db6",
+        "class": "x87-ftol2-low-result-v1",
+        "call_address": "0x00434db6",
+        "function": "th06::AnmManager::DrawStringFormat",
+        "function_offset": 374,
+        "predecessor": {
+          "address": "0x00434db3",
+          "mnemonic": "fld"
+        },
+        "bounded_result_observation": {
+          "scan_instruction_limit": 32,
+          "eax_observed_mask": "0xffffffff",
+          "edx_observed_mask": "0x00000000",
+          "eax_live_mask_at_stop": "0x00000000",
+          "edx_live_mask_at_stop": "0x00000000",
+          "first_eax_observer": {
+            "address": "0x00434dbb",
+            "mnemonic": "push",
+            "aliases": [
+              "eax"
+            ]
+          },
+          "first_edx_observer": null,
+          "termination": "resolved",
+          "termination_address": "0x00434dbf"
+        },
+        "slice_disposition": "unclassified",
+        "reachable_signed_i32_range": "unproved"
+      },
+      {
+        "id": "ftol2-00434dc8",
+        "class": "x87-ftol2-low-result-v1",
+        "call_address": "0x00434dc8",
+        "function": "th06::AnmManager::DrawStringFormat",
+        "function_offset": 392,
+        "predecessor": {
+          "address": "0x00434dc5",
+          "mnemonic": "fld"
+        },
+        "bounded_result_observation": {
+          "scan_instruction_limit": 32,
+          "eax_observed_mask": "0xffffffff",
+          "edx_observed_mask": "0x00000000",
+          "eax_live_mask_at_stop": "0xffffffff",
+          "edx_live_mask_at_stop": "0x00000000",
+          "first_eax_observer": {
+            "address": "0x00434dcd",
+            "mnemonic": "push",
+            "aliases": [
+              "eax"
+            ]
+          },
+          "first_edx_observer": null,
+          "termination": "subsequent-call",
+          "termination_address": "0x00434dda"
+        },
+        "slice_disposition": "unclassified",
+        "reachable_signed_i32_range": "unproved"
+      },
+      {
+        "id": "ftol2-00434dda",
+        "class": "x87-ftol2-low-result-v1",
+        "call_address": "0x00434dda",
+        "function": "th06::AnmManager::DrawStringFormat",
+        "function_offset": 410,
+        "predecessor": {
+          "address": "0x00434dd7",
+          "mnemonic": "fld"
+        },
+        "bounded_result_observation": {
+          "scan_instruction_limit": 32,
+          "eax_observed_mask": "0xffffffff",
+          "edx_observed_mask": "0x00000000",
+          "eax_live_mask_at_stop": "0x00000000",
+          "edx_live_mask_at_stop": "0x00000000",
+          "first_eax_observer": {
+            "address": "0x00434ddf",
+            "mnemonic": "push",
+            "aliases": [
+              "eax"
+            ]
+          },
+          "first_edx_observer": null,
+          "termination": "resolved",
+          "termination_address": "0x00434de7"
+        },
+        "slice_disposition": "unclassified",
+        "reachable_signed_i32_range": "unproved"
+      },
+      {
+        "id": "ftol2-00434ea7",
+        "class": "x87-ftol2-low-result-v1",
+        "call_address": "0x00434ea7",
+        "function": "th06::AnmManager::DrawStringFormat2",
+        "function_offset": 135,
+        "predecessor": {
+          "address": "0x00434ea4",
+          "mnemonic": "fld"
+        },
+        "bounded_result_observation": {
+          "scan_instruction_limit": 32,
+          "eax_observed_mask": "0xffffffff",
+          "edx_observed_mask": "0x00000000",
+          "eax_live_mask_at_stop": "0xffffffff",
+          "edx_live_mask_at_stop": "0x00000000",
+          "first_eax_observer": {
+            "address": "0x00434eac",
+            "mnemonic": "push",
+            "aliases": [
+              "eax"
+            ]
+          },
+          "first_edx_observer": null,
+          "termination": "subsequent-call",
+          "termination_address": "0x00434eb9"
+        },
+        "slice_disposition": "unclassified",
+        "reachable_signed_i32_range": "unproved"
+      },
+      {
+        "id": "ftol2-00434eb9",
+        "class": "x87-ftol2-low-result-v1",
+        "call_address": "0x00434eb9",
+        "function": "th06::AnmManager::DrawStringFormat2",
+        "function_offset": 153,
+        "predecessor": {
+          "address": "0x00434eb6",
+          "mnemonic": "fld"
+        },
+        "bounded_result_observation": {
+          "scan_instruction_limit": 32,
+          "eax_observed_mask": "0xffffffff",
+          "edx_observed_mask": "0x00000000",
+          "eax_live_mask_at_stop": "0x00000000",
+          "edx_live_mask_at_stop": "0xffffffff",
+          "first_eax_observer": {
+            "address": "0x00434ebe",
+            "mnemonic": "push",
+            "aliases": [
+              "eax"
+            ]
+          },
+          "first_edx_observer": null,
+          "termination": "subsequent-call",
+          "termination_address": "0x00434ecb"
+        },
+        "slice_disposition": "unclassified",
+        "reachable_signed_i32_range": "unproved"
+      },
+      {
+        "id": "ftol2-00434ecb",
+        "class": "x87-ftol2-low-result-v1",
+        "call_address": "0x00434ecb",
+        "function": "th06::AnmManager::DrawStringFormat2",
+        "function_offset": 171,
+        "predecessor": {
+          "address": "0x00434ec8",
+          "mnemonic": "fld"
+        },
+        "bounded_result_observation": {
+          "scan_instruction_limit": 32,
+          "eax_observed_mask": "0xffffffff",
+          "edx_observed_mask": "0x00000000",
+          "eax_live_mask_at_stop": "0x00000000",
+          "edx_live_mask_at_stop": "0x00000000",
+          "first_eax_observer": {
+            "address": "0x00434ed0",
+            "mnemonic": "push",
+            "aliases": [
+              "eax"
+            ]
+          },
+          "first_edx_observer": null,
+          "termination": "resolved",
+          "termination_address": "0x00434ed4"
+        },
+        "slice_disposition": "unclassified",
+        "reachable_signed_i32_range": "unproved"
+      },
+      {
+        "id": "ftol2-00434edd",
+        "class": "x87-ftol2-low-result-v1",
+        "call_address": "0x00434edd",
+        "function": "th06::AnmManager::DrawStringFormat2",
+        "function_offset": 189,
+        "predecessor": {
+          "address": "0x00434eda",
+          "mnemonic": "fld"
+        },
+        "bounded_result_observation": {
+          "scan_instruction_limit": 32,
+          "eax_observed_mask": "0xffffffff",
+          "edx_observed_mask": "0x00000000",
+          "eax_live_mask_at_stop": "0x00000000",
+          "edx_live_mask_at_stop": "0x00000000",
+          "first_eax_observer": {
+            "address": "0x00434ee2",
+            "mnemonic": "push",
+            "aliases": [
+              "eax"
+            ]
+          },
+          "first_edx_observer": null,
+          "termination": "resolved",
+          "termination_address": "0x00434eec"
+        },
+        "slice_disposition": "unclassified",
+        "reachable_signed_i32_range": "unproved"
+      },
+      {
+        "id": "ftol2-00434f6c",
+        "class": "x87-ftol2-low-result-v1",
+        "call_address": "0x00434f6c",
+        "function": "th06::AnmManager::DrawStringFormat2",
+        "function_offset": 332,
+        "predecessor": {
+          "address": "0x00434f6a",
+          "mnemonic": "fsubp"
+        },
+        "bounded_result_observation": {
+          "scan_instruction_limit": 32,
+          "eax_observed_mask": "0xffffffff",
+          "edx_observed_mask": "0x00000000",
+          "eax_live_mask_at_stop": "0x00000000",
+          "edx_live_mask_at_stop": "0x00000000",
+          "first_eax_observer": {
+            "address": "0x00434f71",
+            "mnemonic": "mov",
+            "aliases": [
+              "eax"
+            ]
+          },
+          "first_edx_observer": null,
+          "termination": "resolved",
+          "termination_address": "0x00434f7c"
+        },
+        "slice_disposition": "unclassified",
+        "reachable_signed_i32_range": "unproved"
+      },
+      {
+        "id": "ftol2-00434f9c",
+        "class": "x87-ftol2-low-result-v1",
+        "call_address": "0x00434f9c",
+        "function": "th06::AnmManager::DrawStringFormat2",
+        "function_offset": 380,
+        "predecessor": {
+          "address": "0x00434f99",
+          "mnemonic": "fld"
+        },
+        "bounded_result_observation": {
+          "scan_instruction_limit": 32,
+          "eax_observed_mask": "0xffffffff",
+          "edx_observed_mask": "0x00000000",
+          "eax_live_mask_at_stop": "0x00000000",
+          "edx_live_mask_at_stop": "0x00000000",
+          "first_eax_observer": {
+            "address": "0x00434fa1",
+            "mnemonic": "push",
+            "aliases": [
+              "eax"
+            ]
+          },
+          "first_edx_observer": null,
+          "termination": "resolved",
+          "termination_address": "0x00434fa5"
+        },
+        "slice_disposition": "unclassified",
+        "reachable_signed_i32_range": "unproved"
+      },
+      {
+        "id": "ftol2-00434fae",
+        "class": "x87-ftol2-low-result-v1",
+        "call_address": "0x00434fae",
+        "function": "th06::AnmManager::DrawStringFormat2",
+        "function_offset": 398,
+        "predecessor": {
+          "address": "0x00434fab",
+          "mnemonic": "fld"
+        },
+        "bounded_result_observation": {
+          "scan_instruction_limit": 32,
+          "eax_observed_mask": "0xffffffff",
+          "edx_observed_mask": "0x00000000",
+          "eax_live_mask_at_stop": "0xffffffff",
+          "edx_live_mask_at_stop": "0x00000000",
+          "first_eax_observer": {
+            "address": "0x00434fb3",
+            "mnemonic": "push",
+            "aliases": [
+              "eax"
+            ]
+          },
+          "first_edx_observer": null,
+          "termination": "subsequent-call",
+          "termination_address": "0x00434fc0"
+        },
+        "slice_disposition": "unclassified",
+        "reachable_signed_i32_range": "unproved"
+      },
+      {
+        "id": "ftol2-00434fc0",
+        "class": "x87-ftol2-low-result-v1",
+        "call_address": "0x00434fc0",
+        "function": "th06::AnmManager::DrawStringFormat2",
+        "function_offset": 416,
+        "predecessor": {
+          "address": "0x00434fbd",
+          "mnemonic": "fld"
+        },
+        "bounded_result_observation": {
+          "scan_instruction_limit": 32,
+          "eax_observed_mask": "0xffffffff",
+          "edx_observed_mask": "0x00000000",
+          "eax_live_mask_at_stop": "0x00000000",
+          "edx_live_mask_at_stop": "0x00000000",
+          "first_eax_observer": {
+            "address": "0x00434fc5",
+            "mnemonic": "push",
+            "aliases": [
+              "eax"
+            ]
+          },
+          "first_edx_observer": null,
+          "termination": "resolved",
+          "termination_address": "0x00434fcd"
+        },
+        "slice_disposition": "unclassified",
+        "reachable_signed_i32_range": "unproved"
+      }
+    ]
+  },
+  "artifact_sha256": "1c4c128284bf5ab4aa36e636cd5ed15f0300e5295e7fb29f12c0cb2f897f65af"
+}

@@ -131,8 +131,11 @@ transitive noninterference argument for the corresponding draw paths.
 At the 77 \code{\_\_ftol2} sites, predecessor counts are 60 \code{fld}, seven
 \code{fmul}, four \code{fdiv}, and two each of \code{fadd}, \code{fsubp}, and
 \code{fsubr}.  A bounded straight-line scan observes EAX at every caller and
-EDX at none.  This identifies the candidate observable projection but does not
-establish a reachable input range.
+EDX at none.  The bit-mask refinement records 75 full-EAX and two AL-only
+observers.  It stops at 15 control-flow boundaries, 34 subsequent calls, and
+28 syntactically resolved windows; EDX remains live at 42 stops.  This
+identifies a candidate observable projection but is not complete data-flow
+analysis and does not establish a reachable input range.
 
 The CRT trigonometric wrappers embed raw x87 control word \code{0x027f}.  A
 small Lean definition checks its 53-bit significand precision,
@@ -235,3 +238,20 @@ Nor does it prove that mapped gameplay calls stay within signed i32, even
 though static consumers observe only EAX or AL.  Reachable-range invariants and
 binary-to-model correspondence remain required before the helper can be
 replaced by a smaller truncation operation in the proof kernel.
+
+\subsection{Address-level obligation ledger}
+
+The two audited families are frozen as 321 sorted, unique address records in a
+canonical JSON ledger.  The artifact accepts only the pinned executable,
+mapping, and implemented-list hashes; it records hashes of its generator and
+audit tool and seals its canonical content with SHA-256.  A public unit test
+checks that seal, the complete count/signature distributions, conservative
+status fields, and the absence of full disassembly operands without requiring
+the commercial input.
+
+This is progress in traceability, not proof completion.  All 244 comparison
+records remain \code{unclassified} with respect to the gameplay slice.  All 77
+helper records remain \code{unclassified} and
+\code{reachable\_signed\_i32\_range = unproved}.  Each retained record must
+eventually name a binary-to-model and guest-refinement theorem; each omitted
+record must name a projection-noninterference theorem.

@@ -25,6 +25,10 @@ Comparison truth tables now cover all eleven status-mask/branch forms at the
 verified 117-byte `__ftol2` body without retaining proprietary bytes and checks
 its EDX:EAX truncation result over a bounded canonical domain; neither result
 is yet a code-binding or reachable-range proof.
+The 244 comparison addresses and 77 conversion-call addresses are now frozen
+in a hash-bound, proprietary-byte-free obligation ledger. Every site remains
+explicitly unclassified until it receives either a retained-operation
+refinement or an omitted-path noninterference proof.
 
 ## Repository boundary
 
@@ -107,7 +111,9 @@ The pinned executable's x87/XMM census, control-word evidence, helper-call
 surface, and exact-versus-refined arithmetic plan are in
 [`docs/arithmetic-audit.md`](docs/arithmetic-audit.md). The reproducible pinned
 SoftFloat differential probe and its deliberately narrower claim are in
-[`arithmetic/README.md`](arithmetic/README.md). Research
+[`arithmetic/README.md`](arithmetic/README.md); the address-to-proof bridge and
+its still-open premises are in
+[`docs/arithmetic-obligations.md`](docs/arithmetic-obligations.md). Research
 questions, method and evaluation are maintained in
 [`paper/main.tex`](paper/main.tex).
 

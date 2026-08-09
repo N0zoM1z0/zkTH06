@@ -95,7 +95,10 @@ The mapped game surface also contains 244 `fcomp` sites: 236 have DWORD and
 eight have QWORD memory operands. Every one has a complete immediate
 `fnstsw ax`/mask/conditional-branch consumer, spanning eleven signatures. At
 all 77 `__ftol2` sites a straight-line scan observes EAX (or AL) and never EDX;
-the preceding x87 operations are also inventoried.
+the preceding x87 operations are also inventoried. A subsequent bit-mask scan
+refines this to 75 full-EAX and two AL-only observations. Because 42 stopping
+points still have live EDX bits, this remains bounded syntactic evidence rather
+than complete data-flow proof.
 
 The CRT trigonometric wrappers embed x87 control word `0x027f` (53-bit
 significand precision, round-to-nearest-even, exceptions masked), but static
@@ -118,6 +121,11 @@ counterexample searches: load exceptions, out-of-range helper inputs,
 transcendentals, address binding, reachable-range invariants, and a
 model-to-code proof remain open. The reproduction and claim boundary are in
 [`../arithmetic/README.md`](../arithmetic/README.md).
+The corresponding 321 original addresses are now frozen in
+[`../arithmetic/obligations-v1.json`](../arithmetic/obligations-v1.json), with
+every slice disposition and every conversion range explicitly unproved; the
+discharge protocol is in
+[`arithmetic-obligations.md`](arithmetic-obligations.md).
 
 ## Remaining M0 gates
 
