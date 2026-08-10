@@ -73,8 +73,6 @@ PLAYER_SHOOTING_FIELDS = (
 DRAW_ONLY_UPDATE_INPUT = (
     "player_bullet_update.before.active_slots[*].sprite_position_bits[2]"
 )
-DRAW_ONLY_ITEM_INPUT = "items_frame.active_slots[*].unk_142"
-DRAW_ONLY_ENEMY_BULLET_INPUT = "enemy_bullets_frame.active_slots[*].*_anm.sprite_id"
 
 
 def sha256_file(path: Path) -> str:
@@ -289,20 +287,6 @@ def draw_only_update_input_filter(
     return ignore
 
 
-def draw_only_item_filter(path: str, _retail_value: Any, _reference_value: Any) -> bool:
-    prefix = "items_frame.active_slots["
-    suffix = "].unk_142"
-    return path.startswith(prefix) and path.endswith(suffix) and path[len(prefix) : -len(suffix)].isdigit()
-
-
-def draw_only_enemy_bullet_filter(path: str, _retail_value: Any, _reference_value: Any) -> bool:
-    return (
-        path.startswith("enemy_bullets_frame.active_slots[")
-        and "]." in path
-        and path.endswith("_anm.sprite_id")
-    )
-
-
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("retail", type=Path)
@@ -338,11 +322,6 @@ def main() -> int:
         action="store_true",
         help="also compare the gameplay-relevant active Item slot projection",
     )
-    parser.add_argument(
-        "--enemy-bullets",
-        action="store_true",
-        help="also compare the relocation-free, gameplay-live Enemy bullet projection",
-    )
     args = parser.parse_args()
 
     retail_rows = read_jsonl(args.retail)
@@ -356,8 +335,7 @@ def main() -> int:
         raise ValueError("retail trace target mismatch")
 
     retail_frames = [row for row in retail_rows[1:] if row.get("type") == FRAME_KIND]
-    items = args.items or args.enemy_bullets
-    enemy_collisions = args.enemy_collisions or items
+    enemy_collisions = args.enemy_collisions or args.items
     player_bullet_frames = args.player_bullet_frames or enemy_collisions
     player_bullets = args.player_bullets or player_bullet_frames
     player_shooting = args.player_shooting or player_bullets
@@ -378,13 +356,9 @@ def main() -> int:
             "player_damage_calls",
             "player_damage_trace_overflow",
         )
-    if items:
+    if args.items:
         compared_fields += ("items_frame",)
-    if args.enemy_bullets:
-        compared_fields += ("enemy_bullets_frame",)
     ignored_draw_z_differences = [0]
-    ignored_item_draw_differences = [0]
-    ignored_enemy_bullet_draw_differences = [0]
     report: dict[str, Any] = {
         "type": "zkth06.retail-reference-comparison",
         "schema_version": 1,
@@ -405,10 +379,8 @@ def main() -> int:
         "gdb_version": header.get("gdb_version"),
         "config_sha256": header.get("config_sha256"),
         "comparison_profile": (
-            "enemy-bullets"
-            if args.enemy_bullets
-            else "items"
-            if items
+            "items"
+            if args.items
             else "enemy-collisions"
             if enemy_collisions
             else "player-bullet-frames"
@@ -457,28 +429,6 @@ def main() -> int:
                 ),
             }
         ]
-    if items:
-        report.setdefault("semantic_projection_exclusions", []).append(
-            {
-                "path": DRAW_ONLY_ITEM_INPUT,
-                "observed_differences": 0,
-                "reason": (
-                    "ItemManager::OnDraw toggles unk_142 only when selecting the offscreen "
-                    "indicator sprite; no calc-chain function reads this field"
-                ),
-            }
-        )
-    if args.enemy_bullets:
-        report.setdefault("semantic_projection_exclusions", []).append(
-            {
-                "path": DRAW_ONLY_ENEMY_BULLET_INPUT,
-                "observed_differences": 0,
-                "reason": (
-                    "AnmLoadedSprite::spriteId is a load-order draw-backend handle; BulletManager "
-                    "reads active sprite indices and width/height, never spriteId"
-                ),
-            }
-        )
     if len(retail_frames) != len(reference_rows):
         message = f"length mismatch: retail={len(retail_frames)} reference={len(reference_rows)}"
         report.update(
@@ -558,39 +508,16 @@ def main() -> int:
                 )
                 if nested_difference is not None:
                     differing[nested_field] = nested_difference
-        if items:
+        if args.items:
             nested_difference = first_nested_difference(
-                retail.get("items_frame"),
-                reference.get("items_frame"),
-                "items_frame",
-                ignore_leaf=draw_only_item_filter,
-                ignored_count=ignored_item_draw_differences,
+                retail.get("items_frame"), reference.get("items_frame"), "items_frame"
             )
             if nested_difference is not None:
                 differing["items_frame"] = nested_difference
-        if args.enemy_bullets:
-            nested_difference = first_nested_difference(
-                retail.get("enemy_bullets_frame"),
-                reference.get("enemy_bullets_frame"),
-                "enemy_bullets_frame",
-                ignore_leaf=draw_only_enemy_bullet_filter,
-                ignored_count=ignored_enemy_bullet_draw_differences,
-            )
-            if nested_difference is not None:
-                differing["enemy_bullets_frame"] = nested_difference
         if differing:
             if player_bullet_frames:
                 report["semantic_projection_exclusions"][0]["observed_differences"] = (
                     ignored_draw_z_differences[0]
-                )
-            if items:
-                item_exclusion_index = 1 if player_bullet_frames else 0
-                report["semantic_projection_exclusions"][item_exclusion_index]["observed_differences"] = (
-                    ignored_item_draw_differences[0]
-                )
-            if args.enemy_bullets:
-                report["semantic_projection_exclusions"][-1]["observed_differences"] = (
-                    ignored_enemy_bullet_draw_differences[0]
                 )
             mismatch = {
                 "first_mismatch_index": index,
@@ -621,15 +548,6 @@ def main() -> int:
         report["semantic_projection_exclusions"][0]["observed_differences"] = (
             ignored_draw_z_differences[0]
         )
-    if items:
-        item_exclusion_index = 1 if player_bullet_frames else 0
-        report["semantic_projection_exclusions"][item_exclusion_index]["observed_differences"] = (
-            ignored_item_draw_differences[0]
-        )
-    if args.enemy_bullets:
-        report["semantic_projection_exclusions"][-1]["observed_differences"] = (
-            ignored_enemy_bullet_draw_differences[0]
-        )
     if enemy_collisions:
         all_damage_calls = [
             call for frame in retail_frames for call in frame.get("player_damage_calls", [])
@@ -650,7 +568,7 @@ def main() -> int:
                 bool(frame.get("player_damage_trace_overflow")) for frame in retail_frames
             ),
         }
-    if items:
+    if args.items:
         active_item_counts = [
             len(frame.get("items_frame", {}).get("active_slots", []))
             for frame in retail_frames
@@ -673,23 +591,6 @@ def main() -> int:
                 ),
                 None,
             ),
-        }
-    if args.enemy_bullets:
-        active_bullet_counts = [
-            len(frame.get("enemy_bullets_frame", {}).get("active_slots", []))
-            for frame in retail_frames
-        ]
-        report["observed_enemy_bullet_metrics"] = {
-            "maximum_active_bullets": max(active_bullet_counts, default=0),
-            "first_active_game_frame": next(
-                (
-                    int(frame["game_frame"])
-                    for frame, count in zip(retail_frames, active_bullet_counts, strict=True)
-                    if count
-                ),
-                None,
-            ),
-            "final_active_bullets": active_bullet_counts[-1] if active_bullet_counts else 0,
         }
     if args.report is not None:
         write_report(args.report, report)

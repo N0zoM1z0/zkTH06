@@ -1,0 +1,227 @@
+{
+  "schema_version": 1,
+  "kind": "zkth06.second-wave-audit",
+  "inputs": {
+    "executable_sha256": "9f76483c46256804792399296619c1274363c31cd8f1775fafb55106fb852245",
+    "first_item_artifact_sha256": "1dcc3f77e38f695def1535760bc15e813e98dda899f039c938a1f92c8a19416b",
+    "stage1_ecl_sha256": "9d9a40e9f7e3ab9346d3874438134659cacf9d34f4aff57b96b4be4ea85b99d7"
+  },
+  "generator": {
+    "path": "tools/second_wave_audit.py",
+    "sha256": "f3b0f0a8fa12662d3b44bcc1590df2a72d78329db8f8cb861911602ca106ca89"
+  },
+  "upstream": {
+    "url": "https://github.com/GensokyoClub/th06",
+    "revision": "cc475a0bc3fef38683b0f02224c87ddba0a021d9",
+    "source_files": {
+      "src/BulletManager.cpp": "86437f40c7c5ac2c6e548b3003f450d3824d22c2c7a52a7ffbafa3e8f8aad28b",
+      "src/EclManager.cpp": "b4671d3bb277ffafafea18f58f8340f0900d61983816fca947bfc7f1d7f0a668",
+      "src/EffectManager.cpp": "937e51e21f7de564d72f63a0ad5fae85a67201abe0c61e604177b5e172f2bea0",
+      "src/EnemyManager.cpp": "39a38a22282fdee6ce1a458087541e792e50d0a1dcd1994becda6705d96d6bba",
+      "src/Rng.cpp": "2bedc320c90ff651d98aed98a45b57e2074e9726f6c0c70dc5fb2cc9652be2cc"
+    },
+    "anchors": [
+      {
+        "file": "src/EnemyManager.cpp",
+        "line": 92,
+        "anchor": "SpawnEnemy",
+        "role": "timeline Enemy allocator"
+      },
+      {
+        "file": "src/EnemyManager.cpp",
+        "line": 110,
+        "anchor": "CallEclSub",
+        "role": "initial ECL context"
+      },
+      {
+        "file": "src/EnemyManager.cpp",
+        "line": 111,
+        "anchor": "RunEcl",
+        "role": "spawn-time ECL execution"
+      },
+      {
+        "file": "src/EnemyManager.cpp",
+        "line": 532,
+        "anchor": "RunEclTimeline",
+        "role": "timeline-before-Enemy order"
+      },
+      {
+        "file": "src/EnemyManager.cpp",
+        "line": 541,
+        "anchor": "curEnemy->Move",
+        "role": "movement-before-ECL order"
+      },
+      {
+        "file": "src/EnemyManager.cpp",
+        "line": 565,
+        "anchor": "RunEcl(curEnemy)",
+        "role": "per-frame ECL execution"
+      },
+      {
+        "file": "src/EnemyManager.cpp",
+        "line": 597,
+        "anchor": "CalcDamageToEnemy",
+        "role": "Player-bullet collision writer"
+      },
+      {
+        "file": "src/EnemyManager.cpp",
+        "line": 677,
+        "anchor": "randomItemSpawnIndex % 3",
+        "role": "random-drop cadence"
+      },
+      {
+        "file": "src/EnemyManager.cpp",
+        "line": 699,
+        "anchor": "SpawnParticles",
+        "role": "common death effect"
+      },
+      {
+        "file": "src/EffectManager.cpp",
+        "line": 55,
+        "anchor": "GetRandomF32ZeroToOne",
+        "role": "splash x RNG"
+      },
+      {
+        "file": "src/EffectManager.cpp",
+        "line": 56,
+        "anchor": "GetRandomF32ZeroToOne",
+        "role": "splash y RNG"
+      },
+      {
+        "file": "src/EffectManager.cpp",
+        "line": 225,
+        "anchor": "SetAndExecuteScriptIdx",
+        "role": "effect ANM random-sprite path"
+      },
+      {
+        "file": "src/EffectManager.cpp",
+        "line": 250,
+        "anchor": "EffectManager::OnUpdate",
+        "role": "same-frame effect update"
+      },
+      {
+        "file": "src/Rng.cpp",
+        "line": 7,
+        "anchor": "GetRandomU16",
+        "role": "retained RNG transition"
+      },
+      {
+        "file": "src/Rng.cpp",
+        "line": 18,
+        "anchor": "GetRandomU16",
+        "role": "U32 consumes two U16 values"
+      },
+      {
+        "file": "src/BulletManager.cpp",
+        "line": 652,
+        "anchor": "BulletManager::OnUpdate",
+        "role": "Enemy-bullet manager transition"
+      },
+      {
+        "file": "src/BulletManager.cpp",
+        "line": 674,
+        "anchor": "bulletCount = 0",
+        "role": "active-pool count reset"
+      },
+      {
+        "file": "src/BulletManager.cpp",
+        "line": 1102,
+        "anchor": "time.Tick",
+        "role": "Enemy-bullet manager timer"
+      },
+      {
+        "file": "src/EclManager.cpp",
+        "line": 409,
+        "anchor": "SpawnBulletPattern",
+        "role": "ECL direct-shot sink"
+      },
+      {
+        "file": "src/EclManager.cpp",
+        "line": 449,
+        "anchor": "SpawnBulletPattern",
+        "role": "ECL shoot-now sink"
+      },
+      {
+        "file": "src/EclManager.cpp",
+        "line": 986,
+        "anchor": "SpawnBulletPattern",
+        "role": "interval-shot sink"
+      }
+    ],
+    "correspondence_status": "source-level correspondence plus paired address-bound differential evidence"
+  },
+  "derived_profile_contract": {
+    "route": "Reimu A, Normal, Stage 1 replay 002677",
+    "anchor_game_frame": 249,
+    "last_game_frame": 350,
+    "timeline_spawns": [
+      257,
+      273,
+      289,
+      305,
+      321,
+      337
+    ],
+    "second_group_deaths": [
+      328,
+      331,
+      335,
+      343,
+      350
+    ],
+    "death_player_bullet_slots": [
+      1,
+      0,
+      3,
+      2,
+      4
+    ],
+    "death_effect_rng_u16_calls": [
+      55,
+      25,
+      25,
+      55,
+      25
+    ],
+    "rng_anchor": {
+      "seed": 41015,
+      "generation": 157
+    },
+    "rng_final": {
+      "seed": 37443,
+      "generation": 342
+    },
+    "random_drop_items": [
+      {
+        "game_frame": 328,
+        "slot": 1,
+        "type": "ITEM_POWER_SMALL"
+      },
+      {
+        "game_frame": 343,
+        "slot": 2,
+        "type": "ITEM_POINT"
+      }
+    ],
+    "enemy_bullets": {
+      "active_slots": 0,
+      "next_index": 0,
+      "count": 0,
+      "timer_current_at_end": 350,
+      "claim": "complete relocation-free active-slot projection is empty through the checkpoint"
+    },
+    "effect_slice": "five common effects per death, plus six random-drop effects on cursor multiples of three; each observed effect consumes one U16 in its ANM random-sprite instruction and four U16 via two GetRandomU32 splash coordinates in the same frame"
+  },
+  "evidence_status": "paired with a 400-frame retail/reference comparison covering Enemy/ECL, Player collisions, Items, RNG, and the Enemy-bullet manager; a 1200-frame run crosses the first actual Enemy bullets",
+  "open_obligations": [
+    "Translate the selected ECL and effect ANM bytecode to a machine-checked decoder correspondence.",
+    "Replace the finite effect-pool capacity argument with alias-aware noninterference.",
+    "Continue the canonical kernel from frame 350 to the first actual Enemy-bullet spawn at frame 1180."
+  ],
+  "counts": {
+    "source_anchors": 21,
+    "incremental_transitions": 101,
+    "enemy_deaths": 5
+  },
+  "artifact_sha256": "9e968608c356645fa0d4694211f6f11ab2a0c712994eb6dce0e0949bef219b8a"
+}

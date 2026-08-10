@@ -1,0 +1,29 @@
+[workspace]
+
+[package]
+name = "zkth06-second-wave"
+version = "0.1.0"
+edition = "2021"
+license = "GPL-3.0-only"
+rust-version = "1.91.1"
+description = "Closed TH06 Stage-1 second-wave Enemy, RNG, Item, and empty Enemy-bullet transition"
+publish = false
+
+[lib]
+path = "src/lib.rs"
+
+[dependencies]
+zkth06-early-gameplay = { path = "../early-gameplay" }
+zkth06-first-item = { path = "../first-item" }
+zkth06-player-motion = { path = "../player-motion" }
+zkth06-player-shooting = { path = "../player-shooting" }
+zkth06-player-bullets = { path = "../player-bullets" }
+zkth06-player-bullet-lifecycle = { path = "../player-bullet-lifecycle" }
+
+[lints.rust]
+unsafe_code = "forbid"
+
+[profile.release]
+codegen-units = 1
+lto = "fat"
+panic = "abort"

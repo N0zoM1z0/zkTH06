@@ -550,6 +550,56 @@ into the canonical transition. Item/collision ANM decoding, alias-complete
 effect and Sub0-shooting noninterference, x87 refinement, and code
 correspondence remain open; Lean is deliberately not on this critical path.
 
+## Second-wave Enemy/ECL/RNG proof gate
+
+The next enclosing transition now moves that boundary to frame 350. Starting
+from the same fixed frame-1 state, it internally replays the complete earlier
+chain to frame 249 and then derives timeline spawns at frames 257, 273, 289,
+305, 321, and 337. Each Enemy carries its ECL timer, in-bounds gate, life,
+position, axis speed, angle, and angular velocity. Player-bullet collisions
+derive deaths at frames 328, 331, 335, 343, and 350 and raise score from 1960
+to 3910.
+
+The shared RNG is no longer outside the retained state. Its frame-249 anchor
+is seed 41015/generation 157. The five death paths consume respectively 55,
+25, 25, 55, and 25 `GetRandomU16` results: five common effects per death plus
+six random-drop effects when the cursor reaches a multiple of three, with one
+ANM random-sprite draw and two `GetRandomU32` splash coordinates per effect.
+The endpoint is seed 37443/generation 342. Random-drop cursors advance from
+6/1 to 11/3 and produce a small-power Item at frame 328 and a point Item at
+frame 343; both Item states are carried through the endpoint.
+
+Enemy-bullet manager timer/cursors/count and the active pool are also part of
+the canonical state. The pool is derived empty on every frame through 350,
+rather than omitted under a noninterference assumption. The 47,360-byte
+`ZKSWV1` vector checks all 101 incremental states. Its source oracle is a new
+1,200-frame address-bound retail/reference comparison that carries the same
+projection forward to the first seven live Enemy bullets at frame 1180. All
+frames match semantically. The only excluded values are three presentation-
+only fields with recorded next-read arguments. Replacing host `libm` with x87
+`fsincos` under the retail `0x007f` control word was necessary to eliminate a
+one-bit curved-Enemy velocity divergence at frame 880.
+
+The `ZKSWI1` OpenVM payload is 724 bytes: a fixed 24-byte header plus 350
+replay masks. No frame-249 anchor, Enemy/ECL state, RNG state, Item, score, or
+Enemy-bullet state is witness-supplied. The guest derives the complete chain
+from frame 1, hashes every frame-250--350 projection, and exposes digest
+`7d70502eb31b1ad8fc13947b8ae68185df92f3799ee62ca033b21c78fd114281`.
+It executes 28,003,469 instructions over 1,089,931,880 metered cells. The
+tracked bundle is
+[`evidence/openvm-second-wave-349-v1.json`](../evidence/openvm-second-wave-349-v1.json).
+Application proving took 243.25 seconds and 52,391,412 KiB peak RSS without
+swapping; exact verification took 0.24 seconds and 53,496 KiB. The authenticated
+public digest and executable commitment pass, while one-bit variants fail.
+
+This closes the second-group Enemy/ECL and effect-RNG boundary only for the
+selected finite route. The kernel intentionally fails if the frame-328 Enemy
+survives into its next unsupported trigonometric write. Direct ECL/effect ANM
+decoding, general x87 transcendental refinement, alias-complete effect and
+omitted-shooting noninterference, and source/binary/guest correspondence remain
+open. The next executable boundary is the first active Enemy-bullet spawn at
+frame 1180.
+
 ## Local corpus result
 
 The downloaded corpus is excluded from Git. Provenance and input hashes are in
@@ -684,8 +734,9 @@ wrap for one bounded award.
 1. Close or explicitly constrain the selected projection. Inactive Effect
    residue and dynamic ScreenEffect jobs are known open noninterference cases;
    see [`state-projection-audit.md`](state-projection-audit.md).
-2. Compose the second Enemy wave together with its RNG/ECL and Enemy-bullet
-   state. The preceding death-Item feedback is now closed through frame 249.
+2. Extend the derived kernel from frame 350 to the first active Enemy bullets
+   at frame 1180. The second Enemy group, effect RNG, random drops, and empty
+   Enemy-bullet manager state are now closed through frame 350.
 3. Add a field-level canonical snapshot at a selected tick so a subsystem
    mismatch can be reduced to its first field.
 4. Export the same schema from the original executable or an exact-reference

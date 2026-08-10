@@ -3,9 +3,11 @@
 \begin{itemize}
   \item \textbf{Partial retail equivalence only.}  A shipped-executable Wine
   probe now agrees with the Linux reference for 2,000 frames and a 50-field
-  semantic projection on one replay.  Collided-bullet draw-only sprite z is an
-  explicit projection exclusion justified by overwrite-before-read, not raw
-  equality.  The probe does not yet export the eleven canonical
+  semantic projection on one replay.  An enlarged Enemy/ECL/Item/RNG/bullet
+  projection also agrees for 1,200 frames and crosses the first seven live
+  Enemy bullets.  Collided-bullet sprite z, the Item offscreen-indicator flag,
+  and ANM sprite load handles are explicit presentation-only exclusions with
+  next-read arguments, not raw equality.  The probe does not yet export the eleven canonical
   subsystem payloads, cover later stages or the replay matrix, prove that its
   input/timing interventions are noninterfering, or establish whole-state and
   whole-program equivalence.
@@ -27,9 +29,11 @@
   all five first-wave deaths through frame 229, with a public commitment to
   every active bullet and Enemy projection.  The latest successor derives the
   death-drop cursors, first Item spawn/motion/collection, collision-ANM
-  reclamation, and score/power/subrank feedback through frame 249.  It does not
+  reclamation, and score/power/subrank feedback through frame 249.  A further
+  successor derives the second Enemy group, ECL movement, effect RNG, two Item
+  drops, and explicitly empty Enemy-bullet state through frame 350.  It does not
   cover ranks 4--5, the other shot routes,
-  laser paths, enemy bullets, later ECL paths, or Player death.  Its dyadic rounding
+  laser paths, live enemy bullets, later ECL paths, or Player death.  Its dyadic rounding
   algorithm, reachable-domain checks, interior x87 control state, retail
   instruction binding, source-to-Rust correspondence, and projection
   noninterference are not yet machine-checked.  A tracked OpenVM application
@@ -51,9 +55,10 @@
   derives the frame-208 Enemy/ECL write.  The latter still uses a finite
   ECL-time-indexed x87 result table; the first-wave and Item successors add
   finite collision-ANM and Item behavior but do not decode those scripts
-  directly or prove RNG/effect and omitted-shooting noninterference,
-  transcendental refinement, or complete writer correspondence.  The second
-  Enemy wave, its RNG/ECL state, and Enemy bullets remain outside the guest.
+  directly.  The second-wave successor retains shared RNG/effects and the
+  empty Enemy-bullet pool through frame 350, but does not yet implement the
+  first live bullets observed at frame 1180 or prove omitted-shooting
+  noninterference, transcendental refinement, or complete writer correspondence.
   The proof therefore cannot establish replay authenticity, survival, stage
   completion, or whole-game execution.  Application-proof privacy and a
   zero-knowledge property were not evaluated; the current vector is public.

@@ -192,6 +192,33 @@ The proof, vm executable, verifying key, executable commitment, source/evidence
 hashes, and one-bit negative checks are tracked. The next sound boundary is
 the uncomposed second Enemy wave with its RNG/ECL and Enemy-bullet state.
 
+`retail-reference-002677-1200-enemy-bullets-v1.json` enlarges the paired oracle
+through frame 1200. It compares Enemy/ECL, Items, RNG, Player collisions, and a
+relocation-free Enemy-bullet/ANM control projection. All 1,200 frames match;
+the first live Enemy bullets appear at frame 1180 and seven remain active at
+the endpoint. The report counts but semantically excludes three draw-only
+fields whose next calc reads are independent of their stored values. Matching
+the first curved Enemy movement also required the reference runner to execute
+the x87 `fsincos` path under the retail-observed `0x007f` control word instead
+of host `libm`.
+
+`second-wave-002677-350-v1.bin` (`ZKSWV1`) binds the first 350 replay masks and
+the complete incremental frame-250--350 canonical projection to that oracle,
+the sealed second-wave audit, and the parent Item vector. The transition
+derives six timeline spawns, five deaths, ECL movement, exact effect-RNG call
+counts, two random drops, allocator state, score 3910, and the Enemy-bullet
+manager. The bullet pool is explicitly empty at this checkpoint, not omitted.
+
+`openvm-second-wave-349-v1.json` records the ninth OpenVM application proof.
+Its 724-byte private payload contains only a fixed header and 350 replay masks;
+the frame-249 anchor and all later gameplay state are recomputed inside the
+guest. The full chain executes 28,003,469 instructions over 1,089,931,880
+metered cells and authenticates public digest
+`7d70502eb31b1ad8fc13947b8ae68185df92f3799ee62ca033b21c78fd114281`.
+The tracked proof bundle verifies the exact guest commitment and public value.
+The next kernel boundary is the first live Enemy-bullet spawn at frame 1180,
+not an assertion that later bullet state is noninterfering.
+
 `source/openvm-player-motion-v1/player-motion-lib.rs` preserves the exact
 library source compiled into the earlier immutable proof.  The live crate later
 gained the enclosing-state module, so retaining the old source by hash keeps
@@ -207,6 +234,12 @@ proof's claimed source input.
 manifest in the same way. The live workspace now includes the enclosing
 Player-bullet lifecycle crate, while the fourth proof remains bound to the
 three-member manifest from which its guest was built.
+
+`source/openvm-first-item-v1/oracle/` preserves the exact three instrumentation
+sources named by the eighth proof manifest. The live oracle later gained the
+Enemy-bullet projection and x87 correction; retaining the earlier blobs avoids
+rewriting that proof's historical source binding while allowing the live tools
+to advance.
 
 The raw retail/reference JSONL files, debugger logs, executable, DAT archives,
 and generated Wine directory stay under ignored local storage.

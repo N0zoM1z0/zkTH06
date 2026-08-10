@@ -46,7 +46,14 @@ spawn and raw-bit movement, collection geometry, collision-ANM reclamation,
 and retained score/power/subrank writes through frame 249.
 [`first-item-openvm/`](first-item-openvm/) proves all 248 transitions from the
 same anchor with a 520-byte replay-only input. It fails closed before the next
-Enemy/ECL, RNG, and Enemy-bullet state is composed.
+Enemy/ECL, RNG, and Enemy-bullet state is composed. [`second-wave/`](second-wave/)
+then derives that next timeline group through frame 350: six spawns, five
+deaths, ECL movement, death-effect RNG, two random drops, score, and an
+explicitly retained empty Enemy-bullet pool. [`second-wave-openvm/`](second-wave-openvm/)
+replays the complete chain from frame 1 using only 350 private input masks and
+commits every incremental frame-250--350 projection. It fails closed at the
+first unsupported surviving ECL-time/trigonometric path; the next extension
+must reach the first active Enemy bullets observed at frame 1180.
 
 The intended boundary is:
 

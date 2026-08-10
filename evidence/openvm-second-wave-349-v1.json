@@ -1,0 +1,250 @@
+{
+  "type": "zkth06.openvm-second-wave-proof",
+  "schema_version": 1,
+  "date_utc": "2026-08-10",
+  "backend": {
+    "name": "OpenVM",
+    "cargo_openvm_version": "2.0.1",
+    "cargo_openvm_revision": "b820b25baab6c5d9b055f64e0286b6b1058e707c",
+    "guest_target": "riscv32im-risc0-zkvm-elf",
+    "guest_toolchain": "nightly-2026-01-18",
+    "guest_rustc": "rustc 1.94.0-nightly (fe98ddcfc 2026-01-17)",
+    "vm_extensions": [
+      "rv32i",
+      "rv32m",
+      "io",
+      "sha2"
+    ]
+  },
+  "workload": {
+    "source_vector": "second-wave-002677-350-v1.bin",
+    "source_vector_bytes": 47360,
+    "source_vector_sha256": "97d974b1e7b6ff28dc56a0c7c40c9fb2d9d0f5c7ea10a0116fd7800327005fc6",
+    "retail_target_executable_sha256": "9f76483c46256804792399296619c1274363c31cd8f1775fafb55106fb852245",
+    "replay_sha256": "01bc11b9226932bddeeeff675f1741b89b129f4c8820b3b1cf185a1cb19ad10f",
+    "retail_trace_sha256": "b89c01002a1b5424c157c8a7107229fbf258eed12fb40c48c9a620ea6f5160da",
+    "reference_trace_sha256": "4452bb67fe394561f884d99da86fec5c2a3f1d8dededb37f7933f986328931d6",
+    "retail_reference_comparison_sha256": "e053829bb59aa3a4e588e60a46c355a53a56f64756c73a121c2f9acafd0c609d",
+    "static_audit_sha256": "a2c095ecdf559618f002f3df30bbb0afab162bdb226020d9b9b89c130e0afd46",
+    "static_audit_sealed_digest": "9e968608c356645fa0d4694211f6f11ab2a0c712994eb6dce0e0949bef219b8a",
+    "parent_first_item_vector_sha256": "2454c98c1ee1b0595db14758de40a9604918a45351c8026edda6c9e1ab300ebb",
+    "profile": "normal-reimu-a-power-rank-1-second-enemy-group",
+    "source_frames": 1200,
+    "anchor_game_frame": 1,
+    "incremental_anchor_game_frame": 249,
+    "final_game_frame": 350,
+    "transitions": 349,
+    "incremental_transitions": 101,
+    "character": 0,
+    "shot_type": 0,
+    "difficulty": 1,
+    "profile_flags": 15,
+    "timeline_spawns": [
+      257,
+      273,
+      289,
+      305,
+      321,
+      337
+    ],
+    "enemy_deaths": [
+      328,
+      331,
+      335,
+      343,
+      350
+    ],
+    "death_effect_rng_u16_calls": [
+      55,
+      25,
+      25,
+      55,
+      25
+    ],
+    "rng_seed": 37443,
+    "rng_generation": 342,
+    "random_item_spawn_index": 11,
+    "random_item_table_index": 3,
+    "item_allocator_next_index": 3,
+    "item_count": 2,
+    "active_items": 2,
+    "current_power": 1,
+    "subrank": 1,
+    "collided_player_bullets": 4,
+    "active_player_bullets": 7,
+    "remaining_enemies": 1,
+    "maximum_enemies": 5,
+    "maximum_items": 2,
+    "score": 3910,
+    "enemy_bullet_next_index": 0,
+    "enemy_bullet_count": 0,
+    "enemy_bullet_timer": 350,
+    "active_enemy_bullets": 0,
+    "oracle_first_active_enemy_bullet_frame": 1180,
+    "oracle_final_active_enemy_bullets": 7,
+    "input_payload_bytes": 724,
+    "input_payload_sha256": "afb46d2565f64a501e1ea1e8f085951e62115a6dd9d5ec2bcc24ec37d1e9d3ba",
+    "expected_projection_sha256": "abffae8820404a785062257848ded424f483a2beb73416594b30608e607f7438",
+    "state_domain_ascii": "zkTH06/second-wave/projection/v1",
+    "state_domain_nul_terminated": true,
+    "statement_domain_ascii": "zkTH06/openvm/second-wave/v1",
+    "statement_domain_nul_terminated": true,
+    "expected_statement_sha256": "7d70502eb31b1ad8fc13947b8ae68185df92f3799ee62ca033b21c78fd114281",
+    "statement_preimage": "domain || input_payload || final_game_frame_le || input_frames_le || incremental_transitions_le || score_le || rng_seed_le_u16 || rng_generation_le || random_spawn_index_u8 || random_table_index_u8 || item_next_index_le_u16 || item_count_le_u16 || subrank_le_i32 || power_le_u16 || final_entity_counts_u8 || enemy_bullet_manager || maxima_le_u32 || projection_sha256"
+  },
+  "source_bindings": {
+    "zkvm/player-motion/Cargo.toml": "8c859effb9b0f39bb84531819b12b4cb0bd8864fa9c7035308e49a46ead9ce48",
+    "zkvm/player-motion/src/lib.rs": "75b2b76638df83addee4bf6feb35cd321a370790739e635c54b3135ef9d21820",
+    "zkvm/player-motion/src/pc24.rs": "a8960adeec05c5ddaf5343902ae50895a8db9e030f77f5d5c5d664985b84945e",
+    "zkvm/player-shooting/Cargo.toml": "eda906f997f9d56f7468d0fa7147499641ed9b149a7589e528d9e10fa6f1d93b",
+    "zkvm/player-shooting/src/lib.rs": "89748d916d9110db930e9ca5fc876e68c42e74ffe500c52d48736f4aaf9607d1",
+    "zkvm/player-bullets/Cargo.toml": "0a75c59c7d4256a962236cd5bb90d924e6cb1a3c21ff9dfd2d506d788236fc30",
+    "zkvm/player-bullets/src/lib.rs": "6808d5b51001e542f1c0a71cdee1dcd125c3dc12682bb08d8495f1e6adf4b328",
+    "zkvm/player-bullet-lifecycle/Cargo.toml": "7b9c47a129fc78d1260a3b1401ee026bbeb683287448e7132ceef16bd9d0f72c",
+    "zkvm/player-bullet-lifecycle/src/lib.rs": "8f4ee335a5c79b88bbd332eb69f1fdd6a84d7c6e96e98518459e12756f7bfb54",
+    "zkvm/early-gameplay/Cargo.toml": "5fb71d4c9e4789212c38915c521a4a896efb0723455ea11c7fd9b22fe19322b9",
+    "zkvm/early-gameplay/src/lib.rs": "03478cc7cf0242c2b0df72e8ee6b00ea44049c344ad6b46ec03b693e4de29707",
+    "zkvm/first-wave/Cargo.toml": "5f5b914a1a958e83176d38580f9b8a952c5f625e2a8b8d7fb84585da2fe16cee",
+    "zkvm/first-wave/src/lib.rs": "591e22e2a4270f3c9b0de84f1428e53ea0e6aa6179a3f5dfbc18c5c3b9c0374c",
+    "zkvm/first-item/Cargo.toml": "cecf0de93a18428804a2b00e23c6a4eae8cdb06625c676ad040387f38970604d",
+    "zkvm/first-item/src/lib.rs": "5283e30f5b671da5a66d76d86f1d43a92ba8d4603fad15225f697b38a251444c",
+    "zkvm/second-wave/Cargo.lock": "c2cf31fc99a7ec9eb89e2f3e555bab8a823eb85e6d946d00f05592c45c64987d",
+    "zkvm/second-wave/Cargo.toml": "447f5c6686b5b853c4981af923fe9113738d9732b456e5bde5321fb69dc0fd94",
+    "zkvm/second-wave/src/lib.rs": "c1fc3097490ad1121e3c50ff40a1d1f9c3cdbf5e8a1d7f4c186c630f78c5e7f4",
+    "zkvm/second-wave-openvm/Cargo.lock": "c14776c94dab679e73dbba48ac1592d734c65efb904abd5e92ee7eac0d31098e",
+    "zkvm/second-wave-openvm/Cargo.toml": "6746cf469ddcc7c75ae7bf677eb357a17b33687b8903609031164253879f026d",
+    "zkvm/second-wave-openvm/openvm.toml": "66176cd349514666978faed7a789df0653eced83be1a2bcc70b0b5cc2c06ffcc",
+    "zkvm/second-wave-openvm/src/main.rs": "c59646120057b2cc7a5bb3909881ef81985ae0764e8682caac9c089efb0dd8ae",
+    "tools/build_second_wave_openvm_input.py": "00da0c760f97a2f2d78885cd0abe557e0d1d5685ffba8e52b35150fe0bdf3cc6",
+    "reference/src/HeadlessRuntime.cpp": "938960cb95cb324bc86626c91602e010701e3f5fa9f01ed2e58d4535d2808bba",
+    "reference/src/ZunMath.hpp": "58d68f94fdf7208f26cbcac0b8d691a0def674b6fe9bd271982a6091bfc4a1ca",
+    "tools/gdb/retail_anchor_trace.py": "edf988d90b787c97ed5203f72f1b65b555a5e41c71be188005438ce18ba41df5",
+    "tools/compare_retail_anchor.py": "b617035ccb12ae053a8775c33edebb799362bb7b609aa039a52ed3d2fa6fb138"
+  },
+  "evidence_bindings": {
+    "arithmetic/second-wave-v1.json": "a2c095ecdf559618f002f3df30bbb0afab162bdb226020d9b9b89c130e0afd46",
+    "evidence/retail-reference-002677-1200-enemy-bullets-v1.json": "e053829bb59aa3a4e588e60a46c355a53a56f64756c73a121c2f9acafd0c609d",
+    "evidence/second-wave-002677-350-v1.bin": "97d974b1e7b6ff28dc56a0c7c40c9fb2d9d0f5c7ea10a0116fd7800327005fc6",
+    "evidence/second-wave-002677-350-v1.json": "f610920821be75d173da7d0b1eb3f58662bbc45724daa9ebddf3be82fe989b49",
+    "evidence/first-item-002677-249-v1.bin": "2454c98c1ee1b0595db14758de40a9604918a45351c8026edda6c9e1ab300ebb",
+    "tools/build_second_wave_vector.py": "41dbb57e7f440a28438a538e39a90b62656cd252fbbf0443bc63af55b251f865",
+    "tools/second_wave_audit.py": "f3b0f0a8fa12662d3b44bcc1590df2a72d78329db8f8cb861911602ca106ca89",
+    "tools/build_second_wave_openvm_manifest.py": "ee7c5e2fb9a93d4e78d2a459da17b44372a376449c65b0ceea0987b12a28945a"
+  },
+  "artifacts": {
+    "guest_elf": {
+      "bytes": 82792,
+      "sha256": "f09d4c5bc19dc2069b121eed10330bc4c8bf7dc4d506c9f19d93d6ab4eafced7",
+      "tracked": false
+    },
+    "vm_executable": {
+      "path": "second-wave-v1/zkth06-second-wave-openvm.vmexe",
+      "bytes": 859703,
+      "sha256": "bdbb755b79d06e2c688285d8e440c5d35e82840593bf26dc06b843528c0e36e5",
+      "app_exe_commit": "0x002bb8c7af371560e154f6db1cf188a55b64a42da1e20c657350275f2095ce73"
+    },
+    "app_proving_key": {
+      "bytes": 242775,
+      "tracked": false,
+      "reason": "deterministically regenerable and not required for verification"
+    },
+    "app_verifying_key": {
+      "path": "second-wave-v1/app.vk",
+      "bytes": 241614,
+      "sha256": "09b509a234f028b4f251779a26adf4d87b66d40e07174f0f5e3a2d9782de958b"
+    },
+    "app_commit_descriptor": {
+      "path": "second-wave-v1/app-commit.json",
+      "bytes": 181,
+      "sha256": "ddb57b8050d1bacc4103911dbb3e2f24a8aa7b0efa536228707ef27835830d35"
+    },
+    "app_proof": {
+      "path": "openvm-second-wave-349-v1.app.proof",
+      "bytes": 2765680,
+      "sha256": "c40e25f80c28cf13a5f0e5a29b087522b2c1f40b3cc43975590bf3aa7b1b228b"
+    }
+  },
+  "meter": [
+    {
+      "transitions": 349,
+      "incremental_transitions": 101,
+      "instructions": 28003469,
+      "cells": 1089931880,
+      "statement_sha256": "7d70502eb31b1ad8fc13947b8ae68185df92f3799ee62ca033b21c78fd114281"
+    }
+  ],
+  "public_values_audit": {
+    "method": "OpenVM v2.0.1 SDK deserialization as ContinuationVmProof<SC>",
+    "tool_source_bindings": {
+      "tools/openvm-proof-inspect/Cargo.lock": "cb328a765cb2214d7b6284c9eb769cb952815242e356a12f656aa8a40fef332a",
+      "tools/openvm-proof-inspect/Cargo.toml": "5707b336099df1467ce2a7121439c1c46ce7eef0d0a18f9801b4979fbc1ff964",
+      "tools/openvm-proof-inspect/src/main.rs": "524b728225089418f27b147374f64534948c79c1d673a5dbee07a916cce732ec"
+    },
+    "decoded_bytes": [
+      125,
+      112,
+      80,
+      46,
+      179,
+      27,
+      26,
+      216,
+      252,
+      19,
+      148,
+      123,
+      138,
+      230,
+      129,
+      133,
+      223,
+      146,
+      243,
+      121,
+      158,
+      230,
+      44,
+      160,
+      51,
+      178,
+      28,
+      120,
+      253,
+      17,
+      66,
+      129
+    ],
+    "matches_expected_statement_sha256": true,
+    "one_bit_wrong_expected_digest_rejected": true
+  },
+  "proving": {
+    "elapsed_seconds": 243.25,
+    "user_cpu_seconds": 7685.55,
+    "system_cpu_seconds": 823.2,
+    "cpu_utilization_percent": 3497,
+    "max_rss_kib": 52391412,
+    "swaps": 0,
+    "exit_status": 0
+  },
+  "verification": {
+    "elapsed_seconds": 0.24,
+    "max_rss_kib": 53496,
+    "expected_executable_commit_accepted": true,
+    "one_bit_wrong_executable_commit_rejected": true,
+    "public_statement_digest_matches": true,
+    "one_bit_wrong_public_digest_rejected": true
+  },
+  "design_iteration": {
+    "previous_first_item_payload_bytes": 520,
+    "second_wave_payload_bytes": 724,
+    "payload_increase_bytes": 204,
+    "previous_first_item_instructions": 29288817,
+    "second_wave_instructions": 28003469,
+    "instruction_change": -1285348,
+    "previous_first_item_cells": 1146265201,
+    "second_wave_cells": 1089931880,
+    "cell_change": -56323321,
+    "comparison_note": "The guest recomputes the complete frame-1-to-249 anchor but hashes only the new frame-250-to-350 canonical projection; determinism plus the input/final commitment preserves linkage while avoiding rehashing the parent projection."
+  },
+  "claim_boundary": "This proof starts from the fixed empty gameplay-frame-1 state and executes 349 linked Normal Reimu-A power-rank-1 transitions using only replay input masks. It derives the complete frame-249 parent state, then six second-group Enemy spawns, ECL timers and movement, five deaths, effect RNG consumption, two random-drop Items, allocator cursors, score 3910, and explicitly empty Enemy-bullet manager/pool state through frame 350. Every retained Player bullet, Enemy, Item, RNG, score, cursor, and Enemy-bullet field is publicly committed for frames 250 through 350. Retail Wine and the independently built Linux reference match the enlarged projection over 1200 frames and cross the first seven active Enemy bullets at frame 1180. This is finite differential and static-mapping evidence, not a universal retail-binary equivalence proof. The kernel fails closed if the last frame-328 Enemy survives into its unsupported next trigonometric write. Direct ECL/effect ANM decoding, general x87 transcendental refinement, alias-complete omitted-path noninterference, source/binary/guest correspondence, live Enemy bullets after frame 350, and later gameplay subsystems remain explicit obligations."
+}

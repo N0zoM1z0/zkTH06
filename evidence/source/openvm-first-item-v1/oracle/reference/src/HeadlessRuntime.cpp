@@ -16,7 +16,6 @@
 
 #include <SDL2/SDL.h>
 #include <cctype>
-#include <cstddef>
 #include <cerrno>
 #include <cstdio>
 #include <cstdlib>
@@ -286,109 +285,6 @@ void WriteLiveItems(FILE *output, const ItemManager &manager)
                      "\"unk_142\":%d,\"state\":%d}",
                      item.timer.previous, bit_cast_from_size(item.timer.subFrame), item.timer.current,
                      item.itemType, item.isInUse, item.unk_142, item.state);
-        first = false;
-    }
-    std::fputs("]}", output);
-}
-
-i32 AnmInstructionOffset(const AnmVm &vm)
-{
-    if (vm.beginingOfScript == NULL || vm.currentInstruction == NULL)
-    {
-        return -1;
-    }
-    return static_cast<i32>(reinterpret_cast<const u8 *>(vm.currentInstruction) -
-                            reinterpret_cast<const u8 *>(vm.beginingOfScript));
-}
-
-void WriteBulletAnmControl(FILE *output, const AnmVm &vm)
-{
-    u32 spriteWidth = 0;
-    u32 spriteHeight = 0;
-    i32 spriteSourceFile = -1;
-    i32 spriteId = -1;
-    if (vm.sprite != NULL)
-    {
-        spriteWidth = bit_cast_from_size(vm.sprite->widthPx);
-        spriteHeight = bit_cast_from_size(vm.sprite->heightPx);
-        spriteSourceFile = vm.sprite->sourceFileIndex;
-        spriteId = vm.sprite->spriteId;
-    }
-    std::fprintf(output,
-                 "{\"timer_previous\":%d,\"timer_subframe_bits\":\"0x%08x\","
-                 "\"timer_current\":%d,\"flags\":%u,\"pending_interrupt\":%d,"
-                 "\"active_sprite_index\":%d,\"base_sprite_index\":%d,"
-                 "\"anm_file_index\":%d,\"instruction_offset\":%d,"
-                 "\"sprite_source_file_index\":%d,\"sprite_id\":%d,"
-                 "\"sprite_size_bits\":[\"0x%08x\",\"0x%08x\"]}",
-                 vm.currentTimeInScript.previous, bit_cast_from_size(vm.currentTimeInScript.subFrame),
-                 vm.currentTimeInScript.current, bit_cast_from_size(vm.flags), vm.pendingInterrupt,
-                 vm.activeSpriteIndex, vm.baseSpriteIndex, vm.anmFileIndex, AnmInstructionOffset(vm),
-                 spriteSourceFile, spriteId, spriteWidth, spriteHeight);
-}
-
-void WriteEnemyBullets(FILE *output, const BulletManager &manager)
-{
-    std::fprintf(output,
-                 "{\"next_index\":%d,\"bullet_count\":%d,"
-                 "\"timer_previous\":%d,\"timer_subframe_bits\":\"0x%08x\","
-                 "\"timer_current\":%d,\"active_slots\":[",
-                 manager.nextBulletIndex, manager.bulletCount, manager.time.previous,
-                 bit_cast_from_size(manager.time.subFrame), manager.time.current);
-    bool first = true;
-    for (size_t slot = 0; slot < sizeof(manager.bullets) / sizeof(manager.bullets[0]); slot++)
-    {
-        const Bullet &bullet = manager.bullets[slot];
-        if (bullet.state == BULLET_STATE_UNUSED)
-        {
-            continue;
-        }
-        std::fprintf(output, "%s{\"slot\":%zu,\"state\":%u,\"position_bits\":", first ? "" : ",", slot,
-                     bullet.state);
-        const u32 position[] = {bit_cast_from_size(bullet.pos.x), bit_cast_from_size(bullet.pos.y),
-                                bit_cast_from_size(bullet.pos.z)};
-        WriteU32Vector(output, position, 3);
-        std::fputs(",\"velocity_bits\":", output);
-        const u32 velocity[] = {bit_cast_from_size(bullet.velocity.x), bit_cast_from_size(bullet.velocity.y),
-                                bit_cast_from_size(bullet.velocity.z)};
-        WriteU32Vector(output, velocity, 3);
-        std::fputs(",\"acceleration_bits\":", output);
-        const u32 acceleration[] = {bit_cast_from_size(bullet.ex4Acceleration.x),
-                                    bit_cast_from_size(bullet.ex4Acceleration.y),
-                                    bit_cast_from_size(bullet.ex4Acceleration.z)};
-        WriteU32Vector(output, acceleration, 3);
-        std::fprintf(output,
-                     ",\"speed_bits\":\"0x%08x\",\"ex5_float0_bits\":\"0x%08x\","
-                     "\"dir_change_speed_bits\":\"0x%08x\",\"angle_bits\":\"0x%08x\","
-                     "\"ex5_float1_bits\":\"0x%08x\",\"dir_change_rotation_bits\":\"0x%08x\","
-                     "\"timer_previous\":%d,\"timer_subframe_bits\":\"0x%08x\","
-                     "\"timer_current\":%d,\"ex5_int0\":%d,\"dir_change_interval\":%d,"
-                     "\"dir_change_num_times\":%d,\"dir_change_max_times\":%d,"
-                     "\"ex_flags\":%u,\"sprite_offset\":%d,\"unk_5bc\":%u,"
-                     "\"unk_5c0\":%u,\"unk_5c2\":%u,\"is_grazed\":%u,\"graze_size_bits\":",
-                     bit_cast_from_size(bullet.speed), bit_cast_from_size(bullet.ex5Float0),
-                     bit_cast_from_size(bullet.dirChangeSpeed), bit_cast_from_size(bullet.angle),
-                     bit_cast_from_size(bullet.ex5Float1), bit_cast_from_size(bullet.dirChangeRotation),
-                     bullet.timer.previous, bit_cast_from_size(bullet.timer.subFrame), bullet.timer.current,
-                     bullet.ex5Int0, bullet.dirChangeInterval, bullet.dirChangeNumTimes,
-                     bullet.dirChangeMaxTimes, bullet.exFlags, bullet.spriteOffset, bullet.unk_5bc,
-                     bullet.unk_5c0, bullet.unk_5c2, bullet.isGrazed);
-        const u32 grazeSize[] = {bit_cast_from_size(bullet.sprites.grazeSize.x),
-                                 bit_cast_from_size(bullet.sprites.grazeSize.y),
-                                 bit_cast_from_size(bullet.sprites.grazeSize.z)};
-        WriteU32Vector(output, grazeSize, 3);
-        std::fprintf(output, ",\"sprite_unk_55c\":%u,\"bullet_height\":%u,\"bullet_anm\":",
-                     bullet.sprites.unk_55c, bullet.sprites.bulletHeight);
-        WriteBulletAnmControl(output, bullet.sprites.spriteBullet);
-        std::fputs(",\"spawn_fast_anm\":", output);
-        WriteBulletAnmControl(output, bullet.sprites.spriteSpawnEffectFast);
-        std::fputs(",\"spawn_normal_anm\":", output);
-        WriteBulletAnmControl(output, bullet.sprites.spriteSpawnEffectNormal);
-        std::fputs(",\"spawn_slow_anm\":", output);
-        WriteBulletAnmControl(output, bullet.sprites.spriteSpawnEffectSlow);
-        std::fputs(",\"despawn_anm\":", output);
-        WriteBulletAnmControl(output, bullet.sprites.spriteSpawnEffectDonut);
-        std::fputc('}', output);
         first = false;
     }
     std::fputs("]}", output);
@@ -1281,8 +1177,6 @@ void HeadlessRuntime::WriteState(const char *terminalReason)
                  this->playerDamageTraceOverflow ? "true" : "false");
     std::fputs(",\"items_frame\":", this->traceFile);
     WriteLiveItems(this->traceFile, g_ItemManager);
-    std::fputs(",\"enemy_bullets_frame\":", this->traceFile);
-    WriteEnemyBullets(this->traceFile, g_BulletManager);
     std::fputs(",\"bullets\":[", this->traceFile);
     bool first = true;
     for (const Bullet &bullet : g_BulletManager.bullets)

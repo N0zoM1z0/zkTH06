@@ -1,0 +1,45 @@
+{
+  "bindings": {
+    "audit_sha256": "a2c095ecdf559618f002f3df30bbb0afab162bdb226020d9b9b89c130e0afd46",
+    "builder_sha256": "41dbb57e7f440a28438a538e39a90b62656cd252fbbf0443bc63af55b251f865",
+    "comparison_sha256": "e053829bb59aa3a4e588e60a46c355a53a56f64756c73a121c2f9acafd0c609d",
+    "parent_vector_sha256": "2454c98c1ee1b0595db14758de40a9604918a45351c8026edda6c9e1ab300ebb",
+    "reference_trace_sha256": "4452bb67fe394561f884d99da86fec5c2a3f1d8dededb37f7933f986328931d6",
+    "replay_sha256": "01bc11b9226932bddeeeff675f1741b89b129f4c8820b3b1cf185a1cb19ad10f",
+    "retail_trace_sha256": "b89c01002a1b5424c157c8a7107229fbf258eed12fb40c48c9a620ea6f5160da",
+    "target_executable_sha256": "9f76483c46256804792399296619c1274363c31cd8f1775fafb55106fb852245"
+  },
+  "claim_boundary": "frame-by-frame derived canonical projection through second-group death; Enemy-bullet pool is explicitly empty, not an omitted subsystem",
+  "first_record_game_frame": 250,
+  "incremental_transitions": 101,
+  "input_frames": 350,
+  "last_game_frame": 350,
+  "metrics": {
+    "enemy_bullet_active_frames": 0,
+    "enemy_deaths": [
+      328,
+      331,
+      335,
+      343,
+      350
+    ],
+    "final_active_enemies": 1,
+    "final_active_items": 2,
+    "final_rng_generation": 342,
+    "final_rng_seed": 37443,
+    "final_score": 3910,
+    "timeline_spawns": [
+      257,
+      273,
+      289,
+      305,
+      321,
+      337
+    ]
+  },
+  "schema_version": 1,
+  "source_frames": 1200,
+  "type": "zkth06.second-wave-vector",
+  "vector_bytes": 47360,
+  "vector_sha256": "97d974b1e7b6ff28dc56a0c7c40c9fb2d9d0f5c7ea10a0116fd7800327005fc6"
+}

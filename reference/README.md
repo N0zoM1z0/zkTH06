@@ -84,6 +84,13 @@ The pinned executable's address-level floating-point census and the reason host
 `libm` is not accepted as proof semantics are in
 [`../docs/arithmetic-audit.md`](../docs/arithmetic-audit.md).
 
+On x86 and x86-64 the headless trigonometric wrapper executes x87 `fsincos`
+under control word `0x007f` and restores the caller's word. This matches the
+retail arithmetic path and removes a one-bit curved-Enemy velocity divergence
+that host `std::sin`/`std::cos` exposed at gameplay frame 880. Other hosts keep
+the compatibility fallback and are not an exact arithmetic oracle for that
+path.
+
 Compatibility mode restores each stage snapshot exactly as the shipped game
 does. A later canonical-proof mode must instead derive cross-stage state and
 constrain every supplied snapshot.

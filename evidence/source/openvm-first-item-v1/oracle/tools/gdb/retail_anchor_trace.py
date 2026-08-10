@@ -58,7 +58,6 @@ G_INPUT_HOLD_FRAMES = 0x0069D910
 G_PLAYER = 0x006CA628
 G_ENEMY_MANAGER = 0x004B79C8
 G_ITEM_MANAGER = 0x0069E268
-G_BULLET_MANAGER = 0x005A5FF8
 G_MAIN_MENU = 0x006D46C0
 
 SUPERVISOR_CALC_COUNT = G_SUPERVISOR + 0x184
@@ -171,44 +170,6 @@ ITEM_UNK_142 = 0x142
 ITEM_STATE = 0x143
 ITEM_MANAGER_NEXT_INDEX = G_ITEM_MANAGER + 0x28944
 ITEM_MANAGER_ITEM_COUNT = G_ITEM_MANAGER + 0x28948
-
-ENEMY_BULLET_COUNT = 640
-ENEMY_BULLET_SIZE = 0x5C4
-ENEMY_BULLETS = G_BULLET_MANAGER + 0x5600
-ENEMY_BULLET_POS = 0x560
-ENEMY_BULLET_VELOCITY = 0x56C
-ENEMY_BULLET_ACCELERATION = 0x578
-ENEMY_BULLET_SPEED = 0x584
-ENEMY_BULLET_EX5_FLOAT0 = 0x588
-ENEMY_BULLET_DIR_CHANGE_SPEED = 0x58C
-ENEMY_BULLET_ANGLE = 0x590
-ENEMY_BULLET_EX5_FLOAT1 = 0x594
-ENEMY_BULLET_DIR_CHANGE_ROTATION = 0x598
-ENEMY_BULLET_TIMER = 0x59C
-ENEMY_BULLET_EX5_INT0 = 0x5A8
-ENEMY_BULLET_DIR_CHANGE_INTERVAL = 0x5AC
-ENEMY_BULLET_DIR_CHANGE_NUM_TIMES = 0x5B0
-ENEMY_BULLET_DIR_CHANGE_MAX_TIMES = 0x5B4
-ENEMY_BULLET_EX_FLAGS = 0x5B8
-ENEMY_BULLET_SPRITE_OFFSET = 0x5BA
-ENEMY_BULLET_UNK_5BC = 0x5BC
-ENEMY_BULLET_STATE = 0x5BE
-ENEMY_BULLET_UNK_5C0 = 0x5C0
-ENEMY_BULLET_UNK_5C2 = 0x5C2
-ENEMY_BULLET_IS_GRAZED = 0x5C3
-ENEMY_BULLET_GRAZE_SIZE = 0x550
-ENEMY_BULLET_SPRITE_UNK_55C = 0x55C
-ENEMY_BULLET_HEIGHT = 0x55D
-ENEMY_BULLET_MANAGER_NEXT_INDEX = G_BULLET_MANAGER + 0xF5C00
-ENEMY_BULLET_MANAGER_COUNT = G_BULLET_MANAGER + 0xF5C04
-ENEMY_BULLET_MANAGER_TIMER = G_BULLET_MANAGER + 0xF5C08
-
-ANM_BASE_SPRITE = 0x0B2
-ANM_BEGIN_SCRIPT = 0x0B8
-ANM_CURRENT_INSTRUCTION = 0x0BC
-ANM_PENDING_INTERRUPT = 0x088
-ANM_SPRITE_SOURCE_FILE = 0x000
-ANM_SPRITE_ID = 0x034
 
 MENU_GAME_STATE = G_MAIN_MENU + 0x81F0
 MENU_STATE_TIMER = G_MAIN_MENU + 0x81F4
@@ -433,87 +394,6 @@ def capture_items() -> dict[str, object]:
         "item_count": memory.u32(ITEM_MANAGER_ITEM_COUNT),
         "random_spawn_index": memory.u16(ENEMY_MANAGER_RANDOM_ITEM_SPAWN_INDEX),
         "random_table_index": memory.u16(ENEMY_MANAGER_RANDOM_ITEM_TABLE_INDEX),
-        "active_slots": active,
-    }
-
-
-def capture_bullet_anm(vm: int) -> dict[str, object]:
-    beginning = memory.u32(vm + ANM_BEGIN_SCRIPT)
-    current = memory.u32(vm + ANM_CURRENT_INSTRUCTION)
-    instruction_offset = current - beginning if beginning != 0 and current != 0 else -1
-    sprite = memory.u32(vm + ANM_SPRITE)
-    return {
-        "timer_previous": memory.i32(vm + ANM_TIMER),
-        "timer_subframe_bits": f"0x{memory.u32(vm + ANM_TIMER + 4):08x}",
-        "timer_current": memory.i32(vm + ANM_TIMER + 8),
-        "flags": memory.u16(vm + ANM_FLAGS),
-        "pending_interrupt": memory.i16(vm + ANM_PENDING_INTERRUPT),
-        "active_sprite_index": memory.i16(vm + ANM_ACTIVE_SPRITE),
-        "base_sprite_index": memory.i16(vm + ANM_BASE_SPRITE),
-        "anm_file_index": memory.i16(vm + ANM_FILE_INDEX),
-        "instruction_offset": instruction_offset,
-        "sprite_source_file_index": memory.i32(sprite + ANM_SPRITE_SOURCE_FILE) if sprite else -1,
-        "sprite_id": memory.i32(sprite + ANM_SPRITE_ID) if sprite else -1,
-        "sprite_size_bits": (
-            [
-                f"0x{memory.u32(sprite + ANM_LOADED_SPRITE_WIDTH):08x}",
-                f"0x{memory.u32(sprite + ANM_LOADED_SPRITE_HEIGHT):08x}",
-            ]
-            if sprite
-            else ["0x00000000", "0x00000000"]
-        ),
-    }
-
-
-def capture_enemy_bullets() -> dict[str, object]:
-    active: list[dict[str, object]] = []
-    for slot in range(ENEMY_BULLET_COUNT):
-        bullet = ENEMY_BULLETS + slot * ENEMY_BULLET_SIZE
-        state = memory.u16(bullet + ENEMY_BULLET_STATE)
-        if state == 0:
-            continue
-        active.append(
-            {
-                "slot": slot,
-                "state": state,
-                "position_bits": raw_vec(bullet + ENEMY_BULLET_POS, 3),
-                "velocity_bits": raw_vec(bullet + ENEMY_BULLET_VELOCITY, 3),
-                "acceleration_bits": raw_vec(bullet + ENEMY_BULLET_ACCELERATION, 3),
-                "speed_bits": f"0x{memory.u32(bullet + ENEMY_BULLET_SPEED):08x}",
-                "ex5_float0_bits": f"0x{memory.u32(bullet + ENEMY_BULLET_EX5_FLOAT0):08x}",
-                "dir_change_speed_bits": f"0x{memory.u32(bullet + ENEMY_BULLET_DIR_CHANGE_SPEED):08x}",
-                "angle_bits": f"0x{memory.u32(bullet + ENEMY_BULLET_ANGLE):08x}",
-                "ex5_float1_bits": f"0x{memory.u32(bullet + ENEMY_BULLET_EX5_FLOAT1):08x}",
-                "dir_change_rotation_bits": f"0x{memory.u32(bullet + ENEMY_BULLET_DIR_CHANGE_ROTATION):08x}",
-                "timer_previous": memory.i32(bullet + ENEMY_BULLET_TIMER),
-                "timer_subframe_bits": f"0x{memory.u32(bullet + ENEMY_BULLET_TIMER + 4):08x}",
-                "timer_current": memory.i32(bullet + ENEMY_BULLET_TIMER + 8),
-                "ex5_int0": memory.i32(bullet + ENEMY_BULLET_EX5_INT0),
-                "dir_change_interval": memory.i32(bullet + ENEMY_BULLET_DIR_CHANGE_INTERVAL),
-                "dir_change_num_times": memory.i32(bullet + ENEMY_BULLET_DIR_CHANGE_NUM_TIMES),
-                "dir_change_max_times": memory.i32(bullet + ENEMY_BULLET_DIR_CHANGE_MAX_TIMES),
-                "ex_flags": memory.u16(bullet + ENEMY_BULLET_EX_FLAGS),
-                "sprite_offset": memory.i16(bullet + ENEMY_BULLET_SPRITE_OFFSET),
-                "unk_5bc": memory.u16(bullet + ENEMY_BULLET_UNK_5BC),
-                "unk_5c0": memory.u16(bullet + ENEMY_BULLET_UNK_5C0),
-                "unk_5c2": memory.u8(bullet + ENEMY_BULLET_UNK_5C2),
-                "is_grazed": memory.u8(bullet + ENEMY_BULLET_IS_GRAZED),
-                "graze_size_bits": raw_vec(bullet + ENEMY_BULLET_GRAZE_SIZE, 3),
-                "sprite_unk_55c": memory.u8(bullet + ENEMY_BULLET_SPRITE_UNK_55C),
-                "bullet_height": memory.u8(bullet + ENEMY_BULLET_HEIGHT),
-                "bullet_anm": capture_bullet_anm(bullet),
-                "spawn_fast_anm": capture_bullet_anm(bullet + 0x110),
-                "spawn_normal_anm": capture_bullet_anm(bullet + 0x220),
-                "spawn_slow_anm": capture_bullet_anm(bullet + 0x330),
-                "despawn_anm": capture_bullet_anm(bullet + 0x440),
-            }
-        )
-    return {
-        "next_index": memory.i32(ENEMY_BULLET_MANAGER_NEXT_INDEX),
-        "bullet_count": memory.i32(ENEMY_BULLET_MANAGER_COUNT),
-        "timer_previous": memory.i32(ENEMY_BULLET_MANAGER_TIMER),
-        "timer_subframe_bits": f"0x{memory.u32(ENEMY_BULLET_MANAGER_TIMER + 4):08x}",
-        "timer_current": memory.i32(ENEMY_BULLET_MANAGER_TIMER + 8),
         "active_slots": active,
     }
 
@@ -751,7 +631,6 @@ def capture_frame(index: int) -> None:
             "player_damage_calls": frame_damage_calls,
             "player_damage_trace_overflow": False,
             "items_frame": capture_items(),
-            "enemy_bullets_frame": capture_enemy_bullets(),
             "enemies": capture_enemies(),
         }
     )

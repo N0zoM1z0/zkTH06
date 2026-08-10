@@ -1,0 +1,126 @@
+{
+  "claim_boundary": "finite differential evidence over the listed projection; not a proof of whole-state or whole-program equivalence",
+  "compared_fields": [
+    "supervisor_state",
+    "stage",
+    "game_frame",
+    "difficulty",
+    "character",
+    "shot_type",
+    "input",
+    "rng_seed",
+    "rng_generation",
+    "score",
+    "deaths",
+    "bombs_used",
+    "is_time_stopped",
+    "num_retries",
+    "current_power",
+    "lives",
+    "bombs",
+    "rank",
+    "subrank",
+    "player_state",
+    "player_x_bits",
+    "player_y_bits",
+    "player_z_bits",
+    "effective_rate_bits",
+    "movement_min_x_bits",
+    "movement_min_y_bits",
+    "movement_size_x_bits",
+    "movement_size_y_bits",
+    "horizontal_multiplier_bits",
+    "vertical_multiplier_bits",
+    "orthogonal_speed_bits",
+    "orthogonal_focus_speed_bits",
+    "diagonal_speed_bits",
+    "diagonal_focus_speed_bits",
+    "framerate_multiplier_bits",
+    "player_respawn_timer",
+    "player_bomb_is_in_use",
+    "player_invulnerability_timer_previous",
+    "player_invulnerability_timer_subframe_bits",
+    "player_invulnerability_timer_current",
+    "gui_has_current_message",
+    "player_is_focus",
+    "player_previous_frame_input",
+    "player_fire_bullet_timer_previous",
+    "player_fire_bullet_timer_subframe_bits",
+    "player_fire_bullet_timer_current",
+    "player_spawn",
+    "player_bullet_update",
+    "player_last_enemy_hit_bits",
+    "player_bullets_frame",
+    "enemies(raw-bit projection)",
+    "player_damage_calls",
+    "player_damage_trace_overflow",
+    "items_frame",
+    "enemy_bullets_frame"
+  ],
+  "compared_frames": 1200,
+  "comparison_profile": "enemy-bullets",
+  "config_sha256": "979ad921be658e746040c14b633a2c5114c18529244c6e1ed4b9312beb175d37",
+  "controller_patch": "Controller::GetInput returns zero; ReplayManager overwrites input later in calc order",
+  "first_mismatch": null,
+  "frame_boundary": "0x00420858",
+  "frame_boundary_role": "instruction after Chain::RunCalcChain",
+  "gdb_version": "GNU gdb (Ubuntu 12.1-0ubuntu1~22.04.2) 12.1",
+  "observed_enemy_bullet_metrics": {
+    "final_active_bullets": 7,
+    "first_active_game_frame": 1180,
+    "maximum_active_bullets": 7
+  },
+  "observed_enemy_collision_metrics": {
+    "damage_calls": 2731,
+    "damaging_calls": 71,
+    "first_damaging_game_frame": 208,
+    "maximum_active_enemies": 9,
+    "trace_overflow_frames": 0
+  },
+  "observed_item_metrics": {
+    "first_active_game_frame": 219,
+    "first_collection_game_frame": 249,
+    "maximum_active_items": 8
+  },
+  "observed_retail_metrics": {
+    "distinct_input_masks": 15,
+    "final_score": 192030,
+    "first_game_frame": 1,
+    "last_game_frame": 1200,
+    "rng_generation_max": 1802,
+    "rng_generation_min": 2
+  },
+  "reference_trace_sha256": "4452bb67fe394561f884d99da86fec5c2a3f1d8dededb37f7933f986328931d6",
+  "replay_sha256": "01bc11b9226932bddeeeff675f1741b89b129f4c8820b3b1cf185a1cb19ad10f",
+  "retail_mxcsr_values": [
+    "0x00001fa0"
+  ],
+  "retail_trace_schema_version": 1,
+  "retail_trace_sha256": "b89c01002a1b5424c157c8a7107229fbf258eed12fb40c48c9a620ea6f5160da",
+  "retail_x87_control_words": [
+    "0x007f"
+  ],
+  "schema_version": 1,
+  "semantic_projection_exclusions": [
+    {
+      "observed_differences": 1929,
+      "path": "player_bullet_update.before.active_slots[*].sprite_position_bits[2]",
+      "reason": "DrawBulletExplosions writes 0.4 to collided sprite.pos.z after the post-calc anchor; UpdatePlayerBullets overwrites all sprite.pos components from gameplay position before bounds or ANM can read them"
+    },
+    {
+      "observed_differences": 806,
+      "path": "items_frame.active_slots[*].unk_142",
+      "reason": "ItemManager::OnDraw toggles unk_142 only when selecting the offscreen indicator sprite; no calc-chain function reads this field"
+    },
+    {
+      "observed_differences": 441,
+      "path": "enemy_bullets_frame.active_slots[*].*_anm.sprite_id",
+      "reason": "AnmLoadedSprite::spriteId is a load-order draw-backend handle; BulletManager reads active sprite indices and width/height, never spriteId"
+    }
+  ],
+  "status": "match",
+  "target_executable_sha256": "9f76483c46256804792399296619c1274363c31cd8f1775fafb55106fb852245",
+  "type": "zkth06.retail-reference-comparison",
+  "wine_timing_normalization": "pre-game last-frame time set to current time; local catch-up delta set to zero",
+  "wine_version": "wine-11.0"
+}

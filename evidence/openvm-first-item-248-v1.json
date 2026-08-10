@@ -89,9 +89,9 @@
     "zkvm/first-item-openvm/openvm.toml": "66176cd349514666978faed7a789df0653eced83be1a2bcc70b0b5cc2c06ffcc",
     "zkvm/first-item-openvm/src/main.rs": "9c4b0ab57c7c56c7bb1d9c11ea10c664b2907f22d0abb0658a460fc565cf3ffa",
     "tools/build_first_item_openvm_input.py": "e1f2463c3ba5aa988157dfbcbe52522aed02da81dbde2472a93a24fc19175dd8",
-    "reference/src/HeadlessRuntime.cpp": "6e7aff79b52372e210000beff7837cd338ffdafee16973f929af7d649a455248",
-    "tools/gdb/retail_anchor_trace.py": "de66ed3de0adc643ec0eaf42dd09edd48f53ef55da523eb5632d95980503292c",
-    "tools/compare_retail_anchor.py": "7533b8fc2530a2281ebca1a4ba62acea2ed45a94b50279371dcd9547c1df69a0"
+    "evidence/source/openvm-first-item-v1/oracle/reference/src/HeadlessRuntime.cpp": "6e7aff79b52372e210000beff7837cd338ffdafee16973f929af7d649a455248",
+    "evidence/source/openvm-first-item-v1/oracle/tools/gdb/retail_anchor_trace.py": "de66ed3de0adc643ec0eaf42dd09edd48f53ef55da523eb5632d95980503292c",
+    "evidence/source/openvm-first-item-v1/oracle/tools/compare_retail_anchor.py": "7533b8fc2530a2281ebca1a4ba62acea2ed45a94b50279371dcd9547c1df69a0"
   },
   "evidence_bindings": {
     "arithmetic/first-item-v1.json": "21b28dfd9a3e163980ca323d6160c6e80368006afad1a42e3c67c0feb9f02682",

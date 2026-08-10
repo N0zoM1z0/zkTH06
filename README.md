@@ -9,14 +9,14 @@ that state machine agree frame-for-frame with the shipped 32-bit Windows game.
 
 > **Evidence boundary:** an address-bound Wine probe now matches the shipped
 > executable and Linux reference for a 50-field semantic gameplay projection over
-> the first 2,000 frames of one tracked replay. A narrower retained-state
-> projection additionally matches Item spawn/motion/collection and all prior
-> Player-bullet/Enemy fields over the first 300 frames. The sole
-> excluded raw field is a collided-bullet draw-only sprite z that is overwritten
-> before its next semantic read; the evidence artifact records all 3,898 such
-> values and the noninterference argument. This is finite differential evidence,
-> not whole-state equivalence. The current runner remains an instrumented
-> reference harness, not final proof semantics.
+> the first 2,000 frames of one tracked replay. An enlarged raw-bit projection
+> now also matches Enemy/ECL, Item, RNG, Player-collision, and active Enemy-bullet
+> state over 1,200 frames, crossing the first seven Enemy bullets at frame 1180.
+> Three presentation-only fields are excluded with explicit next-read arguments:
+> collided-bullet sprite z, Item offscreen-indicator state, and ANM sprite load
+> handles. This is finite differential evidence, not whole-state equivalence.
+> The current runner remains an instrumented reference harness, not final proof
+> semantics.
 
 The first proof-oriented executable slice is now present under `zkvm/`: an
 integer-only implementation of the PC24 player-position update whose inputs and
@@ -101,6 +101,17 @@ three active bullets, and no active Item. The proof costs 29,288,817
 instructions and 1,146,265,201 metered cells. It fails closed before the second
 Enemy wave, whose RNG/ECL context and Enemy bullets are the next subsystem
 boundary.
+
+The ninth enclosing kernel crosses that boundary through frame 350. From the
+same fixed frame-1 anchor and only 350 replay masks it derives the second
+timeline group, six Enemy spawns, ECL timers and movement, five deaths, exact
+death-effect RNG consumption, two random-drop Items, allocator cursors, and
+score 3910. The Enemy-bullet manager and pool are retained explicitly and are
+derived empty throughout this checkpoint; the retail oracle independently
+continues to frame 1200 and observes the first seven live Enemy bullets at
+frame 1180. The replay-only OpenVM workload executes 28,003,469 instructions
+and 1,089,931,880 metered cells and exposes digest
+`7d70502eb31b1ad8fc13947b8ae68185df92f3799ee62ca033b21c78fd114281`.
 
 A first owner-local Lean model now machine-checks why active-only Effect slots
 violate one-step noninterference and how a narrow dormant reuse shadow repairs
@@ -258,9 +269,14 @@ The next successor closes the death-Item feedback at frame 249: one derived
 small-power Item increases score to 1960, power to 1, and subrank to 1. Its 248
 replay-only transitions meter 1,146,265,201 cells, and the exact proof bundle is
 in [`evidence/openvm-first-item-248-v1.json`](evidence/openvm-first-item-248-v1.json).
-The next enclosing step must expand the second Enemy wave, RNG/ECL, and
-Enemy-bullet state; Player death/respawn and bomb paths remain subsequent
-subsystem boundaries.
+The second-wave successor now reaches frame 350 with derived Enemy/ECL,
+death-effect RNG, random-drop Item, and explicitly empty Enemy-bullet state.
+Its 724-byte replay-only input meters 1,089,931,880 cells; the exact proof
+bundle is in
+[`evidence/openvm-second-wave-349-v1.json`](evidence/openvm-second-wave-349-v1.json).
+The next kernel extension targets the first live Enemy-bullet spawn at frame
+1180; Player death/respawn and bomb paths remain subsequent subsystem
+boundaries.
 Deriving the post-calc anchor, external time-stop writers, and
 non-full-speed timer paths remain soundness gates rather than hidden premises.
 

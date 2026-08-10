@@ -510,6 +510,42 @@ guest still fails closed before the second Enemy wave.  Its RNG/ECL context and
 Enemy bullets, direct Item/collision-ANM decoding, omitted-path
 noninterference, x87 refinement, and code correspondence remain open.
 
+\subsection{Second-wave Enemy/ECL/RNG application proof}
+
+The ninth guest recomputes the frame-249 anchor from the fixed frame-1 state
+and then derives 101 additional states through frame 350.  Six timeline
+instructions allocate enemies at frames 257, 273, 289, 305, 321, and 337;
+Player-bullet collisions remove five of them at frames 328, 331, 335, 343,
+and 350.  The transition retains ECL timer and movement context, advances the
+shared RNG from seed/generation 41015/157 to 37443/342, derives two random-drop
+Items, and reaches score 3910.  Enemy-bullet manager state is retained and its
+pool is derived empty throughout the checkpoint.
+
+The paired address-bound oracle is extended to 1,200 frames.  It matches every
+retained raw-bit field and crosses the first seven active Enemy bullets at
+frame 1180.  This experiment also found a one-bit curved-axis discrepancy at
+frame 880 when the Linux reference used host \code{libm}; executing the source
+wrapper with x87 \code{fsincos} under the retail-observed control word
+\code{0x007f} removes the divergence.  Three draw-only stored fields are
+excluded with explicit overwrite/read arguments rather than silently ignored.
+
+The 47,360-byte \code{ZKSWV1} vector binds those observations.  The private
+\code{ZKSWI1} proof input remains replay-only: a 24-byte header and 350 masks,
+724 bytes total.  The guest executes 28,003,469 instructions and meters
+1,089,931,880 cells while authenticating digest
+\begin{center}
+\small\ttfamily
+7d70502eb31b1ad8fc13947b8ae68185df92f3799ee62ca033b21c78fd114281.
+\end{center}
+Application proving takes 243.25 seconds and peaks at 52,391,412 KiB RSS
+without swapping.  The 2,765,680-byte proof verifies in 0.24 seconds and
+53,496 KiB RSS; exact executable/public commitments pass and one-bit variants
+fail.
+This closes the selected second-group RNG/ECL boundary, not all later Enemy
+behavior.  The next executable checkpoint must extend from frame 350 to the
+first active Enemy-bullet spawn at frame 1180; direct bytecode decoding,
+transcendental refinement, and complete slicing correspondence remain open.
+
 \subsection{Canonical projection experiment}
 
 Two independent complete revision-0.2 traces of the Normal Reimu A NN/NB run

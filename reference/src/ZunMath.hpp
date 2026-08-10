@@ -476,14 +476,54 @@ struct ZunViewport
 
 inline void fsincos_wrapper(f32 *out_sine, f32 *out_cosine, f32 angle)
 {
+#if defined(__i386__) || defined(__x86_64__)
+    u16 oldControl;
+    const u16 retailControl = 0x007f;
+    f32 sine;
+    f32 cosine;
+    __asm__ volatile("fnstcw %[old]\n\t"
+                     "fldcw %[retail]\n\t"
+                     "flds %[angle]\n\t"
+                     "fsincos\n\t"
+                     "fstps %[cosine]\n\t"
+                     "fstps %[sine]\n\t"
+                     "fldcw %[old]"
+                     : [old] "=m"(oldControl), [cosine] "=m"(cosine), [sine] "=m"(sine)
+                     : [retail] "m"(retailControl), [angle] "m"(angle)
+                     : "st");
+    *out_sine = sine;
+    *out_cosine = cosine;
+#else
     *out_sine = std::sin(angle);
     *out_cosine = std::cos(angle);
+#endif
 }
 
 inline void sincosmul(ZunVec3 *out_vel, f32 input, f32 multiplier)
 {
+#if defined(__i386__) || defined(__x86_64__)
+    u16 oldControl;
+    const u16 retailControl = 0x007f;
+    f32 x;
+    f32 y;
+    __asm__ volatile("fnstcw %[old]\n\t"
+                     "fldcw %[retail]\n\t"
+                     "flds %[input]\n\t"
+                     "fsincos\n\t"
+                     "fmuls %[multiplier]\n\t"
+                     "fstps %[x]\n\t"
+                     "fmuls %[multiplier]\n\t"
+                     "fstps %[y]\n\t"
+                     "fldcw %[old]"
+                     : [old] "=m"(oldControl), [x] "=m"(x), [y] "=m"(y)
+                     : [retail] "m"(retailControl), [input] "m"(input), [multiplier] "m"(multiplier)
+                     : "st");
+    out_vel->x = x;
+    out_vel->y = y;
+#else
     out_vel->x = std::cos(input) * multiplier;
     out_vel->y = std::sin(input) * multiplier;
+#endif
 }
 
 inline f32 invertf(f32 x)

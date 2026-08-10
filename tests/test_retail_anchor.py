@@ -124,6 +124,7 @@ def run_comparator(
     player_bullet_frames: bool = False,
     enemy_collisions: bool = False,
     items: bool = False,
+    enemy_bullets: bool = False,
 ) -> subprocess.CompletedProcess[str]:
     command = ["python3", str(COMPARATOR), str(retail), str(reference), "--report", str(report)]
     if enclosing_player:
@@ -138,6 +139,8 @@ def run_comparator(
         command.append("--enemy-collisions")
     if items:
         command.append("--items")
+    if enemy_bullets:
+        command.append("--enemy-bullets")
     return subprocess.run(
         command,
         check=False,
@@ -422,6 +425,53 @@ def main() -> int:
         }
         shooting_retail["items_frame"] = item_projection
         shooting_reference["items_frame"] = json.loads(json.dumps(item_projection))
+
+        enemy_bullet_projection = {
+            "next_index": 1,
+            "bullet_count": 1,
+            "timer_previous": 0,
+            "timer_subframe_bits": "0x00000000",
+            "timer_current": 1,
+            "active_slots": [
+                {
+                    "slot": 0,
+                    "state": 2,
+                    "position_bits": ["0x437c0000", "0x42980000", "0x3dcccccd"],
+                }
+            ],
+        }
+        shooting_retail["enemy_bullets_frame"] = enemy_bullet_projection
+        shooting_reference["enemy_bullets_frame"] = json.loads(
+            json.dumps(enemy_bullet_projection)
+        )
+        write_jsonl(retail, [header, shooting_retail])
+        write_jsonl(reference, [shooting_reference])
+        enemy_bullets = run_comparator(
+            retail, reference, report, enemy_bullets=True
+        )
+        assert enemy_bullets.returncode == 0, enemy_bullets.stderr
+        enemy_bullet_report = json.loads(report.read_text(encoding="utf-8"))
+        assert enemy_bullet_report["comparison_profile"] == "enemy-bullets"
+        assert len(enemy_bullet_report["compared_fields"]) == 55
+        assert enemy_bullet_report["observed_enemy_bullet_metrics"] == {
+            "first_active_game_frame": 1,
+            "maximum_active_bullets": 1,
+            "final_active_bullets": 1,
+        }
+
+        shooting_reference["enemy_bullets_frame"]["active_slots"][0]["state"] = 1
+        write_jsonl(reference, [shooting_reference])
+        enemy_bullet_mismatch = run_comparator(
+            retail, reference, report, enemy_bullets=True
+        )
+        assert enemy_bullet_mismatch.returncode == 1
+        enemy_bullet_nested = json.loads(report.read_text(encoding="utf-8"))[
+            "first_mismatch"
+        ]["differing_fields"]["enemy_bullets_frame"]
+        assert enemy_bullet_nested["path"] == "enemy_bullets_frame.active_slots[0].state"
+        shooting_reference["enemy_bullets_frame"] = json.loads(
+            json.dumps(enemy_bullet_projection)
+        )
         write_jsonl(retail, [header, shooting_retail])
         write_jsonl(reference, [shooting_reference])
         items = run_comparator(retail, reference, report, items=True)
@@ -443,6 +493,21 @@ def main() -> int:
             "differing_fields"
         ]["items_frame"]
         assert item_nested["path"] == "items_frame.active_slots[0].state"
+        shooting_reference["items_frame"] = json.loads(json.dumps(item_projection))
+
+        shooting_reference["items_frame"]["active_slots"][0]["unk_142"] = 0
+        write_jsonl(reference, [shooting_reference])
+        item_draw_only = run_comparator(retail, reference, report, items=True)
+        assert item_draw_only.returncode == 0, item_draw_only.stderr
+        item_draw_report = json.loads(report.read_text(encoding="utf-8"))
+        assert item_draw_report["semantic_projection_exclusions"][-1] == {
+            "path": "items_frame.active_slots[*].unk_142",
+            "observed_differences": 1,
+            "reason": (
+                "ItemManager::OnDraw toggles unk_142 only when selecting the offscreen "
+                "indicator sprite; no calc-chain function reads this field"
+            ),
+        }
         shooting_reference["items_frame"] = json.loads(json.dumps(item_projection))
 
         shooting_reference["player_damage_calls"] = [{**damage_call, "damage": 48}]

@@ -120,6 +120,11 @@ As of 10 August 2026, the following components are implemented:
   collision-ANM reclamation, and score/power/subrank writes through frame 249,
   together with a 300-frame dual oracle, 248-transition Item vector, and
   520-byte replay-only proof input;
+  \item a second-wave crate and ninth OpenVM adapter that derive six timeline
+  spawns, five deaths, ECL movement, shared effect RNG, two random drops, and
+  explicitly empty Enemy-bullet state through frame 350, together with a
+  1,200-frame oracle crossing the first live Enemy bullets, a 101-transition
+  incremental vector, and 724-byte replay-only proof input;
   \item Linux CI that builds the reference runner and cross-checks both replay
   validators on three valid and three deliberately malformed cases, while also
   requiring canonical-record corruption to fail closed.
@@ -136,10 +141,10 @@ external time-stop writers, and non-full-speed timers fail closed or remain
 geometry, and a shorter enclosing prefix links update, bounds reclamation, ANM
 timers, and allocation through frame 207.  The next enclosing kernel derives
 five early enemies and crosses the first Enemy collision and death at frame
-208; its successors close the complete first wave and first Item feedback
-through frame 249.  The retail exporter currently covers a 50-field root
-projection,
-while canonical projection revision 0.2 contains eleven broader
+208; its successors close the complete first wave, first Item feedback, and
+the second Enemy group through frame 350.  The enlarged retail exporter
+continues the Enemy-bullet projection to frame 1200 and crosses its first live
+slots.  The broader canonical projection revision 0.2 still contains eleven
 subsystems.  Bringing that complete schema to the retail boundary remains
-open, and the state audit has already identified inactive Effect residue and
+open; the state audit has already identified inactive Effect residue and
 dynamic screen-effect jobs that prevent claiming projection closure.
