@@ -23,7 +23,11 @@
   206 consecutive rank-1 transitions from an empty pool through motion, bounds
   reclamation, fixed ANM/timer behavior, and allocation.  A successor composes
   five fixed early enemies and derives the first collision, Enemy death, target,
-  and score at frame 208.  It does not cover ranks 4--5, the other shot routes,
+  and score at frame 208.  A successor retains all collided slots and derives
+  all five first-wave deaths through frame 229, with a public commitment to
+  every active bullet and Enemy projection.  It deliberately omits the
+  death-spawned Item state and therefore cannot cross its first score/power
+  feedback at frame 249.  It does not cover ranks 4--5, the other shot routes,
   laser paths, enemy bullets, later ECL paths, or Player death.  Its dyadic rounding
   algorithm, reachable-domain checks, interior x87 control state, retail
   instruction binding, source-to-Rust correspondence, and projection
@@ -44,8 +48,10 @@
   data.  The lifecycle extension removes that witness boundary for its
   206-transition collision-free prefix, and the early-gameplay extension
   derives the frame-208 Enemy/ECL write.  The latter still uses a finite
-  ECL-time-indexed x87 result table and does not prove ANM-data, transcendental,
-  omitted-shooting noninterference, or complete writer correspondence.
+  ECL-time-indexed x87 result table; the first-wave successor adds finite
+  collision-ANM behavior but does not decode that script directly or prove
+  RNG/effect/item and omitted-shooting noninterference, transcendental
+  refinement, or complete writer correspondence.
   The proof therefore cannot establish replay authenticity, survival, stage
   completion, or whole-game execution.  Application-proof privacy and a
   zero-knowledge property were not evaluated; the current vector is public.

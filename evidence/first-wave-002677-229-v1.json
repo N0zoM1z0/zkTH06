@@ -1,0 +1,58 @@
+{
+  "anchor_game_frame": 1,
+  "bindings": {
+    "comparison_sha256": "e76a8587ea94110a00d1c1ccc67f50d0245588e871d32d50186ce7318e210a0f",
+    "generator_sha256": "13c57709a72e1ee0b937380434188525c77a02f4f918a63cf779367f0b1824a7",
+    "parent_early_gameplay_vector_sha256": "c98b3ff3d90ba0f972f0691ffcd2d76573d1e6677d1ec75ed7a5ae59473feb3a",
+    "reference_trace_sha256": "182fede493e92a1efb2511a813fb2697737ca8f40ec9221292189c0d0decf4d2",
+    "replay_sha256": "01bc11b9226932bddeeeff675f1741b89b129f4c8820b3b1cf185a1cb19ad10f",
+    "retail_trace_sha256": "48b6d5b6fc5aefef1b82107dca1661d746dd13f81c27269d9af634e02951ad42",
+    "static_audit_sha256": "45584631f06a2abcee776a1bcf118b1c2bf37bb0f80553840d3fd03c3b41393d",
+    "target_executable_sha256": "9f76483c46256804792399296619c1274363c31cd8f1775fafb55106fb852245"
+  },
+  "claim_boundary": "finite complete retained-state vector from frame 1 through the fifth first-wave death at frame 229; omitted death-item state first feeds score/power at frame 249",
+  "final_game_frame": 229,
+  "incremental_anchor_game_frame": 208,
+  "metrics": {
+    "collisions": [
+      [
+        208,
+        2
+      ],
+      [
+        213,
+        3
+      ],
+      [
+        219,
+        4
+      ],
+      [
+        224,
+        0
+      ],
+      [
+        229,
+        1
+      ]
+    ],
+    "damage_calls": 253,
+    "damaging_calls": 5,
+    "final_collided_bullets": 5,
+    "final_rng_generation": 157,
+    "final_score": 1950
+  },
+  "record_sizes": {
+    "bullet": 104,
+    "enemy": 40,
+    "frame": 28,
+    "header": 232
+  },
+  "schema_version": 1,
+  "selected_frames": 229,
+  "source_frames": 260,
+  "tested_transitions": 228,
+  "type": "zkth06.first-wave-vector",
+  "vector_bytes": 122580,
+  "vector_sha256": "b645bc3e25dd9fcc8ec1cce29cd4971d522b70e48e69243842c3a2b5500cbbf3"
+}

@@ -410,6 +410,57 @@ slicing noninterference proof.  Thus this result crosses one authentic
 collision/death boundary without claiming later ECL, enemy-bullet, RNG, item,
 bomb, Player-death, or whole-game semantics.
 
+\subsection{Complete first-wave application proof}
+
+The seventh guest retains the complete bullet-state map after the first hit
+and derives persistent collided-bullet movement, collision-script timers, and
+the remaining four Enemy deaths.  The five damaging frames are 208, 213, 219,
+224, and 229, with collided slots 2, 3, 4, 0, and 1.  Each hit deals 48 damage;
+the endpoint has score 1950, five collided bullets, six active bullets, and no
+remaining first-wave Enemy.  Across the selected prefix the guest executes 253
+damage calls.  No bullet state, Enemy state, collision result, life, target, or
+score is witness-supplied.
+
+The address-bound Wine trace and independent Linux reference agree over 260
+frames on the enlarged raw projection.  The code{ZKFWV1} vector additionally
+stores the complete 104-byte projection of every active bullet so that the
+shared Rust transition is checked field by field.  The OpenVM public digest
+commits the same active-bullet and Enemy records at every frame, not only the
+endpoint.  Its 480-byte private code{ZKFWI1} input consists of the 24-byte
+fixed header and 228 replay masks.  The authenticated digest is
+\begin{center}
+\small\ttfamily
+1825b64b0a3ac10d26ecd9d82052ab58c68bb5250d89dba85fea79f727f562a8.
+\end{center}
+
+\begin{table}[h]
+  \centering
+  \small
+  \begin{tabular}{@{}rrr@{}}
+    \toprule
+    Transitions & Guest instructions & Metered cells \\
+    \midrule
+    1   & 82,305     & 3,219,079 \\
+    10  & 758,445    & 29,483,552 \\
+    100 & 9,468,443  & 368,988,475 \\
+    207 & 25,262,242 & 985,032,840 \\
+    228 & 28,276,048 & 1,104,665,874 \\
+    \bottomrule
+  \end{tabular}
+  \caption{OpenVM v2.0.1 complete first-wave meter results.}
+  \label{tab:openvm-first-wave-meter}
+\end{table}
+
+Application proving takes 299.07 seconds and peaks at 51,442,624 KiB RSS
+without swapping.  The 3,385,859-byte proof verifies in 0.28 seconds and
+55,288 KiB RSS; exact executable/public commitments pass and one-bit variants
+fail.  The endpoint is a semantic boundary rather than an arbitrary cost
+cutoff: Enemy deaths have spawned omitted Item state, whose first observed
+feedback is a small-power collection that adds 10 score and power at frame
+249.  Extending past frame 229 therefore requires composing Item state.
+RNG/effect and Sub0-shooting noninterference, direct collision-ANM decoding,
+x87 code{fsincos} refinement, and code correspondence remain open.
+
 \subsection{Canonical projection experiment}
 
 Two independent complete revision-0.2 traces of the Normal Reimu A NN/NB run

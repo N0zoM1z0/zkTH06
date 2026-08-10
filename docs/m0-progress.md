@@ -458,6 +458,49 @@ after collision position and removal are derived. RNG, enemy bullets, items,
 bombs, Player death/respawn, dialogue, other routes, and later ECL paths remain
 outside the kernel.
 
+## Complete first-wave proof gate
+
+The next enclosing state replaces the single `collided_slot` marker with the
+complete 80-entry bullet-state map and carries collided bullets through their
+slowed movement and collision-script timers. Starting from the frame-208 state
+derived by the preceding kernel, it executes another 21 transitions and
+derives the remaining deaths at frames 213, 219, 224, and 229. Collision slots
+are 2, 3, 4, 0, and 1; every hit deals 48 damage and contributes 90 hit score
+plus 300 death score. The frame-229 endpoint therefore has score 1950, five
+collided bullets, six active bullets, and no remaining first-wave Enemy.
+
+The enlarged address-bound Wine trace and independent Linux reference match
+for 260 frames over the full Enemy/collision profile. The proof vector commits
+all active-bullet fields (104 bytes per active record), every retained Enemy,
+target, and score field. It contains 253 damage calls and observes RNG
+generation 157, but RNG/effects are not accepted as witnesses or retained by
+the guest.
+
+The `ZKFWI1` OpenVM payload is 480 bytes: a fixed 24-byte header plus 228 replay
+masks. Its public digest is
+`1825b64b0a3ac10d26ecd9d82052ab58c68bb5250d89dba85fea79f727f562a8`.
+
+| Transitions | Guest instructions | Metered cells |
+| ---: | ---: | ---: |
+| 1 | 82,305 | 3,219,079 |
+| 10 | 758,445 | 29,483,552 |
+| 100 | 9,468,443 | 368,988,475 |
+| 207 | 25,262,242 | 985,032,840 |
+| 228 | 28,276,048 | 1,104,665,874 |
+
+Application proving took 299.07 seconds and 51,442,624 KiB peak RSS without
+swapping; verification took 0.28 seconds. Exact executable/public commitments
+pass and one-bit variants fail. The tracked bundle is
+[`evidence/openvm-first-wave-228-v1.json`](../evidence/openvm-first-wave-228-v1.json).
+
+This boundary is intentionally frame 229, not an arbitrary proof-size cutoff.
+Enemy deaths spawn omitted Item state; the first observed feedback into the
+retained projection is a small-power collection that adds 10 score (and power)
+at frame 249. Extending beyond frame 229 therefore requires composing Item
+spawn/motion/collision rather than claiming it noninterfering. Direct collision
+ANM decoding, alias-complete RNG/effect and Sub0-shooting noninterference, x87
+`fsincos` refinement, and source/binary/guest correspondence remain open.
+
 ## Local corpus result
 
 The downloaded corpus is excluded from Git. Provenance and input hashes are in
@@ -592,8 +635,8 @@ wrap for one bounded award.
 1. Close or explicitly constrain the selected projection. Inactive Effect
    residue and dynamic ScreenEffect jobs are known open noninterference cases;
    see [`state-projection-audit.md`](state-projection-audit.md).
-2. Compose Enemy/ECL state so the frame-208 Player-bullet collision and homing
-   target become derived rather than a stopping condition.
+2. Compose death-spawned Item state through its first score/power feedback at
+   frame 249, then add the next Enemy/ECL and enemy-bullet writers.
 3. Add a field-level canonical snapshot at a selected tick so a subsystem
    mismatch can be reduced to its first field.
 4. Export the same schema from the original executable or an exact-reference

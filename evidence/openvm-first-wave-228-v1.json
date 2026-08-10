@@ -1,0 +1,240 @@
+{
+  "type": "zkth06.openvm-first-wave-proof",
+  "schema_version": 1,
+  "date_utc": "2026-08-10",
+  "backend": {
+    "name": "OpenVM",
+    "cargo_openvm_version": "2.0.1",
+    "cargo_openvm_revision": "b820b25baab6c5d9b055f64e0286b6b1058e707c",
+    "guest_target": "riscv32im-risc0-zkvm-elf",
+    "guest_toolchain": "nightly-2026-01-18",
+    "guest_rustc": "rustc 1.94.0-nightly (fe98ddcfc 2026-01-17)",
+    "vm_extensions": [
+      "rv32i",
+      "rv32m",
+      "io",
+      "sha2"
+    ]
+  },
+  "workload": {
+    "source_vector": "first-wave-002677-229-v1.bin",
+    "source_vector_bytes": 122580,
+    "source_vector_sha256": "b645bc3e25dd9fcc8ec1cce29cd4971d522b70e48e69243842c3a2b5500cbbf3",
+    "retail_target_executable_sha256": "9f76483c46256804792399296619c1274363c31cd8f1775fafb55106fb852245",
+    "replay_sha256": "01bc11b9226932bddeeeff675f1741b89b129f4c8820b3b1cf185a1cb19ad10f",
+    "retail_trace_sha256": "48b6d5b6fc5aefef1b82107dca1661d746dd13f81c27269d9af634e02951ad42",
+    "reference_trace_sha256": "182fede493e92a1efb2511a813fb2697737ca8f40ec9221292189c0d0decf4d2",
+    "retail_reference_comparison_sha256": "e76a8587ea94110a00d1c1ccc67f50d0245588e871d32d50186ce7318e210a0f",
+    "static_audit_sha256": "45584631f06a2abcee776a1bcf118b1c2bf37bb0f80553840d3fd03c3b41393d",
+    "static_audit_sealed_digest": "dc8c91a7cc64e49c63308f0f8ca4775ae698724ae6eb40679b96d9d2c5e87521",
+    "parent_early_gameplay_vector_sha256": "c98b3ff3d90ba0f972f0691ffcd2d76573d1e6677d1ec75ed7a5ae59473feb3a",
+    "profile": "reimu-a-rank-1-complete-first-stage1-sub0-wave",
+    "source_frames": 260,
+    "anchor_game_frame": 1,
+    "incremental_anchor_game_frame": 208,
+    "final_game_frame": 229,
+    "transitions": 228,
+    "incremental_transitions": 21,
+    "character": 0,
+    "shot_type": 0,
+    "fixed_power": 0,
+    "profile_flags": 3,
+    "damage_calls": 253,
+    "collision_events": 5,
+    "collision_slots": [
+      2,
+      3,
+      4,
+      0,
+      1
+    ],
+    "enemy_death_frames": [
+      208,
+      213,
+      219,
+      224,
+      229
+    ],
+    "collided_bullets": 5,
+    "active_bullets": 6,
+    "maximum_enemies": 5,
+    "remaining_enemies": 0,
+    "score": 1950,
+    "input_payload_bytes": 480,
+    "input_payload_sha256": "5245962445a7ebb5199ae698e50787d8168ae964c0db990749cfc9143ac3ce00",
+    "expected_projection_sha256": "e93390e00302075259ee5405281b3c022372f6bf096dca591284e14364efdd27",
+    "state_domain_ascii": "zkTH06/first-wave/projection/v1",
+    "state_domain_nul_terminated": true,
+    "statement_domain_ascii": "zkTH06/openvm/first-wave/v1",
+    "statement_domain_nul_terminated": true,
+    "expected_statement_sha256": "1825b64b0a3ac10d26ecd9d82052ab58c68bb5250d89dba85fea79f727f562a8",
+    "statement_preimage": "domain || input_payload || final_game_frame_le || transitions_le || score_le || damage_calls_le || collision_events_le || collided_bullets_le || active_bullets_le || remaining_enemies_le || maximum_enemies_le || projection_sha256"
+  },
+  "source_bindings": {
+    "zkvm/player-motion/Cargo.toml": "8c859effb9b0f39bb84531819b12b4cb0bd8864fa9c7035308e49a46ead9ce48",
+    "zkvm/player-motion/src/lib.rs": "75b2b76638df83addee4bf6feb35cd321a370790739e635c54b3135ef9d21820",
+    "zkvm/player-motion/src/pc24.rs": "a8960adeec05c5ddaf5343902ae50895a8db9e030f77f5d5c5d664985b84945e",
+    "zkvm/player-shooting/Cargo.toml": "eda906f997f9d56f7468d0fa7147499641ed9b149a7589e528d9e10fa6f1d93b",
+    "zkvm/player-shooting/src/lib.rs": "89748d916d9110db930e9ca5fc876e68c42e74ffe500c52d48736f4aaf9607d1",
+    "zkvm/player-bullets/Cargo.toml": "0a75c59c7d4256a962236cd5bb90d924e6cb1a3c21ff9dfd2d506d788236fc30",
+    "zkvm/player-bullets/src/lib.rs": "6808d5b51001e542f1c0a71cdee1dcd125c3dc12682bb08d8495f1e6adf4b328",
+    "zkvm/player-bullet-lifecycle/Cargo.toml": "7b9c47a129fc78d1260a3b1401ee026bbeb683287448e7132ceef16bd9d0f72c",
+    "zkvm/player-bullet-lifecycle/src/lib.rs": "8f4ee335a5c79b88bbd332eb69f1fdd6a84d7c6e96e98518459e12756f7bfb54",
+    "zkvm/early-gameplay/Cargo.toml": "5fb71d4c9e4789212c38915c521a4a896efb0723455ea11c7fd9b22fe19322b9",
+    "zkvm/early-gameplay/src/lib.rs": "03478cc7cf0242c2b0df72e8ee6b00ea44049c344ad6b46ec03b693e4de29707",
+    "zkvm/first-wave/Cargo.toml": "5f5b914a1a958e83176d38580f9b8a952c5f625e2a8b8d7fb84585da2fe16cee",
+    "zkvm/first-wave/src/lib.rs": "591e22e2a4270f3c9b0de84f1428e53ea0e6aa6179a3f5dfbc18c5c3b9c0374c",
+    "zkvm/first-wave-openvm/Cargo.lock": "d0d56f0a9565d591329e14c9a5852a43e7a81d456c111eef961c1c0d145c8a85",
+    "zkvm/first-wave-openvm/Cargo.toml": "5002b08a433303c9795dfebcaae958523f4e1fc4b29a15df553d5f387640e112",
+    "zkvm/first-wave-openvm/openvm.toml": "66176cd349514666978faed7a789df0653eced83be1a2bcc70b0b5cc2c06ffcc",
+    "zkvm/first-wave-openvm/src/main.rs": "b29df8b845250844122e172c8d2e30df6e331a99c69162b02a404b4553a02ccb",
+    "tools/build_first_wave_openvm_input.py": "3a5d55b9d75f37ca511ffe285337fab3457a0463873e856998c7099b286edecb"
+  },
+  "evidence_bindings": {
+    "arithmetic/first-wave-v1.json": "45584631f06a2abcee776a1bcf118b1c2bf37bb0f80553840d3fd03c3b41393d",
+    "evidence/first-wave-002677-229-v1.bin": "b645bc3e25dd9fcc8ec1cce29cd4971d522b70e48e69243842c3a2b5500cbbf3",
+    "evidence/first-wave-002677-229-v1.json": "9edf19b391b6c3a57bf52429848a1314384d9f9803c0aa6d7945c99a7ac736e1",
+    "evidence/retail-reference-002677-260-enemy-collisions-v2.json": "e76a8587ea94110a00d1c1ccc67f50d0245588e871d32d50186ce7318e210a0f",
+    "tools/build_first_wave_vector.py": "13c57709a72e1ee0b937380434188525c77a02f4f918a63cf779367f0b1824a7",
+    "tools/first_wave_audit.py": "b69dc3d4975fc910475d1c97876c2437ba2c6fd34a5873e7b5b5f4418fdf0621"
+  },
+  "artifacts": {
+    "guest_elf": {
+      "bytes": 62412,
+      "sha256": "1433c387324ac6ec48ff7045a3ca3b9368184cf24c4ecb2ba359680213984c72",
+      "tracked": false
+    },
+    "vm_executable": {
+      "path": "first-wave-v1/zkth06-first-wave-openvm.vmexe",
+      "bytes": 585201,
+      "sha256": "7b1e7a786e3260509accbcdc8c7e342734543fe1d406ba159aad15b118c618c3",
+      "app_exe_commit": "0x0042c193d5cbc797b1c01bc28a7929d9f054e0a7584274f771036139b5ab4f84"
+    },
+    "app_proving_key": {
+      "bytes": 242775,
+      "tracked": false,
+      "reason": "deterministically regenerable and not required for verification"
+    },
+    "app_verifying_key": {
+      "path": "first-wave-v1/app.vk",
+      "bytes": 241614,
+      "sha256": "09b509a234f028b4f251779a26adf4d87b66d40e07174f0f5e3a2d9782de958b"
+    },
+    "app_commit_descriptor": {
+      "path": "first-wave-v1/app-commit.json",
+      "bytes": 182,
+      "sha256": "1abd42c3a25dc2509050ab7fb25d4ed378a60b023dd3a83a711e8c8cb409301e"
+    },
+    "app_proof": {
+      "path": "openvm-first-wave-228-v1.app.proof",
+      "bytes": 3385859,
+      "sha256": "e425a31685801335d38135eada94f3708c214e42bb33a6a537e0cc826f6c4d51"
+    }
+  },
+  "meter": [
+    {
+      "transitions": 1,
+      "instructions": 82305,
+      "cells": 3219079,
+      "statement_sha256": "4cdafb0274f0d6d7d689ac3099842aae1eb1763fdeabea004708a6d44e09bea1"
+    },
+    {
+      "transitions": 10,
+      "instructions": 758445,
+      "cells": 29483552,
+      "statement_sha256": "43f13a650cb988c1202c9b3641c92eb178de88b1c5e90608f45e7b3464ec136b"
+    },
+    {
+      "transitions": 100,
+      "instructions": 9468443,
+      "cells": 368988475,
+      "statement_sha256": "2ebf7be396a2671d989d2cfc60a8e17c43d72cae45db9e537de57b0b86b9b989"
+    },
+    {
+      "transitions": 207,
+      "instructions": 25262242,
+      "cells": 985032840,
+      "statement_sha256": "4ea179fa252d03be4bd230495b5aab905548f8c3d22db57b9fbdcb2a84ed5f28"
+    },
+    {
+      "transitions": 228,
+      "instructions": 28276048,
+      "cells": 1104665874,
+      "statement_sha256": "1825b64b0a3ac10d26ecd9d82052ab58c68bb5250d89dba85fea79f727f562a8"
+    }
+  ],
+  "public_values_audit": {
+    "method": "OpenVM v2.0.1 SDK deserialization as ContinuationVmProof<SC>",
+    "tool_source_bindings": {
+      "tools/openvm-proof-inspect/Cargo.lock": "cb328a765cb2214d7b6284c9eb769cb952815242e356a12f656aa8a40fef332a",
+      "tools/openvm-proof-inspect/Cargo.toml": "5707b336099df1467ce2a7121439c1c46ce7eef0d0a18f9801b4979fbc1ff964",
+      "tools/openvm-proof-inspect/src/main.rs": "524b728225089418f27b147374f64534948c79c1d673a5dbee07a916cce732ec"
+    },
+    "decoded_bytes": [
+      24,
+      37,
+      182,
+      75,
+      10,
+      58,
+      193,
+      13,
+      38,
+      236,
+      217,
+      216,
+      32,
+      82,
+      171,
+      88,
+      198,
+      139,
+      181,
+      37,
+      13,
+      137,
+      219,
+      168,
+      95,
+      234,
+      121,
+      247,
+      39,
+      245,
+      98,
+      168
+    ],
+    "matches_expected_statement_sha256": true,
+    "one_bit_wrong_expected_digest_rejected": true
+  },
+  "proving": {
+    "elapsed_seconds": 299.07,
+    "user_cpu_seconds": 9310.59,
+    "system_cpu_seconds": 1790.38,
+    "cpu_utilization_percent": 3711,
+    "max_rss_kib": 51442624,
+    "swaps": 0,
+    "exit_status": 0
+  },
+  "verification": {
+    "elapsed_seconds": 0.28,
+    "max_rss_kib": 55288,
+    "expected_executable_commit_accepted": true,
+    "one_bit_wrong_executable_commit_rejected": true,
+    "public_statement_digest_matches": true,
+    "one_bit_wrong_public_digest_rejected": true
+  },
+  "design_iteration": {
+    "previous_early_gameplay_payload_bytes": 438,
+    "complete_first_wave_payload_bytes": 480,
+    "payload_increase_bytes": 42,
+    "previous_early_gameplay_instructions": 19787280,
+    "complete_first_wave_instructions": 28276048,
+    "instruction_increase": 8488768,
+    "previous_early_gameplay_cells": 769444525,
+    "complete_first_wave_cells": 1104665874,
+    "cell_increase": 335221349,
+    "comparison_note": "Twenty-one replay masks add four collisions/deaths and close the full first wave; all bullet, Enemy, target, and score fields remain derived, and the public projection now commits every active bullet field at every frame."
+  },
+  "claim_boundary": "This proof starts from the fixed empty gameplay-frame-1 state and executes 228 linked Reimu-A rank-1 transitions using only replay input masks. It composes the prior enclosing Player/bullet/Enemy kernel with persistent collided-bullet motion and ANM timers, 253 AABB damage calls, five collision transitions in slots 2/3/4/0/1, all five first-wave deaths, target selection, and score 1950. Every active Player bullet and retained Enemy raw-bit projection is publicly committed. Retail Wine and the independently built Linux reference match over 260 frames. This is finite differential and static-mapping evidence, not a universal retail-binary equivalence proof. The kernel stops at frame 229 because death-spawned item state is omitted and first feeds retained score/power at frame 249. RNG/effect and Sub0 shooting noninterference, direct collision-ANM decoding, x87 fsincos refinement, translation validation, and later gameplay subsystems remain explicit obligations."
+}

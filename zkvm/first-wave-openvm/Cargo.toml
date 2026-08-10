@@ -1,0 +1,22 @@
+[workspace]
+
+[package]
+name = "zkth06-first-wave-openvm"
+version = "0.1.0"
+edition = "2021"
+license = "GPL-3.0-only"
+rust-version = "1.91.1"
+publish = false
+
+[dependencies]
+openvm = { git = "https://github.com/openvm-org/openvm.git", tag = "v2.0.1" }
+openvm-sha2 = { git = "https://github.com/openvm-org/openvm.git", tag = "v2.0.1" }
+zkth06-early-gameplay = { path = "../early-gameplay" }
+zkth06-first-wave = { path = "../first-wave" }
+zkth06-player-bullet-lifecycle = { path = "../player-bullet-lifecycle" }
+zkth06-player-bullets = { path = "../player-bullets" }
+
+[profile.release]
+codegen-units = 1
+lto = "fat"
+panic = "abort"

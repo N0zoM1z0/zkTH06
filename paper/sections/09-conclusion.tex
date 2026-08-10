@@ -59,15 +59,28 @@ crosses one authentic Enemy/ECL boundary, while the finite x87 curve lookup and
 omitted Sub0 shooting effects remain explicit refinement and noninterference
 obligations.
 
+A seventh guest closes the remainder of that first wave.  It replaces the
+single collision marker with the complete bullet-state map, derives the four
+subsequent hits and deaths through frame 229, and publicly commits every active
+bullet and Enemy projection.  Its 480-byte replay-only input drives 228 linked
+transitions, 253 damage calls, score 1950, five collided bullets, and an empty
+first-wave Enemy pool.  The 28,276,048-instruction,
+1,104,665,874-cell workload proves in 299.07 seconds at 51,442,624 KiB peak RSS
+and verifies in 0.28 seconds.  The kernel now stops at an observed semantic
+boundary: death-spawned Item state first writes retained score/power at frame
+249, so further extension must compose that subsystem rather than assume it
+away.
+
 An experimental shared binary protocol now emits real per-frame subsystem and
 root digests with raw floating-point bits, stable identities, and fail-closed
 decoding.  Complete repeated Linux runs are byte-identical, and the first broad
 ANM experiment already exposed the distinction between allocated memory and
 future-live semantic state.  The retail probe already turns a mismatch in its
 narrow root projection into a reproducible first-frame/first-field diagnosis.
-The next concrete gameplay milestone is to extend the enclosing Enemy/ECL and
-enemy-bullet state beyond this early fixed profile, while adding or ruling out
-Player death/respawn, bomb, power, and item paths.  Deriving the fixed
+The next concrete gameplay milestone is to compose the first-wave Item
+spawn/motion/collection path through frame 249, then extend Enemy/ECL and
+enemy-bullet state beyond this early fixed profile while adding or ruling out
+Player death/respawn and bomb paths.  Deriving the fixed
 post-calc anchor from registration/pre-stage scheduling, time-stop writers, and
 non-full-speed paths remains necessary while resolving the
 known reuse and dynamic-job omissions and enlarging the shipped-executable

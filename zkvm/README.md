@@ -35,6 +35,14 @@ independently observed, so this layer is a local function proof rather than an
 enclosing multi-frame bullet state machine. Bullet motion, ANM termination,
 slot reclamation, and Enemy collision remain the next linkage obligation.
 
+[`player-bullet-lifecycle/`](player-bullet-lifecycle/) links that state through
+frame 207, and [`early-gameplay/`](early-gameplay/) composes the first real
+Enemy collision at frame 208. [`first-wave/`](first-wave/) then carries every
+fired and collided slot through all five first-wave deaths at frame 229.
+[`first-wave-openvm/`](first-wave-openvm/) proves the full 228-transition chain
+from the fixed frame-1 anchor using only replay masks. It stops before omitted
+death-item state first feeds score/power at frame 249.
+
 The intended boundary is:
 
 - public: target/version commitments, kernel revision, route and initial-state

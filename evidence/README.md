@@ -154,6 +154,25 @@ The proof, verifying key, vm executable, executable commitment, source hashes,
 and negative checks are tracked. The x87 curve-table refinement, omitted Sub0
 shooting noninterference, and all later gameplay paths remain open.
 
+`first-wave-002677-229-v1.bin` (`ZKFWV1`) continues from the derived frame-208
+state and closes the complete first Stage-1 wave. Its 228 linked transitions
+retain the complete 80-slot Player-bullet pool, including all collided states,
+and derive deaths at frames 208, 213, 219, 224, and 229 in slots 2, 3, 4, 0,
+and 1. The endpoint has score 1950, five collided bullets, six active bullets,
+and no live first-wave Enemy. The companion 260-frame Wine/reference report
+matches every compared raw bullet, Enemy, ECL, damage-call, RNG, Player, and
+score field.
+
+`openvm-first-wave-228-v1.json` records the seventh OpenVM application proof.
+The 480-byte private payload contains only the fixed header and 228 replay
+masks. The guest executes 28,276,048 instructions over 1,104,665,874 metered
+cells and authenticates public digest
+`1825b64b0a3ac10d26ecd9d82052ab58c68bb5250d89dba85fea79f727f562a8`.
+The proof, vm executable, verifying key, executable commitment, source/evidence
+hashes, and negative checks are tracked. This finite prefix deliberately ends
+at frame 229: omitted death-item state first writes retained score/power at
+frame 249 and must be composed before the kernel advances across that writer.
+
 `source/openvm-player-motion-v1/player-motion-lib.rs` preserves the exact
 library source compiled into the earlier immutable proof.  The live crate later
 gained the enclosing-state module, so retaining the old source by hash keeps

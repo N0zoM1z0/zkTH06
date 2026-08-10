@@ -39,6 +39,7 @@ tools/openvm-proof-inspect/target/
 tests/__pycache__/
 formal/.lake/
 zkvm/target/
+zkvm/first-wave/target/
 zkvm/player-motion-openvm/target/
 zkvm/player-motion-openvm/openvm/
 zkvm/player-motion-openvm/*.proof
@@ -63,6 +64,13 @@ zkvm/early-gameplay-openvm/target/
 zkvm/early-gameplay-openvm/openvm/
 zkvm/early-gameplay-openvm/*.proof
 zkvm/early-gameplay-openvm/openvm_init.rs
+zkvm/first-wave-openvm/target/
+zkvm/first-wave-openvm/openvm/
+zkvm/first-wave-openvm/*.proof
+zkvm/first-wave-openvm/openvm_init.rs
+
+# Application proving keys are large, deterministic, and not needed to verify.
+evidence/**/app.pk
 
 # Verified local import of the proprietary retail data.
 data/imported/

@@ -1,0 +1,181 @@
+{
+  "schema_version": 1,
+  "kind": "zkth06.first-wave-audit",
+  "inputs": {
+    "executable_sha256": "9f76483c46256804792399296619c1274363c31cd8f1775fafb55106fb852245",
+    "player_bullet_lifecycle_artifact_sha256": "a82bbf8c40b449e4d2280e805e642a971be719dee970788f344eb8ee1feef5e4",
+    "early_enemy_collision_artifact_sha256": "3724a636ca2c8751127683caf5314a2b3fe5ce6cc4fc00d11cc489b1ffbd6640",
+    "stage1_ecl_sha256": "9d9a40e9f7e3ab9346d3874438134659cacf9d34f4aff57b96b4be4ea85b99d7"
+  },
+  "generator": {
+    "path": "tools/first_wave_audit.py",
+    "sha256": "b69dc3d4975fc910475d1c97876c2437ba2c6fd34a5873e7b5b5f4418fdf0621"
+  },
+  "upstream": {
+    "url": "https://github.com/GensokyoClub/th06",
+    "revision": "cc475a0bc3fef38683b0f02224c87ddba0a021d9",
+    "source_files": {
+      "src/AnmManager.cpp": "fcb3f0b5ef2098d285853c58c2fdf9d369edb231fdf7f551b16e25bfdfac3c82",
+      "src/EnemyManager.cpp": "39a38a22282fdee6ce1a458087541e792e50d0a1dcd1994becda6705d96d6bba",
+      "src/ItemManager.cpp": "60464c391e70c17744aedad587140b82265db35b9b6e86f323b5af641cf772e5",
+      "src/Player.cpp": "5e3e81cff72796c98b9b87dc65d447333444917b63d9e4d493572f23145c26b5"
+    },
+    "anchors": [
+      {
+        "file": "src/Player.cpp",
+        "line": 487,
+        "anchor": "ARRAY_SIZE_SIGNED(player->bullets)",
+        "role": "complete 80-slot update scan"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 571,
+        "anchor": "sprite.pos.x",
+        "role": "gameplay and sprite x movement"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 573,
+        "anchor": "sprite.pos.y",
+        "role": "gameplay and sprite y movement"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 575,
+        "anchor": "sprite.pos.z",
+        "role": "draw-only z overwrite"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 577,
+        "anchor": "IsInBounds",
+        "role": "sprite-sized bounds test"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 583,
+        "anchor": "ExecuteScript",
+        "role": "collision ANM execution"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 587,
+        "anchor": "unk_140.Tick",
+        "role": "bullet age tick"
+      },
+      {
+        "file": "src/EnemyManager.cpp",
+        "line": 641,
+        "anchor": "0 >= curEnemy->life",
+        "role": "Enemy death gate"
+      },
+      {
+        "file": "src/EnemyManager.cpp",
+        "line": 661,
+        "anchor": "AddScore(curEnemy->score)",
+        "role": "fixed Enemy death score"
+      },
+      {
+        "file": "src/EnemyManager.cpp",
+        "line": 662,
+        "anchor": "isSlotOccupied = 0",
+        "role": "Enemy slot reclamation"
+      },
+      {
+        "file": "src/EnemyManager.cpp",
+        "line": 670,
+        "anchor": "itemDrop >= 0",
+        "role": "death-item writer branch"
+      },
+      {
+        "file": "src/EnemyManager.cpp",
+        "line": 673,
+        "anchor": "SpawnItem",
+        "role": "death item spawn"
+      },
+      {
+        "file": "src/EnemyManager.cpp",
+        "line": 675,
+        "anchor": "ITEM_RANDOM_ITEM",
+        "role": "random item branch"
+      },
+      {
+        "file": "src/ItemManager.cpp",
+        "line": 157,
+        "anchor": "CalcItemBoxCollision",
+        "role": "item-to-Player interaction gate"
+      },
+      {
+        "file": "src/ItemManager.cpp",
+        "line": 182,
+        "anchor": "currentPower++",
+        "role": "small-power item state write"
+      },
+      {
+        "file": "src/ItemManager.cpp",
+        "line": 189,
+        "anchor": "AddScore(10)",
+        "role": "first omitted retained-score writer"
+      },
+      {
+        "file": "src/AnmManager.cpp",
+        "line": 1366,
+        "anchor": "currentTimeInScript.Tick",
+        "role": "non-exiting ANM timer tick"
+      }
+    ],
+    "correspondence_status": "inherits pinned parent mapping/disassembly checks; source extension is manual"
+  },
+  "derived_profile_contract": {
+    "route": "Reimu A rank 1, Stage 1 Lunatic replay prefix",
+    "anchor_game_frame": 208,
+    "last_game_frame": 229,
+    "enemy_death_game_frames": [
+      208,
+      213,
+      219,
+      224,
+      229
+    ],
+    "collision_slots": [
+      2,
+      3,
+      4,
+      0,
+      1
+    ],
+    "damage_per_collision": 48,
+    "post_wave_score": 1950,
+    "post_wave_active_enemies": 0,
+    "post_wave_collided_bullets": 5,
+    "collision_anm": {
+      "anm_file_index": 1120,
+      "active_sprite_index": 1090,
+      "size_bits": [
+        "0x41800000",
+        "0x41800000"
+      ],
+      "maximum_timer_current": 22,
+      "first_observed_exit_game_frame": 238
+    },
+    "finite_prefix_noninterference": {
+      "rng_and_effects": "death effects consume RNG generations 27..157 but do not write the retained Player/bullet, Enemy, target, or score projection through frame 229",
+      "items": "deaths spawn omitted item state; no item touches the retained projection through frame 229, while the first observed feedback is the +10 power-item score/power write at frame 249",
+      "enemy_sub0_shooting": "omitted Enemy bullet creation has no retained projection writer through frame 229"
+    }
+  },
+  "evidence_status": "inherits executable/source/mapping/instruction signatures from both parent audits, adds source anchors for collided-bullet continuation and the item feedback boundary, and is paired with finite retail/reference raw-bit validation",
+  "open_obligations": [
+    "Decode and bind collision ANM 1120 directly from pinned player01.anm data.",
+    "Prove alias-aware RNG/effect/item noninterference instead of relying on the finite boundary audit.",
+    "Model spawned item state before extending the score-bearing kernel to frame 249.",
+    "Refine the fixed x87 trigonometric table against fsincos semantics.",
+    "Translation-validate the inherited source/disassembly correspondence."
+  ],
+  "counts": {
+    "source_anchors": 17,
+    "enemy_deaths": 5,
+    "incremental_transitions": 21
+  },
+  "artifact_sha256": "dc8c91a7cc64e49c63308f0f8ca4775ae698724ae6eb40679b96d9d2c5e87521"
+}

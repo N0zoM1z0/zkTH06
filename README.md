@@ -76,6 +76,19 @@ only by derived ECL time, but proving it refines the pinned x87 `fsincos` path
 and proving omitted Sub0 shooting effects noninterfering remain explicit
 soundness obligations.
 
+The enclosing successor now closes the entire first Stage-1 wave rather than
+stopping after one hit. A seventh OpenVM guest derives persistent collided-
+bullet motion and ANM timers plus the remaining four collisions and deaths at
+frames 213, 219, 224, and 229. Its 480-byte private payload is still only a
+fixed header and 228 replay masks; the public digest commits every active
+Player-bullet and Enemy raw-bit projection at every frame. The final state has
+score 1950, five collided bullets, six active bullets, and no live first-wave
+Enemy. The proof costs 28,276,048 instructions and 1,104,665,874 metered cells.
+Retail Wine and the independent reference match the enlarged projection over
+260 frames. The kernel stops at frame 229 because death-spawned item state is
+not yet retained and first feeds score/power at frame 249; this is the next
+enforced subsystem boundary rather than an assumed noninterference claim.
+
 A first owner-local Lean model now machine-checks why active-only Effect slots
 violate one-step noninterference and how a narrow dormant reuse shadow repairs
 that modeled allocation step. It is a proof-design result, not a whole-game or
@@ -177,8 +190,8 @@ projection. Its enclosing player-state subprojection drives 1,999 transitions
 from a fixed post-calc anchor, checks the life-state change at frame 240, and
 now checks focus/previous-input/fire-timer recurrence and the nested local
 `SpawnBullets` and Player-bullet lifecycle projections. A linked prefix now
-carries the complete 80-slot pool through the first real Enemy hit at frame 208
-without slot- or Enemy-state witnesses.
+carries the complete 80-slot pool through all five deaths of the first Enemy
+wave at frame 229 without slot-, collision-, or Enemy-state witnesses.
 The full canonical subsystem projection and broader replay matrix remain open.
 
 ### M1 — canonical gameplay kernel
@@ -221,9 +234,16 @@ and 769,444,525 cells. Proving took 203.58 seconds with 52,632,376 KiB peak RSS;
 verification took 0.22 seconds. The exact bundle and remaining x87/slicing
 obligations are in
 [`evidence/openvm-early-gameplay-207-v1.json`](evidence/openvm-early-gameplay-207-v1.json).
-The next Player work is to extend collision/death/respawn, bomb, power, and item
-interaction while expanding Enemy/ECL and enemy-bullet state beyond this fixed
-early prefix.
+The complete first-wave successor executes 228 transitions from the same fixed
+anchor using 480 replay-only private bytes. It derives five collisions/deaths,
+253 damage calls, score 1950, and an empty first-wave Enemy pool, while publicly
+committing every active bullet and Enemy projection. It meters 1,104,665,874
+cells; proving took 299.07 seconds with 51,442,624 KiB peak RSS and verification
+took 0.28 seconds. The exact bundle is in
+[`evidence/openvm-first-wave-228-v1.json`](evidence/openvm-first-wave-228-v1.json).
+The next enclosing step must add death-spawned Item state before frame 249,
+then expand Enemy/ECL and enemy-bullet state; Player death/respawn and bomb
+paths remain subsequent subsystem boundaries.
 Deriving the post-calc anchor, external time-stop writers, and
 non-full-speed timer paths remain soundness gates rather than hidden premises.
 
