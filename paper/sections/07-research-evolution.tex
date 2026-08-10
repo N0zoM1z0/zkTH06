@@ -309,5 +309,20 @@ per-frame oracle from being mislabeled as persistent bullet state and leaves a
 precise next proof obligation: compose the local allocator with all writers of
 slot liveness.
 
+\paragraph{Phase Z: close only the writer-local prefix, then stop.}
+Tracing the full update order showed that a useful enclosing transition did
+not require solving all Enemy and ECL semantics at once.  From the fixed empty
+frame-1 pool, rank-1 type-0 bullet motion, sprite synchronization, bounds
+reclamation, fixed ANM/timer behavior, and allocation are owner-local until
+EnemyManager first writes collided state at frame 208.  We therefore close 206
+transitions and reject the next step.  The private payload falls from 197,180
+bytes of independently observed callback records to 436 bytes of replay masks,
+while the public digest covers every intermediate state.  The fifth guest costs
+423,247,443 cells.  This is the intended soundness pattern for future growth:
+derive state while the writer inventory is closed, and make the first omitted
+writer an enforced boundary rather than an unspoken assumption.  The next
+obligation is now concrete Enemy/ECL collision composition, not generic
+``bullet support.''
+
 Future changes to the central claim or state boundary should be appended here
 with the evidence that motivated them.

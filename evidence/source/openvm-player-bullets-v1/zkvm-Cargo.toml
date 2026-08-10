@@ -1,5 +1,5 @@
 [workspace]
-members = ["player-motion", "player-shooting", "player-bullets", "player-bullet-lifecycle"]
+members = ["player-motion", "player-shooting", "player-bullets"]
 exclude = ["player-motion-openvm", "player-state-openvm", "player-shooting-openvm"]
 resolver = "2"
 

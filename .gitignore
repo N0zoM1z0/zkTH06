@@ -55,6 +55,10 @@ zkvm/player-bullets-openvm/target/
 zkvm/player-bullets-openvm/openvm/
 zkvm/player-bullets-openvm/*.proof
 zkvm/player-bullets-openvm/openvm_init.rs
+zkvm/player-bullet-lifecycle-openvm/target/
+zkvm/player-bullet-lifecycle-openvm/openvm/
+zkvm/player-bullet-lifecycle-openvm/*.proof
+zkvm/player-bullet-lifecycle-openvm/openvm_init.rs
 
 # Verified local import of the proprietary retail data.
 data/imported/

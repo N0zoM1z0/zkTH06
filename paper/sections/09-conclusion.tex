@@ -5,7 +5,7 @@ a legacy game's execution.  The initial replay runner demonstrates that the
 reconstructed engine can consume real v1.02h witnesses deterministically and
 complete full runs, while strict parsing removes several ambient-memory and
 format-trust hazards.  A first shipped-executable anchor now agrees for 2,000
-frames on a 47-field raw projection.  The result is not yet a proof system and
+frames on a 50-field semantic projection.  The result is not yet a proof system and
 does not yet establish whole-state equivalence with the shipped executable.
 
 A first \code{no\_std} player-position microkernel turns that anchor into an
@@ -36,16 +36,27 @@ pre-call slot array remains independently observed.  The result is therefore a
 local function proof, not evidence that the guest already carries authentic
 bullet liveness across frames.
 
+A fifth guest closes that witness boundary for the maximal writer-local prefix.
+Starting from the fixed empty frame-1 pool and 206 replay masks, it derives
+Player motion and shooting cadence together with rank-1 bullet movement,
+14-by-14 bounds reclamation, fixed ANM/timer behavior, and allocation through
+frame 207.  Its 436-byte private payload contains no slot pre-states, and its
+public digest commits all intermediate states, 35 initializations, and 30
+reclamations.  The 206-step workload costs 10,859,285 instructions and
+423,247,443 cells; proving takes 117.26 seconds at 51,101,780 KiB peak RSS and
+verification takes 0.18 seconds.  The transition rejects another step because
+EnemyManager first writes collided bullet state at frame 208.  This is a
+soundness boundary, not an Enemy/ECL proof.
+
 An experimental shared binary protocol now emits real per-frame subsystem and
 root digests with raw floating-point bits, stable identities, and fail-closed
 decoding.  Complete repeated Linux runs are byte-identical, and the first broad
 ANM experiment already exposed the distinction between allocated memory and
 future-live semantic state.  The retail probe already turns a mismatch in its
 narrow root projection into a reproducible first-frame/first-field diagnosis.
-The next concrete Player milestone is to compose that local callback with
-bullet motion, ANM reclamation, and collision so that each later slot pre-state
-is derived, then add or rule out collision/death/respawn, bomb, power, and item
-paths.  Deriving the fixed
+The next concrete Player milestone is to compose Enemy/ECL state so the
+frame-208 collision is derived, then add or rule out collision/death/respawn,
+bomb, power, and item paths.  Deriving the fixed
 post-calc anchor from registration/pre-stage scheduling, time-stop writers, and
 non-full-speed paths remains necessary while resolving the
 known reuse and dynamic-job omissions and enlarging the shipped-executable

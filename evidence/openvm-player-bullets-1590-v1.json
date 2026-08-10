@@ -54,7 +54,7 @@
     "statement_preimage": "domain || input_payload || selected_last_game_frame_le || spawn_calls_le || initialized_bullets_le || rank1_calls_le || rank2_calls_le || rank3_calls_le || zero_allocation_calls_le || maximum_pre_call_active_slots_le || character || shot_type || maximum_rank || profile_flags || geometry_sha256"
   },
   "source_bindings": {
-    "zkvm/Cargo.toml": "af658ce170a07e4ee55bd5ec2e526533f42c9829b771ff2da3080014c4d0da9b",
+    "evidence/source/openvm-player-bullets-v1/zkvm-Cargo.toml": "af658ce170a07e4ee55bd5ec2e526533f42c9829b771ff2da3080014c4d0da9b",
     "zkvm/player-motion/Cargo.toml": "8c859effb9b0f39bb84531819b12b4cb0bd8864fa9c7035308e49a46ead9ce48",
     "zkvm/player-motion/src/pc24.rs": "a8960adeec05c5ddaf5343902ae50895a8db9e030f77f5d5c5d664985b84945e",
     "zkvm/player-bullets/Cargo.toml": "0a75c59c7d4256a962236cd5bb90d924e6cb1a3c21ff9dfd2d506d788236fc30",

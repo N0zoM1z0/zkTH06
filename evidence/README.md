@@ -109,6 +109,35 @@ and one-bit-wrong commitment/digest checks fail. Because the input pre-states
 are independently observed rather than derived through bullet update,
 collision, and ANM reclamation, this is not an enclosing cross-frame proof.
 
+`retail-reference-002677-2000-player-bullet-lifecycle-v1.json` raises the
+oracle to 50 fields and records complete `UpdatePlayerBullets` before/after and
+post-frame slot projections. Retail and reference agree semantically over all
+2,000 frames. The only raw discrepancy is the collided-bullet draw-only sprite
+z: retail drawing writes 0.4 after the post-calc anchor, while the next bullet
+update overwrites x, y, and z before bounds or ANM reads them. The artifact
+records all 3,898 excluded values and the exact noninterference rationale
+rather than silently dropping the field.
+
+`player-bullet-lifecycle-002677-207-v1.bin` (`ZKPLV1`) retains the first closed
+prefix. It begins with the fixed empty pool at gameplay frame 1 and links every
+later pre-state through Player motion, shooting cadence, type-0 bullet motion,
+14-by-14 bounds reclamation, fixed script-1088 ANM/timer behavior, and rank-1
+allocation. EnemyManager first changes a fired bullet to collided at frame
+208, so the vector and kernel fail closed after frame 207. The 206 transitions
+contain 173 spawn calls, 35 initializations, and 30 update reclamations.
+
+`openvm-player-bullet-lifecycle-206-v1.json` records the fifth OpenVM
+application proof. Its private payload is only 436 bytes: a fixed header and
+206 replay input masks, with no observed slot-state witnesses. The guest
+commits every intermediate Player/bullet state and executes 10,859,285
+instructions over 423,247,443 metered cells. The tracked proof verifies at the
+exact executable commitment; its decoded public digest is
+`e9e19abd79e48af83a3b43fc33a72f49089e83e59e328a97c3e7d1711a7a6ca3`,
+and one-bit-wrong commitment and digest checks fail. This closes only the
+collision-free Reimu-A rank-1 prefix. Enemy/ECL collision, ANM-data and
+compiler correspondence, alias-complete writer noninterference, other routes,
+bombs, death, power/items, and the complete gameplay kernel remain open.
+
 `source/openvm-player-motion-v1/player-motion-lib.rs` preserves the exact
 library source compiled into the earlier immutable proof.  The live crate later
 gained the enclosing-state module, so retaining the old source by hash keeps
@@ -119,6 +148,11 @@ executable was built from the new file.
 workspace manifest bound by the shooting proof. The live workspace later added
 the Player-bullets crate; that member-list change does not rewrite the older
 proof's claimed source input.
+
+`source/openvm-player-bullets-v1/zkvm-Cargo.toml` preserves the next workspace
+manifest in the same way. The live workspace now includes the enclosing
+Player-bullet lifecycle crate, while the fourth proof remains bound to the
+three-member manifest from which its guest was built.
 
 The raw retail/reference JSONL files, debugger logs, executable, DAT archives,
 and generated Wine directory stay under ignored local storage.

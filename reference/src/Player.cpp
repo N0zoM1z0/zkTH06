@@ -48,6 +48,21 @@ struct PlayerSpawnTraceScope
         g_HeadlessRuntime.EndPlayerSpawnTrace(this->player);
     }
 };
+
+struct PlayerBulletUpdateTraceScope
+{
+    Player *player;
+
+    explicit PlayerBulletUpdateTraceScope(Player *player) : player(player)
+    {
+        g_HeadlessRuntime.BeginPlayerBulletUpdateTrace(player);
+    }
+
+    ~PlayerBulletUpdateTraceScope()
+    {
+        g_HeadlessRuntime.EndPlayerBulletUpdateTrace(this->player);
+    }
+};
 } // namespace
 
 Player::Player()
@@ -487,6 +502,7 @@ i32 Player::CalcDamageToEnemy(const ZunVec3 *enemyPos, const ZunVec3 *enemyHitbo
 
 void Player::UpdatePlayerBullets(Player *player)
 {
+    PlayerBulletUpdateTraceScope traceScope(player);
     ZunVec2 vector;
     PlayerBullet *bullet;
     f32 vecLength;

@@ -1,0 +1,454 @@
+{
+  "schema_version": 1,
+  "kind": "zkth06.player-bullet-lifecycle-audit",
+  "inputs": {
+    "executable_sha256": "9f76483c46256804792399296619c1274363c31cd8f1775fafb55106fb852245",
+    "mapping_sha256": "0f20300d5b107b36c933a7f7dc448407ee5f01c5cd7faad132d406c023163191",
+    "player_bullet_spawn_artifact_sha256": "055bb1c0ceee0e464a6dc1208a357d824d136ed1c9ba3b54696229ea09969ba2"
+  },
+  "generator": {
+    "path": "tools/player_bullet_lifecycle_audit.py",
+    "sha256": "455535511d99b6a8033326629863fd77ce7e200357c804f7f1c7d90eb42d066a",
+    "x87_audit_sha256": "93c6aee778f489c92788dc7dfc6c51749fa5f20d075305a4190616d9b5d46290",
+    "disassembler": "GNU objdump (GNU Binutils for Ubuntu) 2.38"
+  },
+  "upstream": {
+    "url": "https://github.com/GensokyoClub/th06",
+    "revision": "cc475a0bc3fef38683b0f02224c87ddba0a021d9",
+    "source_files": {
+      "src/AnmManager.cpp": "fcb3f0b5ef2098d285853c58c2fdf9d369edb231fdf7f551b16e25bfdfac3c82",
+      "src/GameManager.cpp": "45736f6c282c1700d64267d02809ab36ec1ae536e4ff75de3bb84388dcccdcd9",
+      "src/Player.cpp": "5e3e81cff72796c98b9b87dc65d447333444917b63d9e4d493572f23145c26b5"
+    },
+    "anchors": [
+      {
+        "file": "src/Player.cpp",
+        "line": 124,
+        "anchor": "for (curBullet",
+        "role": "registration clears all 80 slots"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 126,
+        "anchor": "bulletState = 0",
+        "role": "registration writes unused state"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 325,
+        "anchor": "HandlePlayerInputs",
+        "role": "movement precedes bullet update"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 328,
+        "anchor": "UpdatePlayerBullets",
+        "role": "bullet update call"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 334,
+        "anchor": "lastEnemyHit.x = -999.0",
+        "role": "target reset after bullet update"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 338,
+        "anchor": "UpdateFireBulletsTimer",
+        "role": "spawn cadence follows bullet update"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 420,
+        "anchor": "bulletState ==",
+        "role": "collision accepts fired bullet"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 422,
+        "anchor": "anmFileIndex + 0x20",
+        "role": "collision ANM selection"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 424,
+        "anchor": "position.z = 0.1",
+        "role": "collision gameplay z"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 426,
+        "anchor": "bulletState =",
+        "role": "Enemy collision state writer"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 427,
+        "anchor": "velocity.x /= 8.0f",
+        "role": "collision x slowdown"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 428,
+        "anchor": "velocity.y /= 8.0f",
+        "role": "collision y slowdown"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 487,
+        "anchor": "ARRAY_SIZE_SIGNED(player->bullets)",
+        "role": "80-slot update loop"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 489,
+        "anchor": "bulletState ==",
+        "role": "unused slot skip"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 571,
+        "anchor": "sprite.pos.x",
+        "role": "move x and overwrite sprite x"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 573,
+        "anchor": "sprite.pos.y",
+        "role": "move y and overwrite sprite y"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 575,
+        "anchor": "sprite.pos.z",
+        "role": "overwrite draw-only sprite z"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 577,
+        "anchor": "IsInBounds",
+        "role": "loaded-sprite bounds call"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 580,
+        "anchor": "bulletState =",
+        "role": "bounds reclamation"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 583,
+        "anchor": "ExecuteScript",
+        "role": "ANM transition"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 585,
+        "anchor": "bulletState =",
+        "role": "ANM reclamation"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 587,
+        "anchor": "unk_140.Tick",
+        "role": "bullet age tick"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 966,
+        "anchor": "bulletState !=",
+        "role": "draw collision-state gate"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 974,
+        "anchor": "sprite.pos.z = 0.4f",
+        "role": "draw-only z writer"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 1073,
+        "anchor": "bulletState =",
+        "role": "spawn fired-state writer"
+      },
+      {
+        "file": "src/GameManager.cpp",
+        "line": 96,
+        "anchor": "width / 2.0f + x",
+        "role": "left bounds predicate"
+      },
+      {
+        "file": "src/GameManager.cpp",
+        "line": 100,
+        "anchor": "x - width / 2.0f",
+        "role": "right bounds predicate"
+      },
+      {
+        "file": "src/GameManager.cpp",
+        "line": 104,
+        "anchor": "height / 2.0f + y",
+        "role": "top bounds predicate"
+      },
+      {
+        "file": "src/GameManager.cpp",
+        "line": 108,
+        "anchor": "y - height / 2.0f",
+        "role": "bottom bounds predicate"
+      },
+      {
+        "file": "src/AnmManager.cpp",
+        "line": 1022,
+        "anchor": "AnmManager::ExecuteScript",
+        "role": "ANM interpreter entry"
+      },
+      {
+        "file": "src/AnmManager.cpp",
+        "line": 1366,
+        "anchor": "currentTimeInScript.Tick",
+        "role": "ANM timer tick"
+      }
+    ],
+    "correspondence_status": "manual-disassembly-source-alignment-unproved"
+  },
+  "mapped_functions": [
+    {
+      "name": "th06::GameManager::IsInBounds",
+      "start": "0x0041b5e1",
+      "size": 130
+    },
+    {
+      "name": "th06::Player::CalcDamageToEnemy",
+      "start": "0x004264b0",
+      "size": 1917
+    },
+    {
+      "name": "th06::Player::OnUpdate",
+      "start": "0x004288c0",
+      "size": 2282
+    },
+    {
+      "name": "th06::Player::UpdatePlayerBullets",
+      "start": "0x004291b0",
+      "size": 1371
+    },
+    {
+      "name": "th06::Player::SpawnBullets",
+      "start": "0x00429820",
+      "size": 270
+    },
+    {
+      "name": "th06::Player::DrawBulletExplosions",
+      "start": "0x00429bb0",
+      "size": 153
+    },
+    {
+      "name": "th06::Player::AddedCallback",
+      "start": "0x00429c50",
+      "size": 1118
+    },
+    {
+      "name": "th06::AnmManager::ExecuteScript",
+      "start": "0x00433960",
+      "size": 4355
+    }
+  ],
+  "checked_instruction_roles": [
+    {
+      "address": "0x00429127",
+      "mnemonic": "call",
+      "role": "OnUpdate calls bullet update"
+    },
+    {
+      "address": "0x00429166",
+      "mnemonic": "mov",
+      "role": "reset target x after update"
+    },
+    {
+      "address": "0x00429199",
+      "mnemonic": "call",
+      "role": "shooting cadence follows target reset"
+    },
+    {
+      "address": "0x00429229",
+      "mnemonic": "cmp",
+      "role": "bound update loop to 80 slots"
+    },
+    {
+      "address": "0x00429236",
+      "mnemonic": "movsx",
+      "role": "load slot state"
+    },
+    {
+      "address": "0x00429246",
+      "mnemonic": "movsx",
+      "role": "load bullet type"
+    },
+    {
+      "address": "0x004295f4",
+      "mnemonic": "fld",
+      "role": "load effective rate for x"
+    },
+    {
+      "address": "0x004295fa",
+      "mnemonic": "fmul",
+      "role": "multiply x velocity"
+    },
+    {
+      "address": "0x00429603",
+      "mnemonic": "fadd",
+      "role": "add prior x"
+    },
+    {
+      "address": "0x00429608",
+      "mnemonic": "fstp",
+      "role": "store rounded gameplay x"
+    },
+    {
+      "address": "0x00429612",
+      "mnemonic": "mov",
+      "role": "overwrite sprite x"
+    },
+    {
+      "address": "0x00429627",
+      "mnemonic": "fld",
+      "role": "load effective rate for y"
+    },
+    {
+      "address": "0x0042962d",
+      "mnemonic": "fmul",
+      "role": "multiply y velocity"
+    },
+    {
+      "address": "0x00429636",
+      "mnemonic": "fadd",
+      "role": "add prior y"
+    },
+    {
+      "address": "0x0042963b",
+      "mnemonic": "fstp",
+      "role": "store rounded gameplay y"
+    },
+    {
+      "address": "0x00429645",
+      "mnemonic": "mov",
+      "role": "overwrite sprite y"
+    },
+    {
+      "address": "0x00429657",
+      "mnemonic": "mov",
+      "role": "overwrite sprite z"
+    },
+    {
+      "address": "0x00429675",
+      "mnemonic": "mov",
+      "role": "load sprite height"
+    },
+    {
+      "address": "0x00429682",
+      "mnemonic": "mov",
+      "role": "load sprite width"
+    },
+    {
+      "address": "0x0042969f",
+      "mnemonic": "call",
+      "role": "call bounds predicate"
+    },
+    {
+      "address": "0x004296ab",
+      "mnemonic": "mov",
+      "role": "bounds writes unused state"
+    },
+    {
+      "address": "0x004296be",
+      "mnemonic": "call",
+      "role": "execute bullet ANM"
+    },
+    {
+      "address": "0x004296ca",
+      "mnemonic": "mov",
+      "role": "ANM exit writes unused state"
+    },
+    {
+      "address": "0x004296fd",
+      "mnemonic": "call",
+      "role": "tick bullet age timer"
+    },
+    {
+      "address": "0x00426848",
+      "mnemonic": "mov",
+      "role": "Enemy hit writes collided state"
+    },
+    {
+      "address": "0x0042685a",
+      "mnemonic": "fdiv",
+      "role": "divide collision x velocity by eight"
+    },
+    {
+      "address": "0x00426872",
+      "mnemonic": "fdiv",
+      "role": "divide collision y velocity by eight"
+    },
+    {
+      "address": "0x00429be8",
+      "mnemonic": "movsx",
+      "role": "draw loads collision state"
+    },
+    {
+      "address": "0x00429c2a",
+      "mnemonic": "mov",
+      "role": "draw stores sprite z 0.4"
+    }
+  ],
+  "writer_inventory": {
+    "player_bullet_state_source_lines": [
+      126,
+      426,
+      580,
+      585,
+      1073
+    ],
+    "states": {
+      "unused": 0,
+      "fired": 1,
+      "collided": 2
+    },
+    "owners": [
+      "registration",
+      "Enemy collision",
+      "bounds",
+      "ANM exit",
+      "spawn"
+    ]
+  },
+  "derived_profile_contract": {
+    "route": "Reimu A rank 1",
+    "anchor_game_frame": 1,
+    "maximum_collision_free_game_frame": 207,
+    "first_external_collision_game_frame": 208,
+    "power": 0,
+    "effective_rate_bits": "0x3f800000",
+    "straight_sprite_size_bits": [
+      "0x41600000",
+      "0x41600000"
+    ],
+    "anm_script": 1088,
+    "homing_target_noninterference": "EnemyManager may write positionOfLastEnemyHit in the selected prefix, but the type-0 route bypasses the type-1-only target read",
+    "draw_noninterference": "DrawBulletExplosions may change collided sprite.pos.z after the post-calc anchor, but UpdatePlayerBullets overwrites x, y, and z before bounds or ExecuteScript",
+    "refinement_boundary": "fixed empty frame-1 pool through frame 207 using replay inputs only; Enemy collision, homing, item power, and collision ANM are excluded"
+  },
+  "evidence_status": "pinned source, mapping, and instruction signatures for update order, bounds, timer, collision, draw-only z, and all lexical Player bullet-state writers; not verified decoding, compiler correspondence, complete alias analysis, ANM-data semantics, or guest refinement",
+  "open_obligations": [
+    "Translation-validate the checked instruction/source alignment.",
+    "Bind script 1088 nontermination and 14-by-14 sprite selection directly to pinned ANM data.",
+    "Prove complete alias-aware writer noninterference rather than the lexical source inventory.",
+    "Compose Enemy/ECL state to derive collision and the last-enemy-hit homing target.",
+    "Extend arithmetic refinement from the current finite normal PC24 profile."
+  ],
+  "counts": {
+    "mapped_functions": 8,
+    "source_anchors": 31,
+    "checked_instruction_roles": 29,
+    "player_bullet_state_writers": 5
+  },
+  "artifact_sha256": "a82bbf8c40b449e4d2280e805e642a971be719dee970788f344eb8ee1feef5e4"
+}

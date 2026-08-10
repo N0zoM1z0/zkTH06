@@ -117,6 +117,7 @@ def run_comparator(
     enclosing_player: bool = False,
     player_shooting: bool = False,
     player_bullets: bool = False,
+    player_bullet_frames: bool = False,
 ) -> subprocess.CompletedProcess[str]:
     command = ["python3", str(COMPARATOR), str(retail), str(reference), "--report", str(report)]
     if enclosing_player:
@@ -125,6 +126,8 @@ def run_comparator(
         command.append("--player-shooting")
     if player_bullets:
         command.append("--player-bullets")
+    if player_bullet_frames:
+        command.append("--player-bullet-frames")
     return subprocess.run(
         command,
         check=False,
@@ -275,6 +278,125 @@ def main() -> int:
         bullets_report = json.loads(report.read_text(encoding="utf-8"))
         assert bullets_report["comparison_profile"] == "player-bullets"
         assert len(bullets_report["compared_fields"]) == 47
+
+        bullet_side = {
+            "slot_states": [1, 0],
+            "active_slots": [{"slot": 0, "state": 1, "type": 0}],
+            "slot_carry": [{"slot": 0, "state": 1}, {"slot": 1, "state": 0}],
+        }
+        bullet_update = {
+            "last_enemy_hit_bits": ["0xc479c000", "0xc479c000", "0x00000000"],
+            "before": bullet_side,
+            "after": bullet_side,
+        }
+        shooting_retail.update(
+            {
+                "player_bullet_update": bullet_update,
+                "player_last_enemy_hit_bits": [
+                    "0xc479c000",
+                    "0xc479c000",
+                    "0x00000000",
+                ],
+                "player_bullets_frame": bullet_side,
+            }
+        )
+        shooting_reference.update(
+            {
+                "player_bullet_update": bullet_update,
+                "player_last_enemy_hit_bits": [
+                    "0xc479c000",
+                    "0xc479c000",
+                    "0x00000000",
+                ],
+                "player_bullets_frame": bullet_side,
+            }
+        )
+        write_jsonl(retail, [header, shooting_retail])
+        write_jsonl(reference, [shooting_reference])
+        bullet_frames = run_comparator(
+            retail, reference, report, player_bullet_frames=True
+        )
+        assert bullet_frames.returncode == 0, bullet_frames.stderr
+        bullet_frames_report = json.loads(report.read_text(encoding="utf-8"))
+        assert bullet_frames_report["comparison_profile"] == "player-bullet-frames"
+        assert len(bullet_frames_report["compared_fields"]) == 50
+        assert bullet_frames_report["semantic_projection_exclusions"][0][
+            "observed_differences"
+        ] == 0
+
+        shooting_reference["player_bullet_update"] = {
+            **bullet_update,
+            "before": {
+                **bullet_side,
+                "active_slots": [
+                    {
+                        **bullet_side["active_slots"][0],
+                        "sprite_position_bits": [
+                            "0x00000000",
+                            "0x00000000",
+                            "0x3dcccccd",
+                        ],
+                    }
+                ],
+            },
+        }
+        shooting_retail["player_bullet_update"] = {
+            **bullet_update,
+            "before": {
+                **bullet_side,
+                "active_slots": [
+                    {
+                        **bullet_side["active_slots"][0],
+                        "sprite_position_bits": [
+                            "0x00000000",
+                            "0x00000000",
+                            "0x3ecccccd",
+                        ],
+                    }
+                ],
+            },
+        }
+        write_jsonl(retail, [header, shooting_retail])
+        write_jsonl(reference, [shooting_reference])
+        fired_z_difference = run_comparator(
+            retail, reference, report, player_bullet_frames=True
+        )
+        assert fired_z_difference.returncode == 1
+
+        for row in (shooting_retail, shooting_reference):
+            before = row["player_bullet_update"]["before"]
+            before["slot_states"] = [2, 0]
+            before["active_slots"][0]["state"] = 2
+            before["slot_carry"][0]["state"] = 2
+        write_jsonl(retail, [header, shooting_retail])
+        write_jsonl(reference, [shooting_reference])
+        draw_only_difference = run_comparator(
+            retail, reference, report, player_bullet_frames=True
+        )
+        assert draw_only_difference.returncode == 0, draw_only_difference.stderr
+        draw_only_report = json.loads(report.read_text(encoding="utf-8"))
+        assert draw_only_report["semantic_projection_exclusions"][0][
+            "observed_differences"
+        ] == 1
+
+        shooting_reference["player_bullet_update"] = {
+            **bullet_update,
+            "after": {
+                **bullet_side,
+                "slot_states": [0, 0],
+            },
+        }
+        write_jsonl(reference, [shooting_reference])
+        bullet_frames_mismatch = run_comparator(
+            retail, reference, report, player_bullet_frames=True
+        )
+        assert bullet_frames_mismatch.returncode == 1
+        bullet_frames_mismatch_report = json.loads(report.read_text(encoding="utf-8"))
+        nested = bullet_frames_mismatch_report["first_mismatch"]["differing_fields"][
+            "player_bullet_update"
+        ]
+        assert nested["path"] == "player_bullet_update.after.slot_states[0]"
+        assert nested["retail"] == 1 and nested["reference"] == 0
 
         shooting_reference["player_spawn"] = {
             **spawn_projection,

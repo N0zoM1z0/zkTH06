@@ -84,6 +84,13 @@ Last updated: 2026-08-10
   1,590 calls. A 56-instruction/31-source-anchor static audit, fixed-width
   vector, Rust transition, and fourth OpenVM application proof cover all 422
   initialized bullets without host floating point or trigonometry.
+- An enclosing Reimu-A rank-1 Player/bullet lifecycle through the first
+  external collision. A 50-field retail/reference oracle, 29-instruction/
+  31-source-anchor static audit, linked vector, integer-only Rust transition,
+  and fifth OpenVM application proof derive 206 consecutive transitions from
+  the fixed frame-1 empty pool using replay masks only. The guest derives 173
+  spawn calls, 35 initializations, and 30 bounds reclamations, then fails
+  closed before EnemyManager's first collided-state write at frame 208.
 
 Compatibility playback intentionally restores every per-stage replay snapshot,
 matching shipped playback. It is an oracle-development mode, not the future
@@ -95,8 +102,8 @@ The first shipped-executable comparison uses the tracked Normal Reimu A
 no-miss/no-bomb replay (`01bc11b...ad10f`). The retail side runs Japanese TH06
 v1.02h (`9f76483c...52245`) under Wine 11.0 and stops at `0x00420858`, the
 instruction immediately after `Chain::RunCalcChain`. The Linux trace is written
-at the corresponding return boundary. Across frames 1--2,000, the original 34
-fields, six enclosing-state fields, and six shooting fields match exactly:
+at the corresponding return boundary. Across frames 1--2,000, the complete
+50-field lifecycle projection matches semantically:
 
 - route, stage, frame, replay input, and Supervisor state;
 - RNG seed and generation count;
@@ -110,7 +117,9 @@ fields, six enclosing-state fields, and six shooting fields match exactly:
 - GUI current-message state, Player focus and previous input, and fire-timer
   previous/subframe/current words; and
 - the structured `Player::SpawnBullets` entry/exit projection when a callback
-  occurs, including all 80 slot states and active bullet details.
+  occurs, including all 80 slot states and active bullet details; and
+- `UpdatePlayerBullets` before/after and post-frame pool projections, plus the
+  last-enemy-hit target used by the type-1 route.
 
 This interval exercises 27 distinct input masks, advances RNG generation from
 2 to 3,555, and reaches score 767,990. At all 2,000 retail anchors the x87
@@ -121,6 +130,13 @@ The enhanced result is sealed in
 [`evidence/retail-reference-002677-2000-enclosing-v1.json`](../evidence/retail-reference-002677-2000-enclosing-v1.json).
 The 46-field shooting result is sealed in
 [`evidence/retail-reference-002677-2000-shooting-v1.json`](../evidence/retail-reference-002677-2000-shooting-v1.json).
+The 50-field Player-bullet lifecycle result is sealed in
+[`evidence/retail-reference-002677-2000-player-bullet-lifecycle-v1.json`](../evidence/retail-reference-002677-2000-player-bullet-lifecycle-v1.json).
+Its only semantic-projection exclusion is 3,898 collided-bullet
+`sprite.pos.z` values: the retail draw callback writes 0.4 after the post-calc
+anchor, while `UpdatePlayerBullets` overwrites all three sprite coordinates
+from gameplay position before bounds or ANM reads them. Fired sprites are
+14-by-14 and collided sprites are 16-by-16 in the observed profile.
 
 Two interventions are explicit parts of the diagnostic environment. First,
 Wine's `timeGetTime` reflects long host uptime while the game's last-frame
@@ -346,6 +362,54 @@ pre-state from preceding Player/bullet state. The proof also does not discharge
 compiler correspondence, trig-helper semantics, complete writer
 noninterference, ranks 4--5, or other character/shot routes.
 
+## Linked Player bullet-lifecycle proof gate
+
+The enclosing refinement removes the local proof's independently observed
+slot-state inputs for the prefix where every liveness writer is owner-local.
+The fixed post-calc frame-1 anchor contains an empty 80-slot pool and zero
+dormant carry. Each step first derives Player motion and shooting state, then
+updates every fired type-0 bullet with the mapped PC24 multiply/add order,
+copies gameplay position to sprite position, applies the 14-by-14 bounds test,
+ticks the fixed nonterminating script-1088 ANM and age timers, and finally
+performs rank-1 allocation in the lowest free slots.
+
+The complete 2,000-frame oracle identifies the exact stopping rule.
+EnemyManager first changes a fired Player bullet to collided at game frame 208;
+the linked profile therefore includes frames 1--207 and rejects another step.
+EnemyManager writes `positionOfLastEnemyHit` on 70 earlier frames, but the
+selected type-0 route does not read the target: only the excluded type-1 homing
+route does. The static artifact inventories all five lexical `bulletState`
+writers and checks 29 instruction roles across eight mapped functions, while
+leaving alias completeness, ANM-data correspondence, and compiler/refinement
+proofs explicit.
+
+The `ZKPLV1` vector checks the derived state exactly at all 207 anchors. Its 206
+transitions contain 173 spawn calls, 35 bullet initializations, 30 bounds
+reclamations, at most seven live slots, and five final live slots. Unlike the
+197,180-byte local-callback proof input, the `ZKPLI1` private payload is only
+436 bytes: a fixed header followed by 206 replay masks. The public statement
+hashes every intermediate Player/bullet state, not merely the endpoint.
+
+| Transitions | Guest instructions | Metered cells |
+| ---: | ---: | ---: |
+| 1 | 33,274 | 1,303,205 |
+| 10 | 274,335 | 10,582,978 |
+| 100 | 4,722,519 | 183,801,013 |
+| 206 | 10,859,285 | 423,247,443 |
+
+Application proving took 117.26 seconds, 4,030.61 user CPU seconds, and
+51,101,780 KiB peak RSS without swapping. Verification took 0.18 seconds and
+50,116 KiB peak RSS. Exact executable-commitment and decoded public-digest
+checks pass; one-bit-wrong commitment and digest checks fail. The tracked
+bundle is
+[`evidence/openvm-player-bullet-lifecycle-206-v1.json`](../evidence/openvm-player-bullet-lifecycle-206-v1.json).
+
+This is the first persistent bullet-state proof, but only for the finite
+collision-free Reimu-A rank-1 prefix. It does not yet derive the frame-208
+Enemy/ECL collision, bind script 1088 directly to ANM data, prove complete
+writer noninterference or compiler correspondence, or cover homing, other
+routes/ranks, bombs, death, power, items, or whole-game state.
+
 ## Local corpus result
 
 The downloaded corpus is excluded from Git. Provenance and input hashes are in
@@ -480,16 +544,18 @@ wrap for one bounded award.
 1. Close or explicitly constrain the selected projection. Inactive Effect
    residue and dynamic ScreenEffect jobs are known open noninterference cases;
    see [`state-projection-audit.md`](state-projection-audit.md).
-2. Add a field-level canonical snapshot at a selected tick so a subsystem
+2. Compose Enemy/ECL state so the frame-208 Player-bullet collision and homing
+   target become derived rather than a stopping condition.
+3. Add a field-level canonical snapshot at a selected tick so a subsystem
    mismatch can be reduced to its first field.
-3. Export the same schema from the original executable or an exact-reference
+4. Export the same schema from the original executable or an exact-reference
    build and identify the first differing field.
-4. Record the entry x87/CPU profile, instrument reached arithmetic sites,
+5. Record the entry x87/CPU profile, instrument reached arithmetic sites,
    cover load/remainder and exceptional helper behavior where reachable, prove
    ECL helper-to-classifier refinement and discharge the point-item player
    candidate/writer/scheduling plus total collision/helper quotient (including
    the fixed-ECL extraction/parser/handler binding),
    and replace host-libm behavior with an exact, address-bound arithmetic
    baseline; prove skipped-draw arithmetic noninterference before removing it.
-5. Add canonical-proof playback that derives stage transitions and rejects a
+6. Add canonical-proof playback that derives stage transitions and rejects a
    replay whose stage snapshots do not match live state.

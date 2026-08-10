@@ -22,6 +22,7 @@ struct HeadlessPlayerBulletTrace
     i16 unk152 = 0;
     i16 spawnPositionIdx = 0;
     u32 spritePositionBits[3] = {};
+    u32 spriteSizeBits[2] = {};
     i32 spriteTimerPrevious = 0;
     u32 spriteTimerSubframeBits = 0;
     i32 spriteTimerCurrent = 0;
@@ -39,6 +40,15 @@ struct HeadlessPlayerSpawnTrace
     u8 isFocus = 0;
     u32 playerPositionBits[3] = {};
     u32 orbPositionBits[2][3] = {};
+    HeadlessPlayerBulletTrace before[80] = {};
+    HeadlessPlayerBulletTrace after[80] = {};
+};
+
+struct HeadlessPlayerBulletUpdateTrace
+{
+    bool valid = false;
+    bool returned = false;
+    u32 lastEnemyHitBits[3] = {};
     HeadlessPlayerBulletTrace before[80] = {};
     HeadlessPlayerBulletTrace after[80] = {};
 };
@@ -83,6 +93,7 @@ struct HeadlessRuntime
     bool inputError = false;
     const char *terminalReason = NULL;
     HeadlessPlayerSpawnTrace playerSpawnTrace;
+    HeadlessPlayerBulletUpdateTrace playerBulletUpdateTrace;
 
     bool ParseArguments(int argc, char *argv[]);
     bool PrintReplayInfo() const;
@@ -97,6 +108,8 @@ struct HeadlessRuntime
     void WriteState(const char *terminalReason);
     void BeginPlayerSpawnTrace(const Player *player, u32 timer);
     void EndPlayerSpawnTrace(const Player *player);
+    void BeginPlayerBulletUpdateTrace(const Player *player);
+    void EndPlayerBulletUpdateTrace(const Player *player);
     bool WriteCanonicalState(const char *terminalReason);
     bool ShouldStopForHit() const;
     bool IsReplayComplete() const;

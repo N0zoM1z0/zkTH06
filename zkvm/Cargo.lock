@@ -3,6 +3,15 @@
 version = 4
 
 [[package]]
+name = "zkth06-player-bullet-lifecycle"
+version = "0.1.0"
+dependencies = [
+ "zkth06-player-bullets",
+ "zkth06-player-motion",
+ "zkth06-player-shooting",
+]
+
+[[package]]
 name = "zkth06-player-bullets"
 version = "0.1.0"
 dependencies = [

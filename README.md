@@ -8,12 +8,14 @@ an accepted result. Before freezing a zkVM guest, the project must first make
 that state machine agree frame-for-frame with the shipped 32-bit Windows game.
 
 > **Evidence boundary:** an address-bound Wine probe now matches the shipped
-> executable and Linux reference for a 47-field raw gameplay projection over
+> executable and Linux reference for a 50-field semantic gameplay projection over
 > the first 2,000 frames of one tracked replay. The latest extension adds the
-> complete nested pre/post `Player::SpawnBullets` projection to the dialogue,
-> focus, previous-input, and fire-timer fields. This is finite differential
-> evidence, not whole-state equivalence. The current runner remains an
-> instrumented reference harness, not final proof semantics.
+> complete nested Player-bullet update and post-frame projections. The sole
+> excluded raw field is a collided-bullet draw-only sprite z that is overwritten
+> before its next semantic read; the evidence artifact records all 3,898 such
+> values and the noninterference argument. This is finite differential evidence,
+> not whole-state equivalence. The current runner remains an instrumented
+> reference harness, not final proof semantics.
 
 The first proof-oriented executable slice is now present under `zkvm/`: an
 integer-only implementation of the PC24 player-position update whose inputs and
@@ -46,8 +48,19 @@ bullets match exactly. A local integer-only transition derives timer gates,
 power rank, lowest-free-slot allocation, and raw geometry; a fourth OpenVM
 application proof executes the complete batch and publicly commits every
 initialized output. This is intentionally a collection of local function
-transitions: the independently observed pre-call states are not yet linked by
-`UpdatePlayerBullets`, ANM reclamation, or Enemy collision.
+transitions: within that local proof, independently observed pre-call states
+are not linked by `UpdatePlayerBullets`, ANM reclamation, or Enemy collision.
+
+The first persistent Player/bullet state boundary is now closed for a smaller
+prefix. Starting from the fixed empty pool at gameplay frame 1, a fifth OpenVM
+guest consumes only 206 replay masks and derives Player motion, shooting
+cadence, rank-1 straight-bullet movement, 14-by-14 bounds reclamation, fixed
+nonterminating ANM/timer effects, and allocation through frame 207. All 35
+initializations and 30 reclamations agree with the 50-field retail/reference
+oracle at every frame. The 436-byte private payload contains no per-frame slot
+state. The proof costs 10,859,285 instructions and 423,247,443 metered cells.
+It deliberately rejects frame 208, where EnemyManager first changes a fired
+bullet to collided; Enemy/ECL composition is the next soundness boundary.
 
 A first owner-local Lean model now machine-checks why active-only Effect slots
 violate one-step noninterference and how a narrow dormant reuse shadow repairs
@@ -145,11 +158,13 @@ inputs were produced by a human or without external tools.
 - Pass Normal no-miss/no-bomb, death/bomb, dialogue, all shot types, Lunatic,
   spell-heavy and Extra cases.
 
-The first 2,000-frame Normal anchor is complete for its enhanced 47-field
+The first 2,000-frame Normal anchor is complete for its enhanced 50-field
 projection. Its enclosing player-state subprojection drives 1,999 transitions
 from a fixed post-calc anchor, checks the life-state change at frame 240, and
 now checks focus/previous-input/fire-timer recurrence and the nested local
-`SpawnBullets` pre/post projection.
+`SpawnBullets` and Player-bullet lifecycle projections. A collision-free prefix
+now also links the complete 80-slot pool through frame 207 without slot-state
+witnesses.
 The full canonical subsystem projection and broader replay matrix remain open.
 
 ### M1 — canonical gameplay kernel
@@ -180,8 +195,13 @@ The next local slice is also proven: 1,590 Reimu-A callback invocations produce
 cells. Proving took 98.60 seconds with 51,626,064 KiB peak RSS and verification
 took 0.12 seconds. The exact proof bundle and its cross-call limitation are in
 [`evidence/openvm-player-bullets-1590-v1.json`](evidence/openvm-player-bullets-1590-v1.json).
-The next Player work is the enclosing bullet update/reclamation/collision
-transition, then collision/death/respawn, bomb, power, and item interaction.
+The enclosing successor now derives 206 consecutive Player/bullet transitions
+from a fixed empty pool and 436 bytes of replay-only private input. It initializes
+35 bullets, reclaims 30, meters 423,247,443 cells, and has a tracked application
+proof described in
+[`evidence/openvm-player-bullet-lifecycle-206-v1.json`](evidence/openvm-player-bullet-lifecycle-206-v1.json).
+The next Player work is to compose the frame-208 Enemy/ECL collision and then
+collision/death/respawn, bomb, power, and item interaction.
 Deriving the post-calc anchor, external time-stop writers, and
 non-full-speed timer paths remain soundness gates rather than hidden premises.
 

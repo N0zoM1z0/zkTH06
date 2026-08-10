@@ -161,6 +161,18 @@ retail callback; consequently the commuting claim is local to one call.
 Linking calls through bullet motion, collision, ANM termination, and slot
 reclamation is an explicit later refinement obligation.
 
+The enclosing lifecycle refinement then removes those slot arrays from the
+witness for the maximal prefix before an external liveness writer is reached.
+It starts from the fixed empty frame-1 pool and orders Player motion, bullet
+update, target reset, fire-timer dispatch, and allocation exactly as the
+mapped callback.  Existing rank-1 type-0 bullets use integer PC24 movement,
+14-by-14 bounds reclamation, and a fixed nonterminating script-1088 timer
+profile.  Every intermediate state is committed.  The retail oracle identifies
+EnemyManager's first fired-to-collided write at frame 208, so the transition
+rejects any step after frame 207 rather than accepting collision state as a
+new witness.  This fail-closed boundary is part of the statement, not a claim
+that Enemy/ECL behavior has already been refined.
+
 Berkeley SoftFloat Release 3e is used as an independent executable oracle for
 the first arithmetic-boundary experiments~\cite{hauser-softfloat3e}.  Its
 \code{extF80\_roundingPrecision = 64} setting denotes precision equivalent to

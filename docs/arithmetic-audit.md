@@ -252,6 +252,17 @@ the arithmetic algorithm, the ambient word at each interior instruction, or
 the mapping from retail instructions to the Rust transition; those remain the
 next code-binding and formal obligations.
 
+The same PC24 core now advances the first linked Player-bullet prefix. For
+Reimu-A rank-1 type-0 bullets it performs the mapped velocity multiply and
+position add before the four 14-by-14 bounds predicates, with an explicit
+binary32 store after each arithmetic instruction. A 207-anchor vector agrees
+bit-for-bit with the retail-bound reference projection and exercises 30 bounds
+reclamations. This is stronger reachability evidence for the existing finite
+normal profile, not a general x87 result: sprite dimensions and the five local
+spawn trigonometric pairs remain fixed raw values, script-1088 semantics are
+trace-bound, and the frame-208 collision plus type-1 homing path are outside
+the linked transition.
+
 The same probe mirrors the 244 mapped comparison forms with `fcomp m32fp` and
 `fcomp m64fp`. It checks C0, C1, C2, and C3 plus exception bits, including
 fixed infinity, quiet-NaN, signaling-NaN, signed-zero, and invalid-versus-

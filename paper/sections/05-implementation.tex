@@ -103,6 +103,10 @@ As of 10 August 2026, the following components are implemented:
   \item a local Reimu-A bullet-spawn crate and OpenVM adapter for ranks 1--3,
   together with a nested 47-field retail/reference oracle, 56-instruction
   static audit, 1,590-call/422-output vector, and fourth tracked proof bundle;
+  \item an enclosing rank-1 Player/bullet lifecycle crate and OpenVM adapter,
+  together with a 50-field retail/reference oracle, 29-instruction static
+  audit, 206-transition linked vector, and fifth proof bundle whose 436-byte
+  private input contains only replay masks;
   \item Linux CI that builds the reference runner and cross-checks both replay
   validators on three valid and three deliberately malformed cases, while also
   requiring canonical-record corruption to fail closed.
@@ -115,10 +119,11 @@ frozen and proven, and the selected enclosing profile no longer accepts its
 movement environment as per-frame witness data.  No complete gameplay guest is
 claimed: the post-calc anchor is fixed, and collision/death/respawn, bombs,
 external time-stop writers, and non-full-speed timers fail closed or remain
-absent.  The local Reimu-A callback now includes allocation and initialized
-geometry, but its independently observed pre-states are not linked through
-bullet update, collision, or ANM reclamation.  The retail exporter currently
-covers a 47-field root projection,
+  absent.  The local Reimu-A callback now includes allocation and initialized
+geometry, and a shorter enclosing prefix links update, bounds reclamation, ANM
+timers, and allocation through frame 207.  It stops before the first Enemy
+collision at frame 208.  The retail exporter currently covers a 50-field root
+projection,
 while canonical projection revision 0.2 contains eleven broader
 subsystems.  Bringing that complete schema to the retail boundary remains
 open, and the state audit has already identified inactive Effect residue and

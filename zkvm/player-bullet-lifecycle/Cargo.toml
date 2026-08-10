@@ -1,0 +1,19 @@
+[package]
+name = "zkth06-player-bullet-lifecycle"
+version = "0.1.0"
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+description = "Collision-free enclosing TH06 Reimu-A Player bullet lifecycle"
+publish = false
+
+[lib]
+path = "src/lib.rs"
+
+[dependencies]
+zkth06-player-motion = { path = "../player-motion" }
+zkth06-player-shooting = { path = "../player-shooting" }
+zkth06-player-bullets = { path = "../player-bullets" }
+
+[lints.rust]
+unsafe_code = "forbid"

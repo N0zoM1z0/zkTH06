@@ -26,6 +26,8 @@ TARGET_SHA256 = "9f76483c46256804792399296619c1274363c31cd8f1775fafb55106fb85224
 FRAME_BOUNDARY = 0x00420858
 SPAWN_BULLETS = 0x00429820
 SPAWN_BULLETS_RETURN = 0x0042978B
+UPDATE_PLAYER_BULLETS = 0x004291B0
+UPDATE_PLAYER_BULLETS_RETURN = 0x0042912C
 MAIN_MENU_UPDATE = 0x0043579F
 CONTROLLER_GET_INPUT = 0x0041D820
 TIMING_LOOP_START = 0x00420960
@@ -35,6 +37,8 @@ G_LAST_FRAME_TIME = 0x006C6BF8
 EXPECTED_FRAME_BYTES = bytes.fromhex("89 45 fc")
 EXPECTED_SPAWN_BYTES = bytes.fromhex("55 8b ec")
 EXPECTED_SPAWN_RETURN_BYTES = bytes.fromhex("83 c4 08")
+EXPECTED_UPDATE_BYTES = bytes.fromhex("55 8b ec")
+EXPECTED_UPDATE_RETURN_BYTES = bytes.fromhex("83 c4 04")
 EXPECTED_MENU_BYTES = bytes.fromhex("55 8b ec")
 EXPECTED_CONTROLLER_BYTES = bytes.fromhex("55 8b ec 81 ec 10")
 ZERO_CONTROLLER_BYTES = bytes.fromhex("b8 00 00 00 00 c3")
@@ -99,6 +103,7 @@ PLAYER_INVULNERABILITY_TIMER_PREVIOUS = G_PLAYER + 0x75B4
 PLAYER_INVULNERABILITY_TIMER_SUBFRAME = G_PLAYER + 0x75B8
 PLAYER_INVULNERABILITY_TIMER_CURRENT = G_PLAYER + 0x75BC
 PLAYER_BOMB_IS_IN_USE = G_PLAYER + 0x75C8
+PLAYER_LAST_ENEMY_HIT = G_PLAYER + 0xA1C
 
 PLAYER_ORB_0 = G_PLAYER + 0x4A0
 PLAYER_ORB_1 = G_PLAYER + 0x4AC
@@ -111,6 +116,9 @@ ANM_FLAGS = 0x080
 ANM_POS = 0x090
 ANM_ACTIVE_SPRITE = 0x0B0
 ANM_FILE_INDEX = 0x0B4
+ANM_SPRITE = 0x0C0
+ANM_LOADED_SPRITE_HEIGHT = 0x02C
+ANM_LOADED_SPRITE_WIDTH = 0x030
 PLAYER_BULLET_POSITION = 0x110
 PLAYER_BULLET_SIZE_VECTOR = 0x11C
 PLAYER_BULLET_VELOCITY = 0x128
@@ -215,6 +223,12 @@ require_bytes(
     EXPECTED_SPAWN_RETURN_BYTES,
     "Player::SpawnBullets return site",
 )
+require_bytes(UPDATE_PLAYER_BULLETS, EXPECTED_UPDATE_BYTES, "Player::UpdatePlayerBullets entry")
+require_bytes(
+    UPDATE_PLAYER_BULLETS_RETURN,
+    EXPECTED_UPDATE_RETURN_BYTES,
+    "Player::UpdatePlayerBullets return site",
+)
 require_bytes(MAIN_MENU_UPDATE, EXPECTED_MENU_BYTES, "main-menu update")
 require_bytes(CONTROLLER_GET_INPUT, EXPECTED_CONTROLLER_BYTES, "controller input")
 
@@ -293,6 +307,9 @@ def capture_active_player_bullets() -> tuple[
         )
         if state == 0:
             continue
+        sprite = memory.u32(bullet + ANM_SPRITE)
+        if sprite == 0:
+            raise RuntimeError(f"active Player bullet slot {slot} has no loaded sprite")
         active.append(
             {
                 "slot": slot,
@@ -312,6 +329,10 @@ def capture_active_player_bullets() -> tuple[
                 "timer_subframe_bits": f"0x{memory.u32(bullet + PLAYER_BULLET_TIMER + 4):08x}",
                 "timer_current": memory.i32(bullet + PLAYER_BULLET_TIMER + 8),
                 "sprite_position_bits": raw_vec(bullet + ANM_POS, 3),
+                "sprite_size_bits": [
+                    f"0x{memory.u32(sprite + ANM_LOADED_SPRITE_WIDTH):08x}",
+                    f"0x{memory.u32(sprite + ANM_LOADED_SPRITE_HEIGHT):08x}",
+                ],
                 "sprite_timer_previous": memory.i32(bullet + ANM_TIMER),
                 "sprite_timer_subframe_bits": f"0x{memory.u32(bullet + ANM_TIMER + 4):08x}",
                 "sprite_timer_current": memory.i32(bullet + ANM_TIMER + 8),
@@ -329,6 +350,7 @@ def capture_spawn_side() -> dict[str, object]:
 
 
 pending_spawn: dict[str, object] | None = None
+pending_bullet_update: dict[str, object] | None = None
 
 
 def capture_spawn_entry() -> None:
@@ -358,8 +380,30 @@ def capture_spawn_return() -> None:
     pending_spawn["after"] = capture_spawn_side()
 
 
+def capture_bullet_update_entry() -> None:
+    global pending_bullet_update
+    if pending_bullet_update is not None:
+        raise RuntimeError("nested or unconsumed Player::UpdatePlayerBullets event")
+    esp = int(gdb.parse_and_eval("$esp"))
+    player = memory.u32(esp + 4)
+    if player != G_PLAYER:
+        raise RuntimeError(
+            f"unexpected Player::UpdatePlayerBullets argument: player=0x{player:08x}"
+        )
+    pending_bullet_update = {
+        "last_enemy_hit_bits": raw_vec(PLAYER_LAST_ENEMY_HIT, 3),
+        "before": capture_spawn_side(),
+    }
+
+
+def capture_bullet_update_return() -> None:
+    if pending_bullet_update is None or "after" in pending_bullet_update:
+        raise RuntimeError("unpaired Player::UpdatePlayerBullets return")
+    pending_bullet_update["after"] = capture_spawn_side()
+
+
 def capture_frame(index: int) -> None:
-    global pending_spawn
+    global pending_spawn, pending_bullet_update
     game_frame = memory.u32(GM_GAME_FRAMES)
     emit(
         {
@@ -417,11 +461,17 @@ def capture_frame(index: int) -> None:
             "x87_control_word": f"0x{int(gdb.parse_and_eval('$fctrl')) & 0xffff:04x}",
             "mxcsr": f"0x{int(gdb.parse_and_eval('$mxcsr')) & 0xffffffff:08x}",
             "player_spawn": pending_spawn,
+            "player_bullet_update": pending_bullet_update,
+            "player_last_enemy_hit_bits": raw_vec(PLAYER_LAST_ENEMY_HIT, 3),
+            "player_bullets_frame": capture_spawn_side(),
         }
     )
     if pending_spawn is not None and "after" not in pending_spawn:
         raise RuntimeError("frame boundary reached before Player::SpawnBullets returned")
+    if pending_bullet_update is None or "after" not in pending_bullet_update:
+        raise RuntimeError("frame boundary reached without a complete Player::UpdatePlayerBullets event")
     pending_spawn = None
+    pending_bullet_update = None
 
 
 # Keep all control flow outside Breakpoint.stop().  Continuing automatically
@@ -433,6 +483,10 @@ frame_breakpoint = gdb.Breakpoint(f"*0x{FRAME_BOUNDARY:08x}", internal=False)
 spawn_breakpoint = gdb.Breakpoint(f"*0x{SPAWN_BULLETS:08x}", internal=False)
 spawn_return_breakpoint = gdb.Breakpoint(
     f"*0x{SPAWN_BULLETS_RETURN:08x}", internal=False
+)
+update_bullets_breakpoint = gdb.Breakpoint(f"*0x{UPDATE_PLAYER_BULLETS:08x}", internal=False)
+update_bullets_return_breakpoint = gdb.Breakpoint(
+    f"*0x{UPDATE_PLAYER_BULLETS_RETURN:08x}", internal=False
 )
 replay_selected = False
 frame_count = 0
@@ -458,6 +512,12 @@ while frame_count < FRAME_LIMIT:
     if pc == SPAWN_BULLETS_RETURN:
         capture_spawn_return()
         continue
+    if pc == UPDATE_PLAYER_BULLETS:
+        capture_bullet_update_entry()
+        continue
+    if pc == UPDATE_PLAYER_BULLETS_RETURN:
+        capture_bullet_update_return()
+        continue
     if pc != FRAME_BOUNDARY:
         continue
     if memory.i32(SUPERVISOR_CUR_STATE) != 2:
@@ -476,6 +536,8 @@ if menu_breakpoint.is_valid():
 frame_breakpoint.delete()
 spawn_breakpoint.delete()
 spawn_return_breakpoint.delete()
+update_bullets_breakpoint.delete()
+update_bullets_return_breakpoint.delete()
 output.close()
 gdb.execute("detach")
 gdb.execute("quit")

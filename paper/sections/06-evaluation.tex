@@ -56,6 +56,11 @@ fields total.  The shooting extension adds the GUI current-message predicate,
 focus and previous-input state, and all three fire-timer words, for 46 fields.
 The local bullet-spawn extension adds a structured entry/exit projection as a
 47th field on callback-bearing frames.
+The lifecycle extension adds update before/after, last-hit target, and
+post-frame pool fields for a 50-field projection.  Retail drawing causes 3,898
+raw differences only in collided-bullet sprite z.  These values are excluded
+explicitly because the next update overwrites all sprite coordinates from
+gameplay position before bounds or ANM reads them.
 
 All 2,000 compared frames match.  This interval contains 27 distinct input
 masks, advances RNG generation from 2 to 3,555, and reaches score 767,990.
@@ -72,7 +77,7 @@ spurious multi-year catch-up loop.  XTest does not reach Wine DirectInput on
 this host, so the physical input routine returns zero; ReplayManager then
 overwrites the complete replay mask at its authentic calc priority.  The
 per-frame input equality is checked rather than assumed.  These interventions
-and the finite 47-field projection prevent promoting the result to whole-state
+and the finite 50-field semantic projection prevent promoting the result to whole-state
 or whole-program equivalence, but they establish a real retail oracle for the
 first core slice.
 
@@ -306,6 +311,52 @@ can change slot state between calls.  Trigonometric outputs are also fixed raw
 values bound by the table/trace rather than a proof of the retail helper.
 Thus the proof establishes a local Reimu-A ranks 1--3 transition batch, not an
 enclosing bullet subsystem, other shot routes, or whole-game execution.
+
+\subsection{Linked Player bullet-lifecycle application proof}
+
+The fifth guest starts at the fixed empty gameplay-frame-1 pool and receives
+only 206 replay input masks.  It derives Player motion and shooting cadence,
+then links rank-1 type-0 bullet movement, sprite synchronization, 14-by-14
+bounds reclamation, fixed script-1088 ANM and age ticks, and lowest-free-slot
+allocation through frame 207.  The vector agrees exactly at all 207 anchors:
+173 spawn calls initialize 35 bullets, update reclaims 30, at most seven slots
+are live, and five remain live at the endpoint.
+
+The private \code{ZKPLI1} payload is 436 bytes, a 99.778882\% reduction from
+the earlier local-callback payload.  This comparison is architectural rather
+than equal-workload performance: the local proof covers 1,590 independent
+calls over 2,000 frames, while the enclosing proof covers the shorter prefix
+but removes every slot pre-state and hashes every intermediate full semantic
+state.  The authenticated public digest is
+\begin{center}
+\small\ttfamily
+e9e19abd79e48af83a3b43fc33a72f49089e83e59e328a97c3e7d1711a7a6ca3.
+\end{center}
+
+\begin{table}[h]
+  \centering
+  \small
+  \begin{tabular}{@{}rrr@{}}
+    \toprule
+    Transitions & Guest instructions & Metered cells \\
+    \midrule
+    1   & 33,274     & 1,303,205 \\
+    10  & 274,335    & 10,582,978 \\
+    100 & 4,722,519  & 183,801,013 \\
+    206 & 10,859,285 & 423,247,443 \\
+    \bottomrule
+  \end{tabular}
+  \caption{OpenVM v2.0.1 linked Player bullet-lifecycle meter results.}
+  \label{tab:openvm-player-bullet-lifecycle-meter}
+\end{table}
+
+Application proving takes 117.26 seconds, 4,030.61 user CPU seconds, and
+51,101,780 KiB peak RSS without swapping; verification takes 0.18 seconds and
+50,116 KiB peak RSS.  Exact commitment/public-digest checks pass and one-bit
+variants fail.  The profile rejects frame 208 because EnemyManager first
+changes a fired bullet to collided there.  It therefore proves persistent
+bullet state only for this collision-free Reimu-A rank-1 prefix, not Enemy/ECL
+collision, homing, other ranks/routes, or the complete Player subsystem.
 
 \subsection{Canonical projection experiment}
 

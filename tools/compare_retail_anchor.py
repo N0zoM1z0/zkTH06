@@ -8,7 +8,7 @@ import hashlib
 import json
 import sys
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 
 
 SCHEMA_VERSION = 1
@@ -68,6 +68,10 @@ PLAYER_SHOOTING_FIELDS = (
     "player_fire_bullet_timer_previous",
     "player_fire_bullet_timer_subframe_bits",
     "player_fire_bullet_timer_current",
+)
+
+DRAW_ONLY_UPDATE_INPUT = (
+    "player_bullet_update.before.active_slots[*].sprite_position_bits[2]"
 )
 
 
@@ -202,7 +206,14 @@ def write_report(path: Path, report: dict[str, Any]) -> None:
     path.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
 
-def first_nested_difference(left: Any, right: Any, path: str = "player_spawn") -> dict[str, Any] | None:
+def first_nested_difference(
+    left: Any,
+    right: Any,
+    path: str = "player_spawn",
+    *,
+    ignore_leaf: Callable[[str, Any, Any], bool] | None = None,
+    ignored_count: list[int] | None = None,
+) -> dict[str, Any] | None:
     if type(left) is not type(right):
         return {"path": path, "retail": left, "reference": right}
     if isinstance(left, dict):
@@ -213,7 +224,13 @@ def first_nested_difference(left: Any, right: Any, path: str = "player_spawn") -
                 "reference_keys": sorted(right),
             }
         for key in left:
-            difference = first_nested_difference(left[key], right[key], f"{path}.{key}")
+            difference = first_nested_difference(
+                left[key],
+                right[key],
+                f"{path}.{key}",
+                ignore_leaf=ignore_leaf,
+                ignored_count=ignored_count,
+            )
             if difference is not None:
                 return difference
         return None
@@ -221,13 +238,53 @@ def first_nested_difference(left: Any, right: Any, path: str = "player_spawn") -
         if len(left) != len(right):
             return {"path": path, "retail_length": len(left), "reference_length": len(right)}
         for index, (left_item, right_item) in enumerate(zip(left, right)):
-            difference = first_nested_difference(left_item, right_item, f"{path}[{index}]")
+            difference = first_nested_difference(
+                left_item,
+                right_item,
+                f"{path}[{index}]",
+                ignore_leaf=ignore_leaf,
+                ignored_count=ignored_count,
+            )
             if difference is not None:
                 return difference
         return None
     if left != right:
+        if ignore_leaf is not None and ignore_leaf(path, left, right):
+            if ignored_count is not None:
+                ignored_count[0] += 1
+            return None
         return {"path": path, "retail": left, "reference": right}
     return None
+
+
+def is_draw_only_update_input(path: str) -> int | None:
+    prefix = "player_bullet_update.before.active_slots["
+    suffix = "].sprite_position_bits[2]"
+    if not path.startswith(prefix) or not path.endswith(suffix):
+        return None
+    slot_index = path[len(prefix) : -len(suffix)]
+    return int(slot_index) if slot_index.isdigit() else None
+
+
+def draw_only_update_input_filter(
+    retail_update: Any, reference_update: Any
+) -> Callable[[str, Any, Any], bool]:
+    def ignore(path: str, _retail_value: Any, _reference_value: Any) -> bool:
+        index = is_draw_only_update_input(path)
+        if index is None:
+            return False
+        try:
+            retail_bullet = retail_update["before"]["active_slots"][index]
+            reference_bullet = reference_update["before"]["active_slots"][index]
+            return (
+                int(retail_bullet["state"]) == 2
+                and int(reference_bullet["state"]) == 2
+                and int(retail_bullet["slot"]) == int(reference_bullet["slot"])
+            )
+        except (IndexError, KeyError, TypeError, ValueError):
+            return False
+
+    return ignore
 
 
 def main() -> int:
@@ -250,6 +307,11 @@ def main() -> int:
         action="store_true",
         help="also compare address-bound Player::SpawnBullets pre/post slot projections",
     )
+    parser.add_argument(
+        "--player-bullet-frames",
+        action="store_true",
+        help="also compare complete post-calc Player-bullet slot projections",
+    )
     args = parser.parse_args()
 
     retail_rows = read_jsonl(args.retail)
@@ -263,12 +325,20 @@ def main() -> int:
         raise ValueError("retail trace target mismatch")
 
     retail_frames = [row for row in retail_rows[1:] if row.get("type") == FRAME_KIND]
-    player_shooting = args.player_shooting or args.player_bullets
+    player_bullets = args.player_bullets or args.player_bullet_frames
+    player_shooting = args.player_shooting or player_bullets
     enclosing_player = args.enclosing_player or player_shooting
     fields = COMMON_FIELDS + (ENCLOSING_PLAYER_FIELDS if enclosing_player else ())
     if player_shooting:
         fields += PLAYER_SHOOTING_FIELDS
-    compared_fields = fields + (("player_spawn",) if args.player_bullets else ())
+    compared_fields = fields + (("player_spawn",) if player_bullets else ())
+    if args.player_bullet_frames:
+        compared_fields += (
+            "player_bullet_update",
+            "player_last_enemy_hit_bits",
+            "player_bullets_frame",
+        )
+    ignored_draw_z_differences = [0]
     report: dict[str, Any] = {
         "type": "zkth06.retail-reference-comparison",
         "schema_version": 1,
@@ -289,8 +359,10 @@ def main() -> int:
         "gdb_version": header.get("gdb_version"),
         "config_sha256": header.get("config_sha256"),
         "comparison_profile": (
-            "player-bullets"
-            if args.player_bullets
+            "player-bullet-frames"
+            if args.player_bullet_frames
+            else "player-bullets"
+            if player_bullets
             else "player-shooting"
             if player_shooting
             else "enclosing-player"
@@ -321,6 +393,18 @@ def main() -> int:
             ),
         },
     }
+    if args.player_bullet_frames:
+        report["semantic_projection_exclusions"] = [
+            {
+                "path": DRAW_ONLY_UPDATE_INPUT,
+                "observed_differences": 0,
+                "reason": (
+                    "DrawBulletExplosions writes 0.4 to collided sprite.pos.z after the "
+                    "post-calc anchor; UpdatePlayerBullets overwrites all sprite.pos "
+                    "components from gameplay position before bounds or ANM can read them"
+                ),
+            }
+        ]
     if len(retail_frames) != len(reference_rows):
         message = f"length mismatch: retail={len(retail_frames)} reference={len(reference_rows)}"
         report.update(
@@ -346,13 +430,38 @@ def main() -> int:
             for key in lhs
             if lhs[key] != rhs[key]
         }
-        if args.player_bullets:
+        if player_bullets:
             nested_difference = first_nested_difference(
                 retail.get("player_spawn"), reference.get("player_spawn")
             )
             if nested_difference is not None:
                 differing["player_spawn"] = nested_difference
+        if args.player_bullet_frames:
+            for nested_field in (
+                "player_bullet_update",
+                "player_last_enemy_hit_bits",
+                "player_bullets_frame",
+            ):
+                retail_nested = retail.get(nested_field)
+                reference_nested = reference.get(nested_field)
+                nested_difference = first_nested_difference(
+                    retail_nested,
+                    reference_nested,
+                    nested_field,
+                    ignore_leaf=(
+                        draw_only_update_input_filter(retail_nested, reference_nested)
+                        if nested_field == "player_bullet_update"
+                        else None
+                    ),
+                    ignored_count=ignored_draw_z_differences,
+                )
+                if nested_difference is not None:
+                    differing[nested_field] = nested_difference
         if differing:
+            if args.player_bullet_frames:
+                report["semantic_projection_exclusions"][0]["observed_differences"] = (
+                    ignored_draw_z_differences[0]
+                )
             mismatch = {
                 "first_mismatch_index": index,
                 "retail_frame": retail.get("game_frame"),
@@ -378,6 +487,10 @@ def main() -> int:
             "first_mismatch": None,
         }
     )
+    if args.player_bullet_frames:
+        report["semantic_projection_exclusions"][0]["observed_differences"] = (
+            ignored_draw_z_differences[0]
+        )
     if args.report is not None:
         write_report(args.report, report)
     print(f"matched {len(retail_frames)} retail/reference anchor frames")
