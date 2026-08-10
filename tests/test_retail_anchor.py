@@ -13,6 +13,9 @@ ROOT = Path(__file__).resolve().parents[1]
 COMPARATOR = ROOT / "tools" / "compare_retail_anchor.py"
 EVIDENCE = ROOT / "evidence" / "retail-reference-002677-2000-v1.json"
 SHOOTING_EVIDENCE = ROOT / "evidence" / "retail-reference-002677-2000-shooting-v1.json"
+PLAYER_BULLETS_EVIDENCE = (
+    ROOT / "evidence" / "retail-reference-002677-2000-player-bullets-v1.json"
+)
 TARGET_SHA256 = "9f76483c46256804792399296619c1274363c31cd8f1775fafb55106fb852245"
 
 
@@ -113,12 +116,15 @@ def run_comparator(
     *,
     enclosing_player: bool = False,
     player_shooting: bool = False,
+    player_bullets: bool = False,
 ) -> subprocess.CompletedProcess[str]:
     command = ["python3", str(COMPARATOR), str(retail), str(reference), "--report", str(report)]
     if enclosing_player:
         command.append("--enclosing-player")
     if player_shooting:
         command.append("--player-shooting")
+    if player_bullets:
+        command.append("--player-bullets")
     return subprocess.run(
         command,
         check=False,
@@ -155,6 +161,13 @@ def main() -> int:
     assert shooting_evidence["comparison_profile"] == "player-shooting"
     assert shooting_evidence["compared_frames"] == 2_000
     assert len(shooting_evidence["compared_fields"]) == 46
+    player_bullets_evidence_text = PLAYER_BULLETS_EVIDENCE.read_text(encoding="utf-8")
+    assert "/home/" not in player_bullets_evidence_text
+    player_bullets_evidence = json.loads(player_bullets_evidence_text)
+    assert player_bullets_evidence["status"] == "match"
+    assert player_bullets_evidence["comparison_profile"] == "player-bullets"
+    assert player_bullets_evidence["compared_frames"] == 2_000
+    assert len(player_bullets_evidence["compared_fields"]) == 47
 
     header = {
         "type": "zkth06.retail-anchor-header",
@@ -246,6 +259,34 @@ def main() -> int:
         shooting_report = json.loads(report.read_text(encoding="utf-8"))
         assert shooting_report["comparison_profile"] == "player-shooting"
         assert len(shooting_report["compared_fields"]) == 46
+
+        spawn_projection = {
+            "timer": 0,
+            "current_power": 0,
+            "before": {"slot_states": [0, 1]},
+            "after": {"slot_states": [1, 1]},
+        }
+        shooting_retail["player_spawn"] = spawn_projection
+        shooting_reference["player_spawn"] = spawn_projection
+        write_jsonl(retail, [header, shooting_retail])
+        write_jsonl(reference, [shooting_reference])
+        bullets = run_comparator(retail, reference, report, player_bullets=True)
+        assert bullets.returncode == 0, bullets.stderr
+        bullets_report = json.loads(report.read_text(encoding="utf-8"))
+        assert bullets_report["comparison_profile"] == "player-bullets"
+        assert len(bullets_report["compared_fields"]) == 47
+
+        shooting_reference["player_spawn"] = {
+            **spawn_projection,
+            "after": {"slot_states": [1, 0]},
+        }
+        write_jsonl(reference, [shooting_reference])
+        bullets_mismatch = run_comparator(retail, reference, report, player_bullets=True)
+        assert bullets_mismatch.returncode == 1
+        bullets_mismatch_report = json.loads(report.read_text(encoding="utf-8"))
+        nested = bullets_mismatch_report["first_mismatch"]["differing_fields"]["player_spawn"]
+        assert nested["path"] == "player_spawn.after.slot_states[1]"
+        assert nested["retail"] == 1 and nested["reference"] == 0
 
         mismatching = retail_frame()
         mismatching["player_x_bits"] = "0x43400001"

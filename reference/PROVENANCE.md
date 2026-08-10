@@ -27,7 +27,11 @@ Relative to the pinned headless snapshot, this directory adds:
   future-live ANM field guards;
 - a retail-anchor-compatible JSONL projection for configured/effective rate,
   Player life/position, respawn and active-bomb state, all invulnerability
-  timer words, movement bounds, bomb multipliers, and character speeds.
+  timer words, movement bounds, bomb multipliers, and character speeds; and
+- headless-only `Player::SpawnBullets` entry/exit instrumentation for complete
+  slot states, dormant carry fields, active bullet geometry/timers, and the
+  first ANM projection. The scope object records diagnostics only while a trace
+  is active and does not alter gameplay state.
 
 The narrow JSONL projection is compared against an address-bound retail Wine
 probe outside this directory. Broad field-level export for the eleven canonical

@@ -5,7 +5,7 @@ engine is isolated under \path{reference/}; its pinned revisions and license
 boundary are explicit.  Changes made for \project{} remain ordinary reviewable
 commits on top of that snapshot.
 
-As of 9 August 2026, the following components are implemented:
+As of 10 August 2026, the following components are implemented:
 
 \begin{itemize}
   \item a standalone Python replay inspector and a stricter owning C++ loader;
@@ -100,6 +100,9 @@ As of 9 August 2026, the following components are implemented:
   previous input, fire-timer state, and the \code{SpawnBullets} request count,
   together with a 46-field retail oracle, 54-instruction static audit,
   1,999-transition/1,590-request vector, and third tracked proof bundle;
+  \item a local Reimu-A bullet-spawn crate and OpenVM adapter for ranks 1--3,
+  together with a nested 47-field retail/reference oracle, 56-instruction
+  static audit, 1,590-call/422-output vector, and fourth tracked proof bundle;
   \item Linux CI that builds the reference runner and cross-checks both replay
   validators on three valid and three deliberately malformed cases, while also
   requiring canonical-record corruption to fail closed.
@@ -112,8 +115,10 @@ frozen and proven, and the selected enclosing profile no longer accepts its
 movement environment as per-frame witness data.  No complete gameplay guest is
 claimed: the post-calc anchor is fixed, and collision/death/respawn, bombs,
 external time-stop writers, and non-full-speed timers fail closed or remain
-absent.  Shooting currently stops at callback dispatch, before bullet-slot
-allocation and shot geometry.  The retail exporter currently covers a 46-field root projection,
+absent.  The local Reimu-A callback now includes allocation and initialized
+geometry, but its independently observed pre-states are not linked through
+bullet update, collision, or ANM reclamation.  The retail exporter currently
+covers a 47-field root projection,
 while canonical projection revision 0.2 contains eleven broader
 subsystems.  Bringing that complete schema to the retail boundary remains
 open, and the state audit has already identified inactive Effect residue and

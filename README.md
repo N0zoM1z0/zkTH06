@@ -8,10 +8,10 @@ an accepted result. Before freezing a zkVM guest, the project must first make
 that state machine agree frame-for-frame with the shipped 32-bit Windows game.
 
 > **Evidence boundary:** an address-bound Wine probe now matches the shipped
-> executable and Linux reference for a 46-field raw gameplay projection over
+> executable and Linux reference for a 47-field raw gameplay projection over
 > the first 2,000 frames of one tracked replay. The latest extension adds the
-> dialogue gate, focus and previous-input state, and all three fire-timer words
-> to the earlier enclosing Player fields. This is finite differential
+> complete nested pre/post `Player::SpawnBullets` projection to the dialogue,
+> focus, previous-input, and fire-timer fields. This is finite differential
 > evidence, not whole-state equivalence. The current runner remains an
 > instrumented reference harness, not final proof semantics.
 
@@ -36,7 +36,18 @@ cadence boundary. A separate integer-only crate derives focus,
 All 1,999 transitions agree with the 46-field retail/reference oracle. Its
 OpenVM proof keeps the private payload at 4,018 bytes and meters 211,737,944
 cells. Bullet-slot allocation and the four character/shot callback geometries
-are deliberately not yet part of this claim.
+are deliberately not part of that enclosing cadence claim.
+
+The callback boundary is now refined one step further for Reimu A ranks 1--3.
+An address-bound retail hook and matching reference instrumentation record all
+80 pre/post slot states, dormant carry fields, active bullet geometry, and ANM
+request projection at every callback. All 1,590 calls and 422 initialized
+bullets match exactly. A local integer-only transition derives timer gates,
+power rank, lowest-free-slot allocation, and raw geometry; a fourth OpenVM
+application proof executes the complete batch and publicly commits every
+initialized output. This is intentionally a collection of local function
+transitions: the independently observed pre-call states are not yet linked by
+`UpdatePlayerBullets`, ANM reclamation, or Enemy collision.
 
 A first owner-local Lean model now machine-checks why active-only Effect slots
 violate one-step noninterference and how a narrow dormant reuse shadow repairs
@@ -134,11 +145,11 @@ inputs were produced by a human or without external tools.
 - Pass Normal no-miss/no-bomb, death/bomb, dialogue, all shot types, Lunatic,
   spell-heavy and Extra cases.
 
-The first 2,000-frame Normal anchor is complete for its enhanced 46-field
+The first 2,000-frame Normal anchor is complete for its enhanced 47-field
 projection. Its enclosing player-state subprojection drives 1,999 transitions
 from a fixed post-calc anchor, checks the life-state change at frame 240, and
-now checks focus/previous-input/fire-timer recurrence through the
-`SpawnBullets` callback boundary.
+now checks focus/previous-input/fire-timer recurrence and the nested local
+`SpawnBullets` pre/post projection.
 The full canonical subsystem projection and broader replay matrix remain open.
 
 ### M1 — canonical gameplay kernel
@@ -164,9 +175,14 @@ OpenVM v2.0.1. Its private payload is still 4,018 bytes rather than the earlier
 verifying key, vm executable, source bindings, negative checks, and explicit
 claim boundary are in
 [`evidence/openvm-player-shooting-1999-v1.json`](evidence/openvm-player-shooting-1999-v1.json).
-The next Player slice is bullet-slot allocation and character/shot callback
-geometry, followed by collision/death/respawn, bomb, power, and item
-interaction. Deriving the post-calc anchor, external time-stop writers, and
+The next local slice is also proven: 1,590 Reimu-A callback invocations produce
+422 hash-committed bullets in 7,394,181 instructions and 309,751,316 metered
+cells. Proving took 98.60 seconds with 51,626,064 KiB peak RSS and verification
+took 0.12 seconds. The exact proof bundle and its cross-call limitation are in
+[`evidence/openvm-player-bullets-1590-v1.json`](evidence/openvm-player-bullets-1590-v1.json).
+The next Player work is the enclosing bullet update/reclamation/collision
+transition, then collision/death/respawn, bomb, power, and item interaction.
+Deriving the post-calc anchor, external time-stop writers, and
 non-full-speed timer paths remain soundness gates rather than hidden premises.
 
 The source audit and compatibility risks are in
@@ -244,7 +260,7 @@ python3 tools/run_retail_anchor.py \
   --max-ticks 2000 --trace /path/to/zkTH06/local/reference-anchor.jsonl)
 
 python3 tools/compare_retail_anchor.py \
-  local/retail-anchor.jsonl local/reference-anchor.jsonl --player-shooting
+  local/retail-anchor.jsonl local/reference-anchor.jsonl --player-bullets
 ```
 
 The probe requires Wine, Xvfb, GDB, passwordless local `sudo` for ptrace, and a

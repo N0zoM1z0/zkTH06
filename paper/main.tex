@@ -33,7 +33,7 @@ digest projection is emitted by the runtime and independently checked by C++
 and Python.  Four locally pinned six-stage replays complete under the
 compatibility runner, and repeated complete canonical runs produce
 byte-identical traces.  An address-bound Wine experiment additionally matches
-the shipped executable and Linux reference for 2,000 frames on a 46-field raw
+the shipped executable and Linux reference for 2,000 frames on a 47-field raw
 projection, while observing ambient x87 control word \code{0x007f} at every
 post-calc anchor.  A first \code{no\_std} player-position microkernel then uses
 integer dyadics and explicit PC24 round-to-nearest-even rather than host
@@ -49,6 +49,12 @@ Player refinement derives focus, previous input, fire-timer cadence, and 1,590
 replay masks.  Its 1,999-transition OpenVM proof executes 5,468,598
 instructions at an estimated 211,737,944 cells, proves in 75.57 seconds with
 approximately 46.8 GiB peak resident memory, and verifies in 0.11 seconds.  A
+fourth guest refines 1,590 local Reimu-A callback invocations through the
+80-slot allocator and initialized geometry for ranks 1--3.  It hashes all 422
+initialized bullets, executes 7,394,181 instructions at 309,751,316 cells, and
+produces a tracked proof in 98.60 seconds.  The independently observed pre-call
+slot arrays are not yet linked across frames, so this remains a local function
+proof rather than an enclosing bullet-subsystem proof.  A
 hash-bound static audit attributes 5,980 x87
 instructions to mapped game functions and identifies direct transcendental,
 conversion-helper, store-boundary, and control-profile obligations.  These

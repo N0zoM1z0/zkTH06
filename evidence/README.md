@@ -84,11 +84,41 @@ checks fail.  Static instruction/source alignment, finite differential
 agreement, and the zk proof remain separate evidence layers: compiler
 correspondence, complete writer noninterference, and callback geometry are open.
 
+`retail-reference-002677-2000-player-bullets-v1.json` adds one structured field
+to form a 47-field profile. At each of 1,590 callback entries it compares the
+address-bound retail and instrumented-reference pre/post projection: all 80
+slot states, all four dormant carry fields, active geometry/timers, player and
+orb positions, and the requested/first-tick ANM projection. The selected run
+initializes 422 bullets, reaches at most 24 active slots before a call, and
+never truncates a pattern for lack of capacity.
+
+`player-bullets-002677-2000-v1.bin` (`ZKPBV1`) converts those calls into a
+fixed-width, proprietary-byte-free local-transition vector. It covers Reimu A
+power 0--31 (ranks 1--3), retains every independently observed pre-slot state,
+and records up to four expected allocations per call. The transition uses raw
+table-bound trigonometric results and integer PC24 position addition; it does
+not substitute host `libm`.
+
+`openvm-player-bullets-1590-v1.json` records the fourth OpenVM application
+proof. The 197,180-byte private payload contains 1,590 callback records; the
+guest derives and hashes all 422 initialized bullets. It executes 7,394,181
+instructions and meters 309,751,316 cells. The proof verifies against the exact
+executable commitment, its decoded public digest is
+`bcb4548e9ab8772a1c4a2b05ef4b667995dbd98ac47d233cc6c889512e60283d`,
+and one-bit-wrong commitment/digest checks fail. Because the input pre-states
+are independently observed rather than derived through bullet update,
+collision, and ANM reclamation, this is not an enclosing cross-frame proof.
+
 `source/openvm-player-motion-v1/player-motion-lib.rs` preserves the exact
 library source compiled into the earlier immutable proof.  The live crate later
 gained the enclosing-state module, so retaining the old source by hash keeps
 both proof bundles independently auditable without pretending the old vm
 executable was built from the new file.
+
+`source/openvm-player-shooting-v1/zkvm-Cargo.toml` similarly preserves the
+workspace manifest bound by the shooting proof. The live workspace later added
+the Player-bullets crate; that member-list change does not rewrite the older
+proof's claimed source input.
 
 The raw retail/reference JSONL files, debugger logs, executable, DAT archives,
 and generated Wine directory stay under ignored local storage.

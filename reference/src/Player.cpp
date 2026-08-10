@@ -14,6 +14,7 @@
 #include "EnemyManager.hpp"
 #include "GameManager.hpp"
 #include "Gui.hpp"
+#include "HeadlessRuntime.hpp"
 #include "ItemManager.hpp"
 #include "Rng.hpp"
 #include "ScreenEffect.hpp"
@@ -30,6 +31,24 @@ static const CharacterData g_CharData[4] = {
     /* MarisaA */ {5.0, 2.5, 5.0, 2.5, Player::FireBulletMarisaA, Player::FireBulletMarisaA},
     /* MarisaB */ {5.0, 2.5, 5.0, 2.5, Player::FireBulletMarisaB, Player::FireBulletMarisaB},
 };
+
+namespace
+{
+struct PlayerSpawnTraceScope
+{
+    Player *player;
+
+    PlayerSpawnTraceScope(Player *player, u32 timer) : player(player)
+    {
+        g_HeadlessRuntime.BeginPlayerSpawnTrace(player, timer);
+    }
+
+    ~PlayerSpawnTraceScope()
+    {
+        g_HeadlessRuntime.EndPlayerSpawnTrace(this->player);
+    }
+};
+} // namespace
 
 Player::Player()
 {
@@ -1042,6 +1061,7 @@ f32 Player::AngleToPlayer(const ZunVec3 *pos) const
 
 void Player::SpawnBullets(Player *p, u32 timer)
 {
+    PlayerSpawnTraceScope traceScope(p, timer);
     FireBulletResult bulletResult;
     PlayerBullet *curBullet;
     i32 curBulletIdx;

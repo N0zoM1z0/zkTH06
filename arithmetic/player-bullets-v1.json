@@ -1,0 +1,559 @@
+{
+  "schema_version": 1,
+  "kind": "zkth06.player-bullet-spawn-audit",
+  "inputs": {
+    "executable_sha256": "9f76483c46256804792399296619c1274363c31cd8f1775fafb55106fb852245",
+    "mapping_sha256": "0f20300d5b107b36c933a7f7dc448407ee5f01c5cd7faad132d406c023163191",
+    "player_shooting_artifact_sha256": "77bc7c34e69964494abad1ca5968af0756f43b9e619b4118df041d08ee946b83"
+  },
+  "generator": {
+    "path": "tools/player_bullets_audit.py",
+    "sha256": "e2e4df9fa7580f89bdb1ab4cba4ebd8efdae4ddde87bea4e0c76cffe4eae90e4",
+    "x87_audit_sha256": "93c6aee778f489c92788dc7dfc6c51749fa5f20d075305a4190616d9b5d46290",
+    "disassembler": "GNU objdump (GNU Binutils for Ubuntu) 2.38"
+  },
+  "upstream": {
+    "url": "https://github.com/GensokyoClub/th06",
+    "revision": "cc475a0bc3fef38683b0f02224c87ddba0a021d9",
+    "source_files": {
+      "src/BulletData.cpp": "f4304507149699256434c902c524069661bcd8939d4d96bda31f9c09201f2a40",
+      "src/Player.cpp": "5e3e81cff72796c98b9b87dc65d447333444917b63d9e4d493572f23145c26b5"
+    },
+    "anchors": [
+      {
+        "file": "src/Player.cpp",
+        "line": 1043,
+        "anchor": "Player::SpawnBullets",
+        "role": "slot allocator entry"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 1053,
+        "anchor": "curBulletIdx <",
+        "role": "80-slot scan"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 1055,
+        "anchor": "bulletState !=",
+        "role": "skip non-unused slot"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 1060,
+        "anchor": "if (!p->isFocus)",
+        "role": "callback selection"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 1068,
+        "anchor": "bulletResult >= 0",
+        "role": "successful callback result"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 1073,
+        "anchor": "bulletState =",
+        "role": "mark slot fired"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 1083,
+        "anchor": "idx++",
+        "role": "advance bullet-data index"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 1092,
+        "anchor": "FireSingleBullet",
+        "role": "shared callback"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 1101,
+        "anchor": "currentPower >=",
+        "role": "power rank selection"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 1106,
+        "anchor": "powerData->bullets + bulletIdx",
+        "role": "row selection"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 1122,
+        "anchor": "framesSinceLastBullet %",
+        "role": "non-laser timer gate"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 1126,
+        "anchor": "SetAndExecuteScriptIdx",
+        "role": "ANM boundary"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 1127,
+        "anchor": "spawnPositionIdx",
+        "role": "player/orb source selector"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 1135,
+        "anchor": "motion.x",
+        "role": "x motion add"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 1136,
+        "anchor": "motion.y",
+        "role": "y motion add"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 1138,
+        "anchor": "position.z =",
+        "role": "fixed z"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 1140,
+        "anchor": "size.x",
+        "role": "size initialization"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 1143,
+        "anchor": "unk_134.z",
+        "role": "direction initialization"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 1144,
+        "anchor": "unk_134.y",
+        "role": "speed initialization"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 1146,
+        "anchor": "cosf",
+        "role": "x velocity helper"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 1148,
+        "anchor": "sinf",
+        "role": "y velocity helper"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 1150,
+        "anchor": "InitializeForPopup",
+        "role": "age timer initialization"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 1152,
+        "anchor": "bulletType",
+        "role": "type initialization"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 1153,
+        "anchor": "damage",
+        "role": "damage initialization"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 1175,
+        "anchor": "g_CharacterPowerDataReimuA",
+        "role": "fixed Reimu-A table"
+      },
+      {
+        "file": "src/BulletData.cpp",
+        "line": 11,
+        "anchor": "ReimuARank1",
+        "role": "rank-1 table"
+      },
+      {
+        "file": "src/BulletData.cpp",
+        "line": 16,
+        "anchor": "ReimuARank2",
+        "role": "rank-2 table"
+      },
+      {
+        "file": "src/BulletData.cpp",
+        "line": 25,
+        "anchor": "ReimuARank3",
+        "role": "rank-3 table"
+      },
+      {
+        "file": "src/BulletData.cpp",
+        "line": 134,
+        "anchor": "{1, 8",
+        "role": "rank-1 upper threshold"
+      },
+      {
+        "file": "src/BulletData.cpp",
+        "line": 135,
+        "anchor": "{3, 16",
+        "role": "rank-2 upper threshold"
+      },
+      {
+        "file": "src/BulletData.cpp",
+        "line": 136,
+        "anchor": "{4, 32",
+        "role": "rank-3 upper threshold"
+      }
+    ],
+    "correspondence_status": "manual-disassembly-source-alignment-unproved"
+  },
+  "mapped_functions": [
+    {
+      "name": "th06::Player::FireBulletReimuA",
+      "start": "0x004260d0",
+      "size": 34
+    },
+    {
+      "name": "th06::Player::FireSingleBullet",
+      "start": "0x00426100",
+      "size": 795
+    },
+    {
+      "name": "th06::Player::SpawnBullets",
+      "start": "0x00429820",
+      "size": 270
+    }
+  ],
+  "checked_instruction_roles": [
+    {
+      "address": "0x004260d3",
+      "mnemonic": "push",
+      "role": "push fixed Reimu-A power table"
+    },
+    {
+      "address": "0x004260e8",
+      "mnemonic": "call",
+      "role": "call FireSingleBullet"
+    },
+    {
+      "address": "0x00426108",
+      "mnemonic": "mov",
+      "role": "load currentPower"
+    },
+    {
+      "address": "0x00426111",
+      "mnemonic": "cmp",
+      "role": "compare rank threshold"
+    },
+    {
+      "address": "0x00426119",
+      "mnemonic": "add",
+      "role": "advance power rank"
+    },
+    {
+      "address": "0x00426124",
+      "mnemonic": "imul",
+      "role": "scale bullet-data index"
+    },
+    {
+      "address": "0x0042612a",
+      "mnemonic": "add",
+      "role": "select bullet-data row"
+    },
+    {
+      "address": "0x00426135",
+      "mnemonic": "mov",
+      "role": "load bullet type"
+    },
+    {
+      "address": "0x00426138",
+      "mnemonic": "cmp",
+      "role": "test laser type"
+    },
+    {
+      "address": "0x004261e4",
+      "mnemonic": "movsx",
+      "role": "load wait period"
+    },
+    {
+      "address": "0x004261eb",
+      "mnemonic": "idiv",
+      "role": "timer remainder"
+    },
+    {
+      "address": "0x004261f0",
+      "mnemonic": "movsx",
+      "role": "load scheduled frame"
+    },
+    {
+      "address": "0x004261f4",
+      "mnemonic": "cmp",
+      "role": "test timer gate"
+    },
+    {
+      "address": "0x00426216",
+      "mnemonic": "mov",
+      "role": "store requested ANM index"
+    },
+    {
+      "address": "0x00426232",
+      "mnemonic": "call",
+      "role": "enter ANM execution boundary"
+    },
+    {
+      "address": "0x0042623c",
+      "mnemonic": "mov",
+      "role": "load source position index"
+    },
+    {
+      "address": "0x0042624c",
+      "mnemonic": "mov",
+      "role": "select player position destination"
+    },
+    {
+      "address": "0x00426272",
+      "mnemonic": "imul",
+      "role": "scale orb index"
+    },
+    {
+      "address": "0x004262a8",
+      "mnemonic": "fld",
+      "role": "load source x"
+    },
+    {
+      "address": "0x004262aa",
+      "mnemonic": "fadd",
+      "role": "add motion x"
+    },
+    {
+      "address": "0x004262b0",
+      "mnemonic": "fstp",
+      "role": "store rounded x"
+    },
+    {
+      "address": "0x004262c4",
+      "mnemonic": "fld",
+      "role": "load source y"
+    },
+    {
+      "address": "0x004262c6",
+      "mnemonic": "fadd",
+      "role": "add motion y"
+    },
+    {
+      "address": "0x004262cc",
+      "mnemonic": "fstp",
+      "role": "store rounded y"
+    },
+    {
+      "address": "0x004262d1",
+      "mnemonic": "mov",
+      "role": "store position z 0.495"
+    },
+    {
+      "address": "0x004262e4",
+      "mnemonic": "mov",
+      "role": "store size x"
+    },
+    {
+      "address": "0x004262f3",
+      "mnemonic": "mov",
+      "role": "store size y"
+    },
+    {
+      "address": "0x004262fc",
+      "mnemonic": "mov",
+      "role": "store size z 1"
+    },
+    {
+      "address": "0x0042630f",
+      "mnemonic": "mov",
+      "role": "store direction"
+    },
+    {
+      "address": "0x0042631e",
+      "mnemonic": "mov",
+      "role": "store scalar speed"
+    },
+    {
+      "address": "0x00426336",
+      "mnemonic": "call",
+      "role": "call cosine helper"
+    },
+    {
+      "address": "0x0042634d",
+      "mnemonic": "fstp",
+      "role": "store velocity x"
+    },
+    {
+      "address": "0x00426365",
+      "mnemonic": "call",
+      "role": "call sine helper"
+    },
+    {
+      "address": "0x0042637c",
+      "mnemonic": "fstp",
+      "role": "store velocity y"
+    },
+    {
+      "address": "0x00426390",
+      "mnemonic": "mov",
+      "role": "initialize age current"
+    },
+    {
+      "address": "0x0042639a",
+      "mnemonic": "mov",
+      "role": "initialize age subframe"
+    },
+    {
+      "address": "0x004263a4",
+      "mnemonic": "mov",
+      "role": "initialize age previous"
+    },
+    {
+      "address": "0x004263b5",
+      "mnemonic": "mov",
+      "role": "store bullet type"
+    },
+    {
+      "address": "0x004263c6",
+      "mnemonic": "mov",
+      "role": "store damage"
+    },
+    {
+      "address": "0x004263f6",
+      "mnemonic": "cmp",
+      "role": "test final row after spawn"
+    },
+    {
+      "address": "0x00426408",
+      "mnemonic": "cmp",
+      "role": "test final row after skip"
+    },
+    {
+      "address": "0x00429830",
+      "mnemonic": "add",
+      "role": "address first Player bullet slot"
+    },
+    {
+      "address": "0x0042984d",
+      "mnemonic": "add",
+      "role": "advance Player bullet slot"
+    },
+    {
+      "address": "0x00429856",
+      "mnemonic": "cmp",
+      "role": "bound scan to 80 slots"
+    },
+    {
+      "address": "0x00429863",
+      "mnemonic": "movsx",
+      "role": "load slot state"
+    },
+    {
+      "address": "0x0042986a",
+      "mnemonic": "test",
+      "role": "select unused state zero"
+    },
+    {
+      "address": "0x00429891",
+      "mnemonic": "call",
+      "role": "call unfocused callback"
+    },
+    {
+      "address": "0x004298b2",
+      "mnemonic": "call",
+      "role": "call focused callback"
+    },
+    {
+      "address": "0x004298be",
+      "mnemonic": "cmp",
+      "role": "test successful callback"
+    },
+    {
+      "address": "0x004298d0",
+      "mnemonic": "mov",
+      "role": "copy bullet x to sprite x"
+    },
+    {
+      "address": "0x004298e2",
+      "mnemonic": "mov",
+      "role": "copy bullet y to sprite y"
+    },
+    {
+      "address": "0x004298eb",
+      "mnemonic": "mov",
+      "role": "store sprite z 0.495"
+    },
+    {
+      "address": "0x004298f8",
+      "mnemonic": "mov",
+      "role": "mark slot fired"
+    },
+    {
+      "address": "0x00429901",
+      "mnemonic": "cmp",
+      "role": "test stop result"
+    },
+    {
+      "address": "0x00429914",
+      "mnemonic": "add",
+      "role": "advance bullet-data index"
+    },
+    {
+      "address": "0x0042991a",
+      "mnemonic": "cmp",
+      "role": "test retry same slot"
+    }
+  ],
+  "derived_profile_contract": {
+    "route": "Reimu A",
+    "supported_power": {
+      "minimum": 0,
+      "maximum": 31,
+      "ranks": [
+        1,
+        2,
+        3
+      ]
+    },
+    "slot_count": 80,
+    "slot_stride": 344,
+    "unused_state": 0,
+    "fired_state": 1,
+    "timer_domain": {
+      "minimum": 0,
+      "maximum": 29
+    },
+    "rank_thresholds": [
+      8,
+      16,
+      32
+    ],
+    "nonlaser_carried_fields": [
+      "sidewaysMotion",
+      "unk_134.x",
+      "unk_152",
+      "spawnPositionIdx"
+    ],
+    "trigonometry_boundary": "cosine/sine helper results are observed as fixed raw bits for the five directions; no host libm equivalence is claimed",
+    "anm_boundary": "the transition emits the requested script index; SetAndExecuteScript remains external",
+    "refinement_boundary": "one local SpawnBullets call from pre-slot state to allocation and initialized geometry; no cross-call linkage, bullet update, collision, or ANM termination"
+  },
+  "evidence_status": "exact static signatures and pinned source candidates for Reimu-A ranks 1-3 allocation and geometry, bound to the shooting-cadence audit; not verified decoding, compiler correspondence, reachability, trigonometric helper equivalence, ANM semantics, or guest refinement",
+  "open_obligations": [
+    "Translation-validate the checked instruction/source alignment.",
+    "Prove the fixed trigonometric raw-bit table against the pinned helper implementation.",
+    "Refine the requested ANM script into the complete future-live AnmVm state.",
+    "Link separate spawn calls through bullet update, collision, and slot reclamation.",
+    "Extend the power table beyond ranks 1-3 and then to the other shot routes."
+  ],
+  "counts": {
+    "mapped_functions": 3,
+    "source_anchors": 31,
+    "checked_instruction_roles": 56
+  },
+  "artifact_sha256": "055bb1c0ceee0e464a6dc1208a357d824d136ed1c9ba3b54696229ea09969ba2"
+}

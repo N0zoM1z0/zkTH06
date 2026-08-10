@@ -4,6 +4,45 @@
 
 #include <cstdio>
 
+struct Player;
+
+struct HeadlessPlayerBulletTrace
+{
+    u32 positionBits[3] = {};
+    u32 sizeBits[3] = {};
+    u32 velocityBits[2] = {};
+    u32 sidewaysMotionBits = 0;
+    u32 unk134Bits[3] = {};
+    i32 timerPrevious = 0;
+    u32 timerSubframeBits = 0;
+    i32 timerCurrent = 0;
+    i16 damage = 0;
+    i16 state = 0;
+    i16 type = 0;
+    i16 unk152 = 0;
+    i16 spawnPositionIdx = 0;
+    u32 spritePositionBits[3] = {};
+    i32 spriteTimerPrevious = 0;
+    u32 spriteTimerSubframeBits = 0;
+    i32 spriteTimerCurrent = 0;
+    u32 spriteFlags = 0;
+    i16 spriteActiveIndex = 0;
+    i16 spriteAnmFileIndex = 0;
+};
+
+struct HeadlessPlayerSpawnTrace
+{
+    bool valid = false;
+    bool returned = false;
+    u32 timer = 0;
+    u16 currentPower = 0;
+    u8 isFocus = 0;
+    u32 playerPositionBits[3] = {};
+    u32 orbPositionBits[2][3] = {};
+    HeadlessPlayerBulletTrace before[80] = {};
+    HeadlessPlayerBulletTrace after[80] = {};
+};
+
 struct HeadlessRuntime
 {
     bool enabled = false;
@@ -43,6 +82,7 @@ struct HeadlessRuntime
     bool inputReady = false;
     bool inputError = false;
     const char *terminalReason = NULL;
+    HeadlessPlayerSpawnTrace playerSpawnTrace;
 
     bool ParseArguments(int argc, char *argv[]);
     bool PrintReplayInfo() const;
@@ -55,6 +95,8 @@ struct HeadlessRuntime
     void ConfigureDirectReplay();
     u16 NextInput();
     void WriteState(const char *terminalReason);
+    void BeginPlayerSpawnTrace(const Player *player, u32 timer);
+    void EndPlayerSpawnTrace(const Player *player);
     bool WriteCanonicalState(const char *terminalReason);
     bool ShouldStopForHit() const;
     bool IsReplayComplete() const;

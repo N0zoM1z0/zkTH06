@@ -1,0 +1,47 @@
+{
+  "capacity_truncated_calls": 0,
+  "character": 0,
+  "claim_boundary": "finite retail/reference evidence and a local per-call vector for Reimu-A ranks 1-3 SpawnBullets allocation and initialized geometry; pre-call slot states are independently observed and are not linked across calls through motion, ANM, or Enemy collision",
+  "comparison_artifact": "retail-reference-002677-2000-player-bullets-v1.json",
+  "comparison_sha256": "7fd6fdfea213dd1dd1a3041e0a44fa1a5177e3f5b9b1a7716223368a545ed50e",
+  "dormant_carry_profile": "all four non-laser carried fields are zero before and after every call",
+  "first_spawn_game_frame": 35,
+  "format": "little-endian ZKPBV1",
+  "generator": {
+    "path": "tools/build_player_bullets_vector.py",
+    "sha256": "be7b185396908e71ef939750e9a36971b17a48a0de96f26b0422d2e5d0dd8030"
+  },
+  "header_bytes": 224,
+  "initialized_bullets": 422,
+  "last_spawn_game_frame": 1869,
+  "maximum_pre_call_active_slots": 24,
+  "rank_call_counts": {
+    "1": 953,
+    "2": 324,
+    "3": 313
+  },
+  "record_bytes": 416,
+  "reference_trace_sha256": "b36b854f21bcc14bb72d4e1f3339e0bd0826ed7c35cd25011454550a9f926b43",
+  "replay_sha256": "01bc11b9226932bddeeeff675f1741b89b129f4c8820b3b1cf185a1cb19ad10f",
+  "retail_anm_projection": "requested/active script, flags, position, and first script tick checked by generator",
+  "retail_trace_sha256": "d084746ef9713d5cc9ea9dc07c78360e53879a321b1b61c8df536125e12be49d",
+  "schema_version": 1,
+  "shot_type": 0,
+  "source_frames": 2000,
+  "spawn_calls": 1590,
+  "static_audit_artifact": "player-bullets-v1.json",
+  "static_audit_sealed_digest": "055bb1c0ceee0e464a6dc1208a357d824d136ed1c9ba3b54696229ea09969ba2",
+  "static_audit_sha256": "e48961be7018a4f0fd93332065f080306287f4709bd04f62f3c66d92780237b5",
+  "supported_power": {
+    "maximum": 31,
+    "minimum": 0,
+    "ranks": [
+      1,
+      2,
+      3
+    ]
+  },
+  "target_executable_sha256": "9f76483c46256804792399296619c1274363c31cd8f1775fafb55106fb852245",
+  "type": "zkth06.player-bullet-spawn-vector",
+  "vector_sha256": "2e0656c2f95df106f5305ceb42d6eb8822f639bb910d56e0d8c7f09882f2d51f"
+}

@@ -290,9 +290,24 @@ callback arguments.  The new OpenVM guest retains the 4,018-byte replay-only
 payload and costs 211,737,944 cells, only 0.8924\% above the enclosing-state
 guest.  This converts ``shooting support'' from an underspecified claim into a
 reviewable refinement ladder: cadence is now proven for the selected profile;
-bullet-slot allocation and each fixed character/shot callback are the next
-separate obligations.  The no-dialogue corpus fact remains finite evidence,
+bullet-slot allocation and each fixed character/shot callback became the next
+separate obligations addressed by Phase Y.  The no-dialogue corpus fact
+remains finite evidence,
 not a universal noninterference theorem.
+
+\paragraph{Phase Y: prove local allocation before claiming cross-frame bullet
+state.}
+Entering the callback exposed two different goals that should not be conflated.
+The first is a closed local function: given all 80 slot states, select Reimu-A
+rank/timer rows, scan the lowest unused slots, and initialize geometry.  The
+second is an enclosing transition that must itself derive those slot states
+through bullet motion, collision, ANM termination, and reclamation.  We prove
+the first goal over 1,590 retail-bound calls and 422 outputs, but keep each
+pre-state independently observed.  The fourth OpenVM guest costs 309,751,316
+cells and its public digest covers every initialized bullet.  This prevents a
+per-frame oracle from being mislabeled as persistent bullet state and leaves a
+precise next proof obligation: compose the local allocator with all writers of
+slot liveness.
 
 Future changes to the central claim or state boundary should be appended here
 with the evidence that motivated them.

@@ -5,7 +5,7 @@ a legacy game's execution.  The initial replay runner demonstrates that the
 reconstructed engine can consume real v1.02h witnesses deterministically and
 complete full runs, while strict parsing removes several ambient-memory and
 format-trust hazards.  A first shipped-executable anchor now agrees for 2,000
-frames on a 46-field raw projection.  The result is not yet a proof system and
+frames on a 47-field raw projection.  The result is not yet a proof system and
 does not yet establish whole-state equivalence with the shipped executable.
 
 A first \code{no\_std} player-position microkernel turns that anchor into an
@@ -27,15 +27,25 @@ seconds.  This follows two rejected or superseded boundaries: an uncommitted
 existential transcript and a 95,976-byte hash-bound but prover-chosen
 environment transcript.
 
+A fourth guest now refines the local Reimu-A callback through power ranks
+1--3, timer gates, the 80-slot allocator, and initialized geometry.  Across
+1,590 retail-bound invocations it derives and publicly hashes 422 bullets,
+costing 7,394,181 instructions and 309,751,316 cells; its tracked application
+proof completes in 98.60 seconds and verifies in 0.12 seconds.  Crucially, each
+pre-call slot array remains independently observed.  The result is therefore a
+local function proof, not evidence that the guest already carries authentic
+bullet liveness across frames.
+
 An experimental shared binary protocol now emits real per-frame subsystem and
 root digests with raw floating-point bits, stable identities, and fail-closed
 decoding.  Complete repeated Linux runs are byte-identical, and the first broad
 ANM experiment already exposed the distinction between allocated memory and
 future-live semantic state.  The retail probe already turns a mismatch in its
 narrow root projection into a reproducible first-frame/first-field diagnosis.
-The next concrete Player milestone is to refine the callback boundary into
-bullet-slot allocation and fixed character/shot geometry, then add or rule out
-collision/death/respawn, bomb, power, and item paths.  Deriving the fixed
+The next concrete Player milestone is to compose that local callback with
+bullet motion, ANM reclamation, and collision so that each later slot pre-state
+is derived, then add or rule out collision/death/respawn, bomb, power, and item
+paths.  Deriving the fixed
 post-calc anchor from registration/pre-stage scheduling, time-stop writers, and
 non-full-speed paths remains necessary while resolving the
 known reuse and dynamic-job omissions and enlarging the shipped-executable

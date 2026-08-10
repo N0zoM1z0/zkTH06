@@ -91,7 +91,181 @@ bool ParseAction(const char *name, u16 *mask)
     }
     return false;
 }
+
+HeadlessPlayerBulletTrace CapturePlayerBullet(const PlayerBullet &bullet)
+{
+    HeadlessPlayerBulletTrace trace;
+    trace.positionBits[0] = bit_cast_from_size(bullet.position.x);
+    trace.positionBits[1] = bit_cast_from_size(bullet.position.y);
+    trace.positionBits[2] = bit_cast_from_size(bullet.position.z);
+    trace.sizeBits[0] = bit_cast_from_size(bullet.size.x);
+    trace.sizeBits[1] = bit_cast_from_size(bullet.size.y);
+    trace.sizeBits[2] = bit_cast_from_size(bullet.size.z);
+    trace.velocityBits[0] = bit_cast_from_size(bullet.velocity.x);
+    trace.velocityBits[1] = bit_cast_from_size(bullet.velocity.y);
+    trace.unk134Bits[0] = bit_cast_from_size(bullet.unk_134.x);
+    trace.unk134Bits[1] = bit_cast_from_size(bullet.unk_134.y);
+    trace.unk134Bits[2] = bit_cast_from_size(bullet.unk_134.z);
+    trace.spritePositionBits[0] = bit_cast_from_size(bullet.sprite.pos.x);
+    trace.spritePositionBits[1] = bit_cast_from_size(bullet.sprite.pos.y);
+    trace.spritePositionBits[2] = bit_cast_from_size(bullet.sprite.pos.z);
+    trace.sidewaysMotionBits = bit_cast_from_size(bullet.sidewaysMotion);
+    trace.timerPrevious = bullet.unk_140.previous;
+    trace.timerSubframeBits = bit_cast_from_size(bullet.unk_140.subFrame);
+    trace.timerCurrent = bullet.unk_140.current;
+    trace.damage = bullet.damage;
+    trace.state = bullet.bulletState;
+    trace.type = bullet.bulletType;
+    trace.unk152 = bullet.unk_152;
+    trace.spawnPositionIdx = bullet.spawnPositionIdx;
+    trace.spriteTimerPrevious = bullet.sprite.currentTimeInScript.previous;
+    trace.spriteTimerSubframeBits = bit_cast_from_size(bullet.sprite.currentTimeInScript.subFrame);
+    trace.spriteTimerCurrent = bullet.sprite.currentTimeInScript.current;
+    trace.spriteFlags = bit_cast_from_size(bullet.sprite.flags);
+    trace.spriteActiveIndex = bullet.sprite.activeSpriteIndex;
+    trace.spriteAnmFileIndex = bullet.sprite.anmFileIndex;
+    return trace;
+}
+
+void WriteU32Vector(FILE *output, const u32 *values, size_t count)
+{
+    std::fputc('[', output);
+    for (size_t index = 0; index < count; index++)
+    {
+        std::fprintf(output, "%s\"0x%08x\"", index == 0 ? "" : ",", values[index]);
+    }
+    std::fputc(']', output);
+}
+
+void WritePlayerBulletTrace(FILE *output, size_t slot, const HeadlessPlayerBulletTrace &bullet)
+{
+    std::fprintf(output,
+                 "{\"slot\":%zu,\"state\":%d,\"type\":%d,\"damage\":%d,"
+                 "\"spawn_position_idx\":%d,\"unk_152\":%d,\"position_bits\":",
+                 slot, bullet.state, bullet.type, bullet.damage, bullet.spawnPositionIdx, bullet.unk152);
+    WriteU32Vector(output, bullet.positionBits, 3);
+    std::fputs(",\"size_bits\":", output);
+    WriteU32Vector(output, bullet.sizeBits, 3);
+    std::fputs(",\"velocity_bits\":", output);
+    WriteU32Vector(output, bullet.velocityBits, 2);
+    std::fprintf(output,
+                 ",\"sideways_motion_bits\":\"0x%08x\",\"unk_134_bits\":",
+                 bullet.sidewaysMotionBits);
+    WriteU32Vector(output, bullet.unk134Bits, 3);
+    std::fprintf(output,
+                 ",\"timer_previous\":%d,\"timer_subframe_bits\":\"0x%08x\","
+                 "\"timer_current\":%d,\"sprite_position_bits\":",
+                 bullet.timerPrevious, bullet.timerSubframeBits, bullet.timerCurrent);
+    WriteU32Vector(output, bullet.spritePositionBits, 3);
+    std::fprintf(output,
+                 ",\"sprite_timer_previous\":%d,\"sprite_timer_subframe_bits\":\"0x%08x\","
+                 "\"sprite_timer_current\":%d,\"sprite_flags\":%u,"
+                 "\"sprite_active_index\":%d,\"sprite_anm_file_index\":%d}",
+                 bullet.spriteTimerPrevious, bullet.spriteTimerSubframeBits, bullet.spriteTimerCurrent,
+                 bullet.spriteFlags, bullet.spriteActiveIndex, bullet.spriteAnmFileIndex);
+}
+
+void WritePlayerSpawnSide(FILE *output, const HeadlessPlayerBulletTrace (&bullets)[80])
+{
+    std::fputs("{\"slot_states\":[", output);
+    for (size_t slot = 0; slot < 80; slot++)
+    {
+        std::fprintf(output, "%s%d", slot == 0 ? "" : ",", bullets[slot].state);
+    }
+    std::fputs("],\"active_slots\":[", output);
+    bool first = true;
+    for (size_t slot = 0; slot < 80; slot++)
+    {
+        if (bullets[slot].state == BULLET_STATE_UNUSED)
+        {
+            continue;
+        }
+        std::fputs(first ? "" : ",", output);
+        WritePlayerBulletTrace(output, slot, bullets[slot]);
+        first = false;
+    }
+    std::fputs("],\"slot_carry\":[", output);
+    for (size_t slot = 0; slot < 80; slot++)
+    {
+        const HeadlessPlayerBulletTrace &bullet = bullets[slot];
+        std::fprintf(output,
+                     "%s{\"sideways_motion_bits\":\"0x%08x\","
+                     "\"unk_134_x_bits\":\"0x%08x\",\"unk_152\":%d,"
+                     "\"spawn_position_idx\":%d}",
+                     slot == 0 ? "" : ",", bullet.sidewaysMotionBits, bullet.unk134Bits[0],
+                     bullet.unk152, bullet.spawnPositionIdx);
+    }
+    std::fputs("]}", output);
+}
+
+void WritePlayerSpawnTrace(FILE *output, const HeadlessPlayerSpawnTrace &trace)
+{
+    if (!trace.valid)
+    {
+        std::fputs("null", output);
+        return;
+    }
+    if (!trace.returned)
+    {
+        std::fputs("{\"error\":\"SpawnBullets did not return\"}", output);
+        return;
+    }
+    std::fprintf(output, "{\"timer\":%u,\"current_power\":%u,\"is_focus\":%u,"
+                         "\"player_position_bits\":",
+                 trace.timer, trace.currentPower, trace.isFocus);
+    WriteU32Vector(output, trace.playerPositionBits, 3);
+    std::fputs(",\"orb_position_bits\":[", output);
+    WriteU32Vector(output, trace.orbPositionBits[0], 3);
+    std::fputc(',', output);
+    WriteU32Vector(output, trace.orbPositionBits[1], 3);
+    std::fputs("],\"before\":", output);
+    WritePlayerSpawnSide(output, trace.before);
+    std::fputs(",\"after\":", output);
+    WritePlayerSpawnSide(output, trace.after);
+    std::fputc('}', output);
+}
 } // namespace
+
+void HeadlessRuntime::BeginPlayerSpawnTrace(const Player *player, u32 timer)
+{
+    this->playerSpawnTrace = {};
+    if (!this->enabled || this->traceFile == NULL)
+    {
+        return;
+    }
+    HeadlessPlayerSpawnTrace &trace = this->playerSpawnTrace;
+    trace.valid = true;
+    trace.timer = timer;
+    trace.currentPower = g_GameManager.currentPower;
+    trace.isFocus = player->isFocus;
+    trace.playerPositionBits[0] = bit_cast_from_size(player->positionCenter.x);
+    trace.playerPositionBits[1] = bit_cast_from_size(player->positionCenter.y);
+    trace.playerPositionBits[2] = bit_cast_from_size(player->positionCenter.z);
+    trace.orbPositionBits[0][0] = bit_cast_from_size(player->orbsPosition[0].x);
+    trace.orbPositionBits[0][1] = bit_cast_from_size(player->orbsPosition[0].y);
+    trace.orbPositionBits[0][2] = bit_cast_from_size(player->orbsPosition[0].z);
+    trace.orbPositionBits[1][0] = bit_cast_from_size(player->orbsPosition[1].x);
+    trace.orbPositionBits[1][1] = bit_cast_from_size(player->orbsPosition[1].y);
+    trace.orbPositionBits[1][2] = bit_cast_from_size(player->orbsPosition[1].z);
+    for (size_t slot = 0; slot < 80; slot++)
+    {
+        trace.before[slot] = CapturePlayerBullet(player->bullets[slot]);
+    }
+}
+
+void HeadlessRuntime::EndPlayerSpawnTrace(const Player *player)
+{
+    HeadlessPlayerSpawnTrace &trace = this->playerSpawnTrace;
+    if (!trace.valid)
+    {
+        return;
+    }
+    for (size_t slot = 0; slot < 80; slot++)
+    {
+        trace.after[slot] = CapturePlayerBullet(player->bullets[slot]);
+    }
+    trace.returned = true;
+}
 
 bool HeadlessRuntime::ParseArguments(int argc, char *argv[])
 {
@@ -759,7 +933,7 @@ void HeadlessRuntime::WriteState(const char *terminalReason)
                  "\"diagonal_speed_bits\":%u,\"diagonal_focus_speed_bits\":%u},"
                  "\"lives\":%d,\"bombs\":%d,\"score\":%u,"
                  "\"deaths\":%d,\"bombs_used\":%d,\"num_retries\":%u,"
-                 "\"current_power\":%u,\"rank\":%d,\"subrank\":%d,\"bullets\":[",
+                 "\"current_power\":%u,\"rank\":%d,\"subrank\":%d,\"player_spawn\":",
                  (unsigned long long)this->ticks, terminalJson,
                  this->difficulty, this->character, this->shotType,
                  this->replayPath == NULL ? this->practiceStage : g_GameManager.currentStage, this->actualSeed,
@@ -792,6 +966,8 @@ void HeadlessRuntime::WriteState(const char *terminalReason)
                  g_GameManager.livesRemaining, g_GameManager.bombsRemaining, g_GameManager.score,
                  g_GameManager.deaths, g_GameManager.bombsUsed, g_GameManager.numRetries,
                  g_GameManager.currentPower, g_GameManager.rank, g_GameManager.subRank);
+    WritePlayerSpawnTrace(this->traceFile, this->playerSpawnTrace);
+    std::fputs(",\"bullets\":[", this->traceFile);
     bool first = true;
     for (const Bullet &bullet : g_BulletManager.bullets)
     {
@@ -837,6 +1013,7 @@ void HeadlessRuntime::WriteState(const char *terminalReason)
     }
     std::fprintf(this->traceFile, "]}\n");
     std::fflush(this->traceFile);
+    this->playerSpawnTrace = {};
 }
 
 bool HeadlessRuntime::AdvanceTick()

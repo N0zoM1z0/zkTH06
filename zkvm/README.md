@@ -24,7 +24,16 @@ start/tick/reset state, and `SpawnBullets` requests. A retail-bound `ZKSHV1`
 vector checks 1,999 consecutive transitions and 1,590 callback requests.
 [`player-shooting-openvm/`](player-shooting-openvm/) proves the same transition
 with only replay masks as per-frame private input. This layer ends at callback
-dispatch; bullet allocation and character/shot geometry are the next slice.
+dispatch.
+
+[`player-bullets/`](player-bullets/) refines one Reimu-A callback through the
+80-slot allocator and initialized raw geometry for ranks 1--3. The companion
+[`player-bullets-openvm/`](player-bullets-openvm/) guest proves 1,590 observed
+calls and hashes all 422 initialized outputs. Its input includes a complete
+pre-call slot-state array for each call. Those arrays are retail-bound but
+independently observed, so this layer is a local function proof rather than an
+enclosing multi-frame bullet state machine. Bullet motion, ANM termination,
+slot reclamation, and Enemy collision remain the next linkage obligation.
 
 The intended boundary is:
 

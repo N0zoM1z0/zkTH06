@@ -1,6 +1,6 @@
 # State projection soundness audit
 
-Last updated: 2026-08-09
+Last updated: 2026-08-10
 
 This document tracks whether the state selected by the canonical trace is
 closed under the pinned reference transition. Revision 0.2 is a diagnostic
@@ -57,7 +57,7 @@ their residual values survive reuse. The current audit is:
 | Enemy bullets | Ordinary retirement reaches `memset(..., 0, sizeof(Bullet))`; spawning then assigns mode-specific state. | Nonzero-state slots are hashed in slot order. | Audit every path to state zero and every flag-specific spawn/read pair. |
 | Lasers | Spawn assigns both VMs and every scalar used by the update loop. | Active slots are hashed in slot order. | Prove ANM guarded-state initialization and all retirement paths. |
 | Items | Spawn assigns position, velocity, type, state, timer, and sprite; `targetPosition` is read only in state 2, where spawn assigns it. | Active slots and allocator cursor are hashed. | Prove the state partition and account for any RNG-consuming item ANM opcode. |
-| Player bullets | Character/shot callbacks populate a reused slot and start its ANM program. | Active slots, gameplay fields, and ANM state are hashed. | Audit all four character/shot callbacks for overwrite-before-read. |
+| Player bullets | Character/shot callbacks populate a reused slot and start its ANM program. | Active slots, gameplay fields, and ANM state are hashed. A local Reimu-A ranks 1--3 transition now carries all four non-laser dormant fields and matches 1,590 retail/reference callback projections. | Link calls through update/collision/ANM reclamation; prove fixed trig helper results; extend ranks 4--5 and the other shot routes. |
 | Effects | Retirement clears only `inUseFlag`; spawn does not clear all motion fields. Spell-card effects can reuse `unk_15c` and `angleRelated`, and callback-specific fields have different initialization rules. | Only active slots and allocator cursor are hashed. | **Open counterexample to closure:** include a dormant reuse shadow, canonicalize allocation with a proved refinement, or strengthen the reachable-state invariant. |
 
 The Effects row is enough to reject a claim that revision 0.2 is a Markov state

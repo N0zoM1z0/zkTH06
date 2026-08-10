@@ -150,6 +150,17 @@ checks every individual timer argument.  The slice stops before bullet-slot
 allocation and character-specific callback geometry; those become a separate
 refinement rather than an implicit assumption about ``shooting.''
 
+The next local refinement enters \code{SpawnBullets} with the complete
+80-entry state array and the four non-laser fields that the callback leaves
+untouched.  For Reimu A ranks 1--3 it derives the power row, timer gate,
+lowest-free-slot choice, and initialized geometry.  Position addition reuses
+the integer PC24 model.  The five trigonometric result pairs are retained as
+raw constants bound to the pinned retail table and trace rather than recomputed
+with host \code{libm}.  Each vector pre-state is independently observed at the
+retail callback; consequently the commuting claim is local to one call.
+Linking calls through bullet motion, collision, ANM termination, and slot
+reclamation is an explicit later refinement obligation.
+
 Berkeley SoftFloat Release 3e is used as an independent executable oracle for
 the first arithmetic-boundary experiments~\cite{hauser-softfloat3e}.  Its
 \code{extF80\_roundingPrecision = 64} setting denotes precision equivalent to

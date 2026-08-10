@@ -1,6 +1,6 @@
 # M0 replay differential runner progress
 
-Last updated: 2026-08-09
+Last updated: 2026-08-10
 
 ## Implemented
 
@@ -78,6 +78,12 @@ Last updated: 2026-08-09
   33-source-anchor audit, 46-field retail/reference comparison, 1,999-step
   vector with 1,590 callback requests, and third tracked OpenVM proof bind this
   layer through focused/unfocused callback dispatch.
+- A local Reimu-A bullet-spawn refinement for power ranks 1--3. An address-bound
+  retail hook and reference trace compare complete 80-slot pre/post state,
+  dormant carry, initialized geometry/timers, and the ANM request projection at
+  1,590 calls. A 56-instruction/31-source-anchor static audit, fixed-width
+  vector, Rust transition, and fourth OpenVM application proof cover all 422
+  initialized bullets without host floating point or trigonometry.
 
 Compatibility playback intentionally restores every per-stage replay snapshot,
 matching shipped playback. It is an oracle-development mode, not the future
@@ -102,7 +108,9 @@ fields, six enclosing-state fields, and six shooting fields match exactly:
 - the configured framerate multiplier, respawn timer, active-bomb flag, and
   invulnerability timer previous/subframe/current words; and
 - GUI current-message state, Player focus and previous input, and fire-timer
-  previous/subframe/current words.
+  previous/subframe/current words; and
+- the structured `Player::SpawnBullets` entry/exit projection when a callback
+  occurs, including all 80 slot states and active bullet details.
 
 This interval exercises 27 distinct input masks, advances RNG generation from
 2 to 3,555, and reaches score 767,990. At all 2,000 retail anchors the x87
@@ -293,6 +301,50 @@ character/shot callback geometry, power-dependent patterns, and existing
 bullet update/collision effects remain outside the transition. The static
 audit also leaves source/compiler correspondence, complete writer
 noninterference, and Rust refinement as explicit obligations.
+
+## Local Player bullet-spawn proof gate
+
+The next refinement enters the Reimu-A callback and returns at the
+`SpawnBullets` call boundary. The retail probe is pinned to entry `0x00429820`
+and its unique caller return `0x0042978b`. The matching reference scope records
+complete pre/post arrays for 80 slots, four non-laser dormant carry fields,
+active geometry and timers, player/orb positions, and the requested/first-tick
+ANM projection. Across the same 2,000-frame prefix, all 1,590 calls match and
+422 bullets are initialized. Pre-call occupancy reaches 24 of 80 slots, so no
+observed callback is capacity-truncated.
+
+The `ZKPBV1` vector binds this finite oracle and a 56-instruction static audit.
+The Rust transition fails closed outside Reimu A power 0--31 and timer 0--29,
+scans the lowest unused slot exactly, preserves all callback-unwritten fields,
+and emits raw geometry. Position addition uses the integer PC24 model. The
+five velocity pairs are fixed raw outputs bound to the pinned table/trace;
+host trigonometry is not used and helper equivalence remains open.
+
+The fourth OpenVM guest receives each complete pre-call slot-state array,
+derives the allocations, and hashes every initialized bullet into its public
+statement. The full 1,590-call workload has a 197,180-byte private payload and
+public digest
+`bcb4548e9ab8772a1c4a2b05ef4b667995dbd98ac47d233cc6c889512e60283d`.
+
+| Spawn calls | Guest instructions | Metered cells |
+| ---: | ---: | ---: |
+| 1 | 8,918 | 378,104 |
+| 10 | 47,560 | 2,010,154 |
+| 100 | 449,480 | 18,882,447 |
+| 1,000 | 4,480,565 | 188,128,190 |
+| 1,590 | 7,394,181 | 309,751,316 |
+
+Application proving took 98.60 seconds and peaked at 51,626,064 KiB RSS;
+verification took 0.12 seconds. Exact commitment/public-digest checks pass and
+one-bit-wrong variants fail. The tracked bundle is
+[`evidence/openvm-player-bullets-1590-v1.json`](../evidence/openvm-player-bullets-1590-v1.json).
+
+This is a batch of local transitions, not an enclosing bullet subsystem. Each
+pre-state is independently observed. `UpdatePlayerBullets`, collision, ANM
+termination, and slot reclamation must next derive one call's reachable
+pre-state from preceding Player/bullet state. The proof also does not discharge
+compiler correspondence, trig-helper semantics, complete writer
+noninterference, ranks 4--5, or other character/shot routes.
 
 ## Local corpus result
 

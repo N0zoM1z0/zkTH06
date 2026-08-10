@@ -49,7 +49,7 @@
     "statement_preimage": "domain || input_payload || final_game_frame_le || final_x_bits_le || final_y_bits_le || final_life_state || final_flags || zero_u16 || final_life_timer_le || final_previous_input_le || zero_u16 || final_fire_previous_le || final_fire_current_le || final_spawn_call_count_le"
   },
   "source_bindings": {
-    "zkvm/Cargo.toml": "e696c4aa9e100962ce5f86a151041261339516aa299c4a55d9739247b3744a58",
+    "evidence/source/openvm-player-shooting-v1/zkvm-Cargo.toml": "e696c4aa9e100962ce5f86a151041261339516aa299c4a55d9739247b3744a58",
     "zkvm/player-motion/Cargo.toml": "8c859effb9b0f39bb84531819b12b4cb0bd8864fa9c7035308e49a46ead9ce48",
     "zkvm/player-motion/src/enclosing.rs": "630206d0e8d1987207e44b0d3772c8f84749ad6f615f0e7f360dd7184128c7c8",
     "zkvm/player-motion/src/lib.rs": "75b2b76638df83addee4bf6feb35cd321a370790739e635c54b3135ef9d21820",

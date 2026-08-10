@@ -1,0 +1,215 @@
+{
+  "type": "zkth06.openvm-player-bullets-proof",
+  "schema_version": 1,
+  "date_utc": "2026-08-10",
+  "backend": {
+    "name": "OpenVM",
+    "cargo_openvm_version": "2.0.1",
+    "cargo_openvm_revision": "b820b25baab6c5d9b055f64e0286b6b1058e707c",
+    "guest_target": "riscv32im-risc0-zkvm-elf",
+    "guest_toolchain": "nightly-2026-01-18",
+    "guest_rustc": "rustc 1.94.0-nightly (fe98ddcfc 2026-01-17)",
+    "vm_extensions": [
+      "rv32i",
+      "rv32m",
+      "io",
+      "sha2"
+    ]
+  },
+  "workload": {
+    "source_vector": "player-bullets-002677-2000-v1.bin",
+    "source_vector_bytes": 661664,
+    "source_vector_sha256": "2e0656c2f95df106f5305ceb42d6eb8822f639bb910d56e0d8c7f09882f2d51f",
+    "retail_target_executable_sha256": "9f76483c46256804792399296619c1274363c31cd8f1775fafb55106fb852245",
+    "replay_sha256": "01bc11b9226932bddeeeff675f1741b89b129f4c8820b3b1cf185a1cb19ad10f",
+    "retail_trace_sha256": "d084746ef9713d5cc9ea9dc07c78360e53879a321b1b61c8df536125e12be49d",
+    "reference_trace_sha256": "b36b854f21bcc14bb72d4e1f3339e0bd0826ed7c35cd25011454550a9f926b43",
+    "retail_reference_comparison_sha256": "7fd6fdfea213dd1dd1a3041e0a44fa1a5177e3f5b9b1a7716223368a545ed50e",
+    "static_audit_sha256": "e48961be7018a4f0fd93332065f080306287f4709bd04f62f3c66d92780237b5",
+    "static_audit_sealed_digest": "055bb1c0ceee0e464a6dc1208a357d824d136ed1c9ba3b54696229ea09969ba2",
+    "profile": "reimu-a-ranks-1-through-3-zero-dormant-carry",
+    "source_frames": 2000,
+    "character": 0,
+    "shot_type": 0,
+    "maximum_rank": 3,
+    "profile_flags": 1,
+    "spawn_calls": 1590,
+    "initialized_bullets": 422,
+    "rank_call_counts": {
+      "1": 953,
+      "2": 324,
+      "3": 313
+    },
+    "zero_allocation_calls": 1272,
+    "maximum_pre_call_active_slots": 24,
+    "selected_last_game_frame": 1869,
+    "input_payload_bytes": 197180,
+    "input_payload_sha256": "18f1443405e0a11c44e42230baa711d16e5e8f1bb1262235d3c5469b3f76b1fb",
+    "expected_geometry_sha256": "f5aaa5467dcec6e4a3af1670b8f46aea1fbc7e97cf2c9c155f8f8c8a629123fe",
+    "statement_domain_ascii": "zkTH06/openvm/player-bullets/v1",
+    "statement_domain_nul_terminated": true,
+    "output_domain_ascii": "zkTH06/player-bullets/output/v1",
+    "output_domain_nul_terminated": true,
+    "expected_statement_sha256": "bcb4548e9ab8772a1c4a2b05ef4b667995dbd98ac47d233cc6c889512e60283d",
+    "statement_preimage": "domain || input_payload || selected_last_game_frame_le || spawn_calls_le || initialized_bullets_le || rank1_calls_le || rank2_calls_le || rank3_calls_le || zero_allocation_calls_le || maximum_pre_call_active_slots_le || character || shot_type || maximum_rank || profile_flags || geometry_sha256"
+  },
+  "source_bindings": {
+    "zkvm/Cargo.toml": "af658ce170a07e4ee55bd5ec2e526533f42c9829b771ff2da3080014c4d0da9b",
+    "zkvm/player-motion/Cargo.toml": "8c859effb9b0f39bb84531819b12b4cb0bd8864fa9c7035308e49a46ead9ce48",
+    "zkvm/player-motion/src/pc24.rs": "a8960adeec05c5ddaf5343902ae50895a8db9e030f77f5d5c5d664985b84945e",
+    "zkvm/player-bullets/Cargo.toml": "0a75c59c7d4256a962236cd5bb90d924e6cb1a3c21ff9dfd2d506d788236fc30",
+    "zkvm/player-bullets/src/lib.rs": "6808d5b51001e542f1c0a71cdee1dcd125c3dc12682bb08d8495f1e6adf4b328",
+    "zkvm/player-bullets-openvm/Cargo.lock": "acadc539c37ca588725a4b278b86fed8dcddf0c960e5fe52e1e4a08f1bfe68ef",
+    "zkvm/player-bullets-openvm/Cargo.toml": "564a577a6f3f52db30087b2ceaba4a5b7f3a64ba33abcc9994270496c9d83e84",
+    "zkvm/player-bullets-openvm/openvm.toml": "66176cd349514666978faed7a789df0653eced83be1a2bcc70b0b5cc2c06ffcc",
+    "zkvm/player-bullets-openvm/src/main.rs": "9aec36704029bcf1bd39347c499c90cf2bceb8a69264d63c8b2148c39ccaf6ab",
+    "tools/build_player_bullets_openvm_input.py": "682dc0fd811497cba488995af13bae03052ef646d4788de61bf17207bf32ae3d"
+  },
+  "evidence_bindings": {
+    "arithmetic/player-bullets-v1.json": "e48961be7018a4f0fd93332065f080306287f4709bd04f62f3c66d92780237b5",
+    "evidence/player-bullets-002677-2000-v1.bin": "2e0656c2f95df106f5305ceb42d6eb8822f639bb910d56e0d8c7f09882f2d51f",
+    "evidence/player-bullets-002677-2000-v1.json": "cbe121a19f076db0c03330f96c6748165bae98cc159d6b5c072e55ad718e0e9c",
+    "evidence/retail-reference-002677-2000-player-bullets-v1.json": "7fd6fdfea213dd1dd1a3041e0a44fa1a5177e3f5b9b1a7716223368a545ed50e",
+    "tools/build_player_bullets_vector.py": "be7b185396908e71ef939750e9a36971b17a48a0de96f26b0422d2e5d0dd8030",
+    "tools/player_bullets_audit.py": "e2e4df9fa7580f89bdb1ab4cba4ebd8efdae4ddde87bea4e0c76cffe4eae90e4"
+  },
+  "artifacts": {
+    "guest_elf": {
+      "bytes": 33364,
+      "sha256": "45b3b79ef410cbf242c140b4ffee2b11f17b38f1af4d14d6312836e26e9375eb",
+      "tracked": false
+    },
+    "vm_executable": {
+      "path": "openvm-player-bullets-v1.vmexe",
+      "bytes": 244927,
+      "sha256": "27174cfae33c9d7dd9993eac4e64d17f7feef31ec49bb04ece335d9e796084a0",
+      "app_exe_commit": "0x0017c4d129bdb19e255e48bed2cc53f4b5bade6ff00b4c9e799e2d9928648796"
+    },
+    "app_proving_key": {
+      "bytes": 242775,
+      "sha256": "4e50cc10cecc2d74728d09fce80e583ddd3ff86602ce38e6e3107a77e18a86bf",
+      "tracked": false,
+      "reason": "deterministically regenerable and not required for verification"
+    },
+    "app_verifying_key": {
+      "path": "openvm-player-bullets-v1.app.vk",
+      "bytes": 241614,
+      "sha256": "09b509a234f028b4f251779a26adf4d87b66d40e07174f0f5e3a2d9782de958b"
+    },
+    "app_commit_descriptor": {
+      "path": "openvm-player-bullets-v1.app-commit.json",
+      "bytes": 182,
+      "sha256": "7ccdeb0305d567e047ba70108f011ab3600cb8d38a28941e7a266baa114090e5",
+      "note": "OpenVM v2.0.1 verify app consumes app_exe_commit only; app_vm_commit is canonical zero"
+    },
+    "app_proof": {
+      "path": "openvm-player-bullets-1590-v1.app.proof",
+      "bytes": 946892,
+      "sha256": "e0db1973553ea54066aae0bb50041bb28490ad187189f0305a3fa0edf578698c"
+    }
+  },
+  "meter": [
+    {
+      "spawn_calls": 1,
+      "instructions": 8918,
+      "cells": 378104,
+      "statement_sha256": "f50e58026ae2250c88aef575ae37681732213aa05c1a983804662163d87e2ab4"
+    },
+    {
+      "spawn_calls": 10,
+      "instructions": 47560,
+      "cells": 2010154,
+      "statement_sha256": "e0d4fd396c2e1af1203158897d5120107538b95f90a4a557a10a24bcf1bde5d2"
+    },
+    {
+      "spawn_calls": 100,
+      "instructions": 449480,
+      "cells": 18882447,
+      "statement_sha256": "3f0d4f0afb5c1b29ac3313d97320c6864e17f4bbfb15156b31ef12689d851c15"
+    },
+    {
+      "spawn_calls": 1000,
+      "instructions": 4480565,
+      "cells": 188128190,
+      "statement_sha256": "897c1fa039f422f7d9a99cc590d61e71658522fb968f2657444825ae3be3a39b"
+    },
+    {
+      "spawn_calls": 1590,
+      "instructions": 7394181,
+      "cells": 309751316,
+      "statement_sha256": "bcb4548e9ab8772a1c4a2b05ef4b667995dbd98ac47d233cc6c889512e60283d"
+    }
+  ],
+  "public_values_audit": {
+    "method": "OpenVM v2.0.1 SDK deserialization as ContinuationVmProof<SC>",
+    "tool_source_bindings": {
+      "tools/openvm-proof-inspect/Cargo.lock": "cb328a765cb2214d7b6284c9eb769cb952815242e356a12f656aa8a40fef332a",
+      "tools/openvm-proof-inspect/Cargo.toml": "5707b336099df1467ce2a7121439c1c46ce7eef0d0a18f9801b4979fbc1ff964",
+      "tools/openvm-proof-inspect/src/main.rs": "524b728225089418f27b147374f64534948c79c1d673a5dbee07a916cce732ec"
+    },
+    "decoded_bytes": [
+      188,
+      180,
+      84,
+      142,
+      154,
+      184,
+      119,
+      42,
+      28,
+      74,
+      43,
+      5,
+      239,
+      75,
+      102,
+      121,
+      149,
+      219,
+      217,
+      138,
+      196,
+      125,
+      35,
+      60,
+      198,
+      200,
+      137,
+      81,
+      46,
+      96,
+      40,
+      61
+    ],
+    "matches_expected_statement_sha256": true,
+    "one_bit_wrong_expected_digest_rejected": true
+  },
+  "proving": {
+    "elapsed_seconds": 98.60,
+    "user_cpu_seconds": 2994.97,
+    "system_cpu_seconds": 312.12,
+    "cpu_utilization_percent": 3354,
+    "max_rss_kib": 51626064,
+    "exit_status": 0
+  },
+  "verification": {
+    "elapsed_seconds": 0.12,
+    "expected_executable_commit_accepted": true,
+    "one_bit_wrong_executable_commit_rejected": true,
+    "public_statement_digest_matches": true,
+    "one_bit_wrong_public_digest_rejected": true
+  },
+  "design_iteration": {
+    "previous_shooting_payload_bytes": 4018,
+    "bullet_spawn_payload_bytes": 197180,
+    "payload_increase_bytes": 193162,
+    "previous_shooting_instructions": 5468598,
+    "bullet_spawn_instructions": 7394181,
+    "instruction_increase": 1925583,
+    "previous_shooting_cells": 211737944,
+    "bullet_spawn_cells": 309751316,
+    "cell_increase": 98013372,
+    "added_initialized_bullet_outputs": 422
+  },
+  "claim_boundary": "This proof executes 1,590 independently observed Reimu-A SpawnBullets pre-states from the selected 2,000-frame replay prefix. It derives ranks 1-3, timer gates, lowest-free-slot allocation, carried fields, raw binary32 geometry, and a public digest covering all 422 initialized bullets. The retail/reference oracle compares 47 top-level fields and complete nested pre/post slot projections; the static audit pins 56 instruction roles. The fixed trigonometric outputs are trace- and table-bound rather than proved from the retail helper. Because UpdatePlayerBullets, ANM reclamation, and Enemy collision are not linked between calls, this is not an enclosing cross-frame bullet-state proof, a proof of compiler correspondence, or complete writer noninterference. Other shot routes, ranks 4-5, laser paths, collision, bomb execution, item interaction, and whole-game state remain outside the proved transition."
+}

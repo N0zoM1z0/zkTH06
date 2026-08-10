@@ -24,6 +24,8 @@ import gdb
 SCHEMA_VERSION = 1
 TARGET_SHA256 = "9f76483c46256804792399296619c1274363c31cd8f1775fafb55106fb852245"
 FRAME_BOUNDARY = 0x00420858
+SPAWN_BULLETS = 0x00429820
+SPAWN_BULLETS_RETURN = 0x0042978B
 MAIN_MENU_UPDATE = 0x0043579F
 CONTROLLER_GET_INPUT = 0x0041D820
 TIMING_LOOP_START = 0x00420960
@@ -31,6 +33,8 @@ TIMING_LOOP_END = 0x00420990
 G_LAST_FRAME_TIME = 0x006C6BF8
 
 EXPECTED_FRAME_BYTES = bytes.fromhex("89 45 fc")
+EXPECTED_SPAWN_BYTES = bytes.fromhex("55 8b ec")
+EXPECTED_SPAWN_RETURN_BYTES = bytes.fromhex("83 c4 08")
 EXPECTED_MENU_BYTES = bytes.fromhex("55 8b ec")
 EXPECTED_CONTROLLER_BYTES = bytes.fromhex("55 8b ec 81 ec 10")
 ZERO_CONTROLLER_BYTES = bytes.fromhex("b8 00 00 00 00 c3")
@@ -96,6 +100,29 @@ PLAYER_INVULNERABILITY_TIMER_SUBFRAME = G_PLAYER + 0x75B8
 PLAYER_INVULNERABILITY_TIMER_CURRENT = G_PLAYER + 0x75BC
 PLAYER_BOMB_IS_IN_USE = G_PLAYER + 0x75C8
 
+PLAYER_ORB_0 = G_PLAYER + 0x4A0
+PLAYER_ORB_1 = G_PLAYER + 0x4AC
+PLAYER_BULLETS = G_PLAYER + 0xA28
+PLAYER_BULLET_COUNT = 80
+PLAYER_BULLET_SIZE = 0x158
+
+ANM_TIMER = 0x030
+ANM_FLAGS = 0x080
+ANM_POS = 0x090
+ANM_ACTIVE_SPRITE = 0x0B0
+ANM_FILE_INDEX = 0x0B4
+PLAYER_BULLET_POSITION = 0x110
+PLAYER_BULLET_SIZE_VECTOR = 0x11C
+PLAYER_BULLET_VELOCITY = 0x128
+PLAYER_BULLET_SIDEWAYS_MOTION = 0x130
+PLAYER_BULLET_UNK_134 = 0x134
+PLAYER_BULLET_TIMER = 0x140
+PLAYER_BULLET_DAMAGE = 0x14C
+PLAYER_BULLET_STATE = 0x14E
+PLAYER_BULLET_TYPE = 0x150
+PLAYER_BULLET_UNK_152 = 0x152
+PLAYER_BULLET_SPAWN_POSITION = 0x154
+
 MENU_GAME_STATE = G_MAIN_MENU + 0x81F0
 MENU_STATE_TIMER = G_MAIN_MENU + 0x81F4
 MENU_IDLE_FRAMES = G_MAIN_MENU + 0x81F8
@@ -141,6 +168,9 @@ class Memory:
     def u16(self, address: int) -> int:
         return int.from_bytes(self.read(address, 2), "little")
 
+    def i16(self, address: int) -> int:
+        return int.from_bytes(self.read(address, 2), "little", signed=True)
+
     def u32(self, address: int) -> int:
         return int.from_bytes(self.read(address, 4), "little")
 
@@ -179,6 +209,12 @@ if not TIMING_LOOP_START <= pc <= TIMING_LOOP_END:
 if memory.i32(MENU_GAME_STATE) != STATE_MAIN_MENU:
     raise RuntimeError("retail process did not reach the initialized main menu")
 require_bytes(FRAME_BOUNDARY, EXPECTED_FRAME_BYTES, "post-calc anchor")
+require_bytes(SPAWN_BULLETS, EXPECTED_SPAWN_BYTES, "Player::SpawnBullets entry")
+require_bytes(
+    SPAWN_BULLETS_RETURN,
+    EXPECTED_SPAWN_RETURN_BYTES,
+    "Player::SpawnBullets return site",
+)
 require_bytes(MAIN_MENU_UPDATE, EXPECTED_MENU_BYTES, "main-menu update")
 require_bytes(CONTROLLER_GET_INPUT, EXPECTED_CONTROLLER_BYTES, "controller input")
 
@@ -231,7 +267,99 @@ def inject_shoot() -> None:
     memory.put_u32(G_INPUT_HOLD_FRAMES, 0)
 
 
+def raw_vec(address: int, count: int) -> list[str]:
+    return [f"0x{memory.u32(address + index * 4):08x}" for index in range(count)]
+
+
+def capture_active_player_bullets() -> tuple[
+    list[int], list[dict[str, object]], list[dict[str, object]]
+]:
+    states: list[int] = []
+    active: list[dict[str, object]] = []
+    carry: list[dict[str, object]] = []
+    for slot in range(PLAYER_BULLET_COUNT):
+        bullet = PLAYER_BULLETS + slot * PLAYER_BULLET_SIZE
+        state = memory.i16(bullet + PLAYER_BULLET_STATE)
+        states.append(state)
+        carry.append(
+            {
+                "sideways_motion_bits": f"0x{memory.u32(bullet + PLAYER_BULLET_SIDEWAYS_MOTION):08x}",
+                "unk_134_x_bits": f"0x{memory.u32(bullet + PLAYER_BULLET_UNK_134):08x}",
+                "unk_152": memory.i16(bullet + PLAYER_BULLET_UNK_152),
+                "spawn_position_idx": memory.i16(
+                    bullet + PLAYER_BULLET_SPAWN_POSITION
+                ),
+            }
+        )
+        if state == 0:
+            continue
+        active.append(
+            {
+                "slot": slot,
+                "state": state,
+                "type": memory.i16(bullet + PLAYER_BULLET_TYPE),
+                "damage": memory.i16(bullet + PLAYER_BULLET_DAMAGE),
+                "spawn_position_idx": memory.i16(
+                    bullet + PLAYER_BULLET_SPAWN_POSITION
+                ),
+                "unk_152": memory.i16(bullet + PLAYER_BULLET_UNK_152),
+                "position_bits": raw_vec(bullet + PLAYER_BULLET_POSITION, 3),
+                "size_bits": raw_vec(bullet + PLAYER_BULLET_SIZE_VECTOR, 3),
+                "velocity_bits": raw_vec(bullet + PLAYER_BULLET_VELOCITY, 2),
+                "sideways_motion_bits": f"0x{memory.u32(bullet + PLAYER_BULLET_SIDEWAYS_MOTION):08x}",
+                "unk_134_bits": raw_vec(bullet + PLAYER_BULLET_UNK_134, 3),
+                "timer_previous": memory.i32(bullet + PLAYER_BULLET_TIMER),
+                "timer_subframe_bits": f"0x{memory.u32(bullet + PLAYER_BULLET_TIMER + 4):08x}",
+                "timer_current": memory.i32(bullet + PLAYER_BULLET_TIMER + 8),
+                "sprite_position_bits": raw_vec(bullet + ANM_POS, 3),
+                "sprite_timer_previous": memory.i32(bullet + ANM_TIMER),
+                "sprite_timer_subframe_bits": f"0x{memory.u32(bullet + ANM_TIMER + 4):08x}",
+                "sprite_timer_current": memory.i32(bullet + ANM_TIMER + 8),
+                "sprite_flags": memory.u32(bullet + ANM_FLAGS),
+                "sprite_active_index": memory.i16(bullet + ANM_ACTIVE_SPRITE),
+                "sprite_anm_file_index": memory.i16(bullet + ANM_FILE_INDEX),
+            }
+        )
+    return states, active, carry
+
+
+def capture_spawn_side() -> dict[str, object]:
+    states, active, carry = capture_active_player_bullets()
+    return {"slot_states": states, "active_slots": active, "slot_carry": carry}
+
+
+pending_spawn: dict[str, object] | None = None
+
+
+def capture_spawn_entry() -> None:
+    global pending_spawn
+    if pending_spawn is not None:
+        raise RuntimeError("nested or unconsumed Player::SpawnBullets event")
+    esp = int(gdb.parse_and_eval("$esp"))
+    player = memory.u32(esp + 4)
+    timer = memory.u32(esp + 8)
+    if player != G_PLAYER or timer >= 30:
+        raise RuntimeError(
+            f"unexpected Player::SpawnBullets arguments: player=0x{player:08x} timer={timer}"
+        )
+    pending_spawn = {
+        "timer": timer,
+        "current_power": memory.u16(GM_CURRENT_POWER),
+        "is_focus": memory.u8(PLAYER_IS_FOCUS),
+        "player_position_bits": raw_vec(PLAYER_X, 3),
+        "orb_position_bits": [raw_vec(PLAYER_ORB_0, 3), raw_vec(PLAYER_ORB_1, 3)],
+        "before": capture_spawn_side(),
+    }
+
+
+def capture_spawn_return() -> None:
+    if pending_spawn is None or "after" in pending_spawn:
+        raise RuntimeError("unpaired Player::SpawnBullets return")
+    pending_spawn["after"] = capture_spawn_side()
+
+
 def capture_frame(index: int) -> None:
+    global pending_spawn
     game_frame = memory.u32(GM_GAME_FRAMES)
     emit(
         {
@@ -288,8 +416,12 @@ def capture_frame(index: int) -> None:
             "framerate_multiplier_bits": f"0x{memory.u32(SUPERVISOR_FRAMERATE_MULTIPLIER):08x}",
             "x87_control_word": f"0x{int(gdb.parse_and_eval('$fctrl')) & 0xffff:04x}",
             "mxcsr": f"0x{int(gdb.parse_and_eval('$mxcsr')) & 0xffffffff:08x}",
+            "player_spawn": pending_spawn,
         }
     )
+    if pending_spawn is not None and "after" not in pending_spawn:
+        raise RuntimeError("frame boundary reached before Player::SpawnBullets returned")
+    pending_spawn = None
 
 
 # Keep all control flow outside Breakpoint.stop().  Continuing automatically
@@ -298,6 +430,10 @@ def capture_frame(index: int) -> None:
 # makes every sampled instruction boundary unambiguous.
 menu_breakpoint = gdb.Breakpoint(f"*0x{MAIN_MENU_UPDATE:08x}", internal=False)
 frame_breakpoint = gdb.Breakpoint(f"*0x{FRAME_BOUNDARY:08x}", internal=False)
+spawn_breakpoint = gdb.Breakpoint(f"*0x{SPAWN_BULLETS:08x}", internal=False)
+spawn_return_breakpoint = gdb.Breakpoint(
+    f"*0x{SPAWN_BULLETS_RETURN:08x}", internal=False
+)
 replay_selected = False
 frame_count = 0
 
@@ -316,6 +452,12 @@ while frame_count < FRAME_LIMIT:
             menu_breakpoint.delete()
             gdb.write("zkTH06: injected replay-stage confirmation\n")
         continue
+    if pc == SPAWN_BULLETS:
+        capture_spawn_entry()
+        continue
+    if pc == SPAWN_BULLETS_RETURN:
+        capture_spawn_return()
+        continue
     if pc != FRAME_BOUNDARY:
         continue
     if memory.i32(SUPERVISOR_CUR_STATE) != 2:
@@ -332,6 +474,8 @@ while frame_count < FRAME_LIMIT:
 if menu_breakpoint.is_valid():
     menu_breakpoint.delete()
 frame_breakpoint.delete()
+spawn_breakpoint.delete()
+spawn_return_breakpoint.delete()
 output.close()
 gdb.execute("detach")
 gdb.execute("quit")

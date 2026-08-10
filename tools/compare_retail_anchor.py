@@ -202,6 +202,34 @@ def write_report(path: Path, report: dict[str, Any]) -> None:
     path.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
 
+def first_nested_difference(left: Any, right: Any, path: str = "player_spawn") -> dict[str, Any] | None:
+    if type(left) is not type(right):
+        return {"path": path, "retail": left, "reference": right}
+    if isinstance(left, dict):
+        if left.keys() != right.keys():
+            return {
+                "path": path,
+                "retail_keys": sorted(left),
+                "reference_keys": sorted(right),
+            }
+        for key in left:
+            difference = first_nested_difference(left[key], right[key], f"{path}.{key}")
+            if difference is not None:
+                return difference
+        return None
+    if isinstance(left, list):
+        if len(left) != len(right):
+            return {"path": path, "retail_length": len(left), "reference_length": len(right)}
+        for index, (left_item, right_item) in enumerate(zip(left, right)):
+            difference = first_nested_difference(left_item, right_item, f"{path}[{index}]")
+            if difference is not None:
+                return difference
+        return None
+    if left != right:
+        return {"path": path, "retail": left, "reference": right}
+    return None
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("retail", type=Path)
@@ -217,6 +245,11 @@ def main() -> int:
         action="store_true",
         help="also compare the enclosing profile and Player shooting cadence fields",
     )
+    parser.add_argument(
+        "--player-bullets",
+        action="store_true",
+        help="also compare address-bound Player::SpawnBullets pre/post slot projections",
+    )
     args = parser.parse_args()
 
     retail_rows = read_jsonl(args.retail)
@@ -230,10 +263,12 @@ def main() -> int:
         raise ValueError("retail trace target mismatch")
 
     retail_frames = [row for row in retail_rows[1:] if row.get("type") == FRAME_KIND]
-    enclosing_player = args.enclosing_player or args.player_shooting
+    player_shooting = args.player_shooting or args.player_bullets
+    enclosing_player = args.enclosing_player or player_shooting
     fields = COMMON_FIELDS + (ENCLOSING_PLAYER_FIELDS if enclosing_player else ())
-    if args.player_shooting:
+    if player_shooting:
         fields += PLAYER_SHOOTING_FIELDS
+    compared_fields = fields + (("player_spawn",) if args.player_bullets else ())
     report: dict[str, Any] = {
         "type": "zkth06.retail-reference-comparison",
         "schema_version": 1,
@@ -254,13 +289,15 @@ def main() -> int:
         "gdb_version": header.get("gdb_version"),
         "config_sha256": header.get("config_sha256"),
         "comparison_profile": (
-            "player-shooting"
-            if args.player_shooting
+            "player-bullets"
+            if args.player_bullets
+            else "player-shooting"
+            if player_shooting
             else "enclosing-player"
             if enclosing_player
             else "base"
         ),
-        "compared_fields": list(fields),
+        "compared_fields": list(compared_fields),
         "retail_x87_control_words": sorted(
             {str(row["x87_control_word"]) for row in retail_frames}
         ),
@@ -303,12 +340,18 @@ def main() -> int:
         if int(retail.get("index", -1)) != index:
             raise ValueError(f"non-contiguous retail index at row {index}")
         lhs = normalize_retail(retail, fields)
-        rhs = normalize_reference(reference, enclosing_player, args.player_shooting)
+        rhs = normalize_reference(reference, enclosing_player, player_shooting)
         differing = {
             key: {"retail": lhs[key], "reference": rhs[key]}
             for key in lhs
             if lhs[key] != rhs[key]
         }
+        if args.player_bullets:
+            nested_difference = first_nested_difference(
+                retail.get("player_spawn"), reference.get("player_spawn")
+            )
+            if nested_difference is not None:
+                differing["player_spawn"] = nested_difference
         if differing:
             mismatch = {
                 "first_mismatch_index": index,

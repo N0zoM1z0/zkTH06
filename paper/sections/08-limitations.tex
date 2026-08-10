@@ -2,7 +2,7 @@
 
 \begin{itemize}
   \item \textbf{Partial retail equivalence only.}  A shipped-executable Wine
-  probe now agrees with the Linux reference for 2,000 frames and a 46-field
+  probe now agrees with the Linux reference for 2,000 frames and a 47-field
   raw projection on one replay.  It does not yet export the eleven canonical
   subsystem payloads, cover later stages or the replay matrix, prove that its
   input/timing interventions are noninterfering, or establish whole-state and
@@ -13,9 +13,12 @@
   consecutive retail-derived steps, but the profile fixes a post-calc anchor
   and excludes collision death, spawning/respawn, bomb callbacks, external
   time-stop writes, non-full-speed timers, and exceptional/subnormal arithmetic,
-  and it does not model hitbox/orb/animation side effects.  Shooting stops at
-  \code{SpawnBullets} dispatch and does not model bullet slots, character/shot
-  geometry, power-dependent patterns, or bullet collision.  Its dyadic rounding
+  and it does not model hitbox/orb/animation side effects.  The cadence layer
+  stops at \code{SpawnBullets} dispatch.  A separate local callback layer does
+  model all 80 slot states and Reimu-A ranks 1--3 initialized geometry, but its
+  1,590 pre-states are independently observed rather than derived through
+  bullet motion, ANM reclamation, or collision.  It does not cover ranks 4--5,
+  the other shot routes, laser paths, or bullet collision.  Its dyadic rounding
   algorithm, reachable-domain checks, interior x87 control state, retail
   instruction binding, source-to-Rust correspondence, and projection
   noninterference are not yet machine-checked.  A tracked OpenVM application
@@ -31,6 +34,9 @@
   The shooting extension additionally fixes the dialogue predicate false for
   this interval; the 2,000 observed false values do not prove dialogue
   noninterference or writer completeness.
+  The bullet-spawn extension supplies complete pre-call slot arrays as private
+  data, so it proves local allocation/geometry but does not close a persistent
+  bullet-state witness boundary.
   The proof therefore cannot establish replay authenticity, survival, stage
   completion, or whole-game execution.  Application-proof privacy and a
   zero-knowledge property were not evaluated; the current vector is public.
