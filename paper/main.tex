@@ -54,7 +54,13 @@ fourth guest refines 1,590 local Reimu-A callback invocations through the
 initialized bullets, executes 7,394,181 instructions at 309,751,316 cells, and
 produces a tracked proof in 98.60 seconds.  The independently observed pre-call
 slot arrays are not yet linked across frames, so this remains a local function
-proof rather than an enclosing bullet-subsystem proof.  A
+proof rather than an enclosing bullet-subsystem proof.  A fifth guest closes
+that witness boundary through frame 207.  A sixth composes the first five
+Stage-1 enemies and crosses the first real collision at frame 208 using 438
+bytes of replay-only private input.  It derives 200 damage calls, the unique
+slot-2 collision, first-enemy death, target selection, and score 390 in
+19,787,280 instructions and 769,444,525 cells; its tracked application proof
+completes in 203.58 seconds and verifies in 0.22 seconds.  A
 hash-bound static audit attributes 5,980 x87
 instructions to mapped game functions and identifies direct transcendental,
 conversion-helper, store-boundary, and control-profile obligations.  These
@@ -82,8 +88,8 @@ Extraction and runtime-decoder binding remain open.  A sealed Linux probe
 observes 2,081 collected items without a range violation, but does not promote
 that corpus result into a proof.
 These results establish a first narrow retail anchor, fail-closed enclosing
-transition profile, and arithmetic proof surface only; the fixed post-calc
-anchor, collision/death/respawn, bombs, time-stop writers, exact x87
+transition profile through one Enemy death, and arithmetic proof surface only;
+the fixed post-calc anchor, Player death/respawn, bombs, time-stop writers, exact x87
 transcendental semantics, presentation-dependent state, and a complete
 retail canonical-subsystem exporter remain open equivalence gates.  This living paper
 records the research questions, implementation evidence, negative results, and

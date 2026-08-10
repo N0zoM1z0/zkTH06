@@ -5,6 +5,7 @@
 #include <cstdio>
 
 struct Player;
+struct ZunVec3;
 
 struct HeadlessPlayerBulletTrace
 {
@@ -53,6 +54,20 @@ struct HeadlessPlayerBulletUpdateTrace
     HeadlessPlayerBulletTrace after[80] = {};
 };
 
+struct HeadlessPlayerDamageTrace
+{
+    bool returned = false;
+    u32 enemyPositionBits[3] = {};
+    u32 enemyHitboxBits[3] = {};
+    u32 bombIsInUse = 0;
+    i32 damage = 0;
+    bool hitWithLaserDuringBomb = false;
+    HeadlessPlayerBulletTrace before[80] = {};
+    HeadlessPlayerBulletTrace after[80] = {};
+};
+
+constexpr size_t HEADLESS_PLAYER_DAMAGE_TRACE_CAPACITY = 256;
+
 struct HeadlessRuntime
 {
     bool enabled = false;
@@ -94,6 +109,9 @@ struct HeadlessRuntime
     const char *terminalReason = NULL;
     HeadlessPlayerSpawnTrace playerSpawnTrace;
     HeadlessPlayerBulletUpdateTrace playerBulletUpdateTrace;
+    HeadlessPlayerDamageTrace playerDamageTraces[HEADLESS_PLAYER_DAMAGE_TRACE_CAPACITY];
+    size_t playerDamageTraceCount = 0;
+    bool playerDamageTraceOverflow = false;
 
     bool ParseArguments(int argc, char *argv[]);
     bool PrintReplayInfo() const;
@@ -110,6 +128,8 @@ struct HeadlessRuntime
     void EndPlayerSpawnTrace(const Player *player);
     void BeginPlayerBulletUpdateTrace(const Player *player);
     void EndPlayerBulletUpdateTrace(const Player *player);
+    void BeginPlayerDamageTrace(const Player *player, const ZunVec3 *enemyPosition, const ZunVec3 *enemyHitbox);
+    void EndPlayerDamageTrace(const Player *player, i32 damage, bool hitWithLaserDuringBomb);
     bool WriteCanonicalState(const char *terminalReason);
     bool ShouldStopForHit() const;
     bool IsReplayComplete() const;

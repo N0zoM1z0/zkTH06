@@ -384,6 +384,7 @@ i32 Player::CalcDamageToEnemy(const ZunVec3 *enemyPos, const ZunVec3 *enemyHitbo
     ZunVec3 enemyBottomRight;
 
     damage = 0;
+    g_HeadlessRuntime.BeginPlayerDamageTrace(this, enemyPos, enemyHitboxSize);
 
     ZunVec3::SetVecCorners(&enemyTopLeft, &enemyBottomRight, enemyPos, enemyHitboxSize);
     bullet = &this->bullets[0];
@@ -497,6 +498,8 @@ i32 Player::CalcDamageToEnemy(const ZunVec3 *enemyPos, const ZunVec3 *enemyHitbo
             *hitWithLazerDuringBomb = true;
         }
     }
+    g_HeadlessRuntime.EndPlayerDamageTrace(
+        this, damage, hitWithLazerDuringBomb != NULL && *hitWithLazerDuringBomb);
     return damage;
 }
 

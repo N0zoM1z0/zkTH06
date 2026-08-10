@@ -19,11 +19,12 @@
   stops at \code{SpawnBullets} dispatch.  A separate local callback layer does
   model all 80 slot states and Reimu-A ranks 1--3 initialized geometry, but its
   1,590 pre-states are independently observed rather than derived through
-  bullet motion, ANM reclamation, or collision.  A shorter enclosing layer now
-  derives 206 consecutive rank-1 transitions from an empty pool through motion,
-  bounds reclamation, fixed ANM/timer behavior, and allocation, but deliberately
-  stops before the first Enemy collision at frame 208.  It does not cover ranks 4--5,
-  the other shot routes, laser paths, or bullet collision.  Its dyadic rounding
+  bullet motion, ANM reclamation, or collision.  One enclosing layer derives
+  206 consecutive rank-1 transitions from an empty pool through motion, bounds
+  reclamation, fixed ANM/timer behavior, and allocation.  A successor composes
+  five fixed early enemies and derives the first collision, Enemy death, target,
+  and score at frame 208.  It does not cover ranks 4--5, the other shot routes,
+  laser paths, enemy bullets, later ECL paths, or Player death.  Its dyadic rounding
   algorithm, reachable-domain checks, interior x87 control state, retail
   instruction binding, source-to-Rust correspondence, and projection
   noninterference are not yet machine-checked.  A tracked OpenVM application
@@ -40,9 +41,11 @@
   this interval; the 2,000 observed false values do not prove dialogue
   noninterference or writer completeness.
   The bullet-spawn extension supplies complete pre-call slot arrays as private
-  data.  The lifecycle extension removes that witness boundary only for its
-  206-transition collision-free prefix; it does not derive the frame-208
-  Enemy/ECL write or prove ANM-data and writer correspondence.
+  data.  The lifecycle extension removes that witness boundary for its
+  206-transition collision-free prefix, and the early-gameplay extension
+  derives the frame-208 Enemy/ECL write.  The latter still uses a finite
+  ECL-time-indexed x87 result table and does not prove ANM-data, transcendental,
+  omitted-shooting noninterference, or complete writer correspondence.
   The proof therefore cannot establish replay authenticity, survival, stage
   completion, or whole-game execution.  Application-proof privacy and a
   zero-knowledge property were not evaluated; the current vector is public.

@@ -312,6 +312,11 @@ def main() -> int:
         action="store_true",
         help="also compare complete post-calc Player-bullet slot projections",
     )
+    parser.add_argument(
+        "--enemy-collisions",
+        action="store_true",
+        help="also compare raw Enemy/ECL state and every CalcDamageToEnemy call boundary",
+    )
     args = parser.parse_args()
 
     retail_rows = read_jsonl(args.retail)
@@ -325,18 +330,25 @@ def main() -> int:
         raise ValueError("retail trace target mismatch")
 
     retail_frames = [row for row in retail_rows[1:] if row.get("type") == FRAME_KIND]
-    player_bullets = args.player_bullets or args.player_bullet_frames
+    player_bullet_frames = args.player_bullet_frames or args.enemy_collisions
+    player_bullets = args.player_bullets or player_bullet_frames
     player_shooting = args.player_shooting or player_bullets
     enclosing_player = args.enclosing_player or player_shooting
     fields = COMMON_FIELDS + (ENCLOSING_PLAYER_FIELDS if enclosing_player else ())
     if player_shooting:
         fields += PLAYER_SHOOTING_FIELDS
     compared_fields = fields + (("player_spawn",) if player_bullets else ())
-    if args.player_bullet_frames:
+    if player_bullet_frames:
         compared_fields += (
             "player_bullet_update",
             "player_last_enemy_hit_bits",
             "player_bullets_frame",
+        )
+    if args.enemy_collisions:
+        compared_fields += (
+            "enemies(raw-bit projection)",
+            "player_damage_calls",
+            "player_damage_trace_overflow",
         )
     ignored_draw_z_differences = [0]
     report: dict[str, Any] = {
@@ -359,8 +371,10 @@ def main() -> int:
         "gdb_version": header.get("gdb_version"),
         "config_sha256": header.get("config_sha256"),
         "comparison_profile": (
-            "player-bullet-frames"
-            if args.player_bullet_frames
+            "enemy-collisions"
+            if args.enemy_collisions
+            else "player-bullet-frames"
+            if player_bullet_frames
             else "player-bullets"
             if player_bullets
             else "player-shooting"
@@ -393,7 +407,7 @@ def main() -> int:
             ),
         },
     }
-    if args.player_bullet_frames:
+    if player_bullet_frames:
         report["semantic_projection_exclusions"] = [
             {
                 "path": DRAW_ONLY_UPDATE_INPUT,
@@ -436,7 +450,7 @@ def main() -> int:
             )
             if nested_difference is not None:
                 differing["player_spawn"] = nested_difference
-        if args.player_bullet_frames:
+        if player_bullet_frames:
             for nested_field in (
                 "player_bullet_update",
                 "player_last_enemy_hit_bits",
@@ -457,8 +471,35 @@ def main() -> int:
                 )
                 if nested_difference is not None:
                     differing[nested_field] = nested_difference
+        if args.enemy_collisions:
+            retail_enemies = [
+                {key: value for key, value in enemy.items() if key not in ("x", "y")}
+                for enemy in retail.get("enemies", [])
+            ]
+            reference_enemies = [
+                {key: value for key, value in enemy.items() if key not in ("x", "y")}
+                for enemy in reference.get("enemies", [])
+            ]
+            for nested_field, retail_nested, reference_nested in (
+                ("enemies", retail_enemies, reference_enemies),
+                (
+                    "player_damage_calls",
+                    retail.get("player_damage_calls"),
+                    reference.get("player_damage_calls"),
+                ),
+                (
+                    "player_damage_trace_overflow",
+                    retail.get("player_damage_trace_overflow"),
+                    reference.get("player_damage_trace_overflow"),
+                ),
+            ):
+                nested_difference = first_nested_difference(
+                    retail_nested, reference_nested, nested_field
+                )
+                if nested_difference is not None:
+                    differing[nested_field] = nested_difference
         if differing:
-            if args.player_bullet_frames:
+            if player_bullet_frames:
                 report["semantic_projection_exclusions"][0]["observed_differences"] = (
                     ignored_draw_z_differences[0]
                 )
@@ -487,10 +528,30 @@ def main() -> int:
             "first_mismatch": None,
         }
     )
-    if args.player_bullet_frames:
+    if player_bullet_frames:
         report["semantic_projection_exclusions"][0]["observed_differences"] = (
             ignored_draw_z_differences[0]
         )
+    if args.enemy_collisions:
+        all_damage_calls = [
+            call for frame in retail_frames for call in frame.get("player_damage_calls", [])
+        ]
+        damaging_frames = [
+            int(frame["game_frame"])
+            for frame in retail_frames
+            if any(int(call["damage"]) != 0 for call in frame.get("player_damage_calls", []))
+        ]
+        report["observed_enemy_collision_metrics"] = {
+            "damage_calls": len(all_damage_calls),
+            "damaging_calls": sum(int(call["damage"]) != 0 for call in all_damage_calls),
+            "first_damaging_game_frame": damaging_frames[0] if damaging_frames else None,
+            "maximum_active_enemies": max(
+                (len(frame.get("enemies", [])) for frame in retail_frames), default=0
+            ),
+            "trace_overflow_frames": sum(
+                bool(frame.get("player_damage_trace_overflow")) for frame in retail_frames
+            ),
+        }
     if args.report is not None:
         write_report(args.report, report)
     print(f"matched {len(retail_frames)} retail/reference anchor frames")

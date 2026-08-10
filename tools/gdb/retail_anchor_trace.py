@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import json
 import os
+import struct
 from pathlib import Path
 
 import gdb
@@ -28,6 +29,8 @@ SPAWN_BULLETS = 0x00429820
 SPAWN_BULLETS_RETURN = 0x0042978B
 UPDATE_PLAYER_BULLETS = 0x004291B0
 UPDATE_PLAYER_BULLETS_RETURN = 0x0042912C
+CALC_DAMAGE_TO_ENEMY = 0x004264B0
+CALC_DAMAGE_TO_ENEMY_RETURN = 0x004127D5
 MAIN_MENU_UPDATE = 0x0043579F
 CONTROLLER_GET_INPUT = 0x0041D820
 TIMING_LOOP_START = 0x00420960
@@ -39,6 +42,8 @@ EXPECTED_SPAWN_BYTES = bytes.fromhex("55 8b ec")
 EXPECTED_SPAWN_RETURN_BYTES = bytes.fromhex("83 c4 08")
 EXPECTED_UPDATE_BYTES = bytes.fromhex("55 8b ec")
 EXPECTED_UPDATE_RETURN_BYTES = bytes.fromhex("83 c4 04")
+EXPECTED_DAMAGE_BYTES = bytes.fromhex("55 8b ec")
+EXPECTED_DAMAGE_RETURN_BYTES = bytes.fromhex("89 45 f8")
 EXPECTED_MENU_BYTES = bytes.fromhex("55 8b ec")
 EXPECTED_CONTROLLER_BYTES = bytes.fromhex("55 8b ec 81 ec 10")
 ZERO_CONTROLLER_BYTES = bytes.fromhex("b8 00 00 00 00 c3")
@@ -51,6 +56,7 @@ G_CUR_FRAME_INPUT = 0x0069D904
 G_LAST_FRAME_INPUT = 0x0069D908
 G_INPUT_HOLD_FRAMES = 0x0069D910
 G_PLAYER = 0x006CA628
+G_ENEMY_MANAGER = 0x004B79C8
 G_MAIN_MENU = 0x006D46C0
 
 SUPERVISOR_CALC_COUNT = G_SUPERVISOR + 0x184
@@ -130,6 +136,24 @@ PLAYER_BULLET_STATE = 0x14E
 PLAYER_BULLET_TYPE = 0x150
 PLAYER_BULLET_UNK_152 = 0x152
 PLAYER_BULLET_SPAWN_POSITION = 0x154
+
+ENEMY_ARRAY = G_ENEMY_MANAGER + 0xED0
+ENEMY_COUNT = 256
+ENEMY_SIZE = 0xEC8
+ENEMY_CONTEXT = 0x990
+ENEMY_CONTEXT_TIMER = ENEMY_CONTEXT + 4
+ENEMY_CONTEXT_SUB_ID = ENEMY_CONTEXT + 0x48
+ENEMY_POSITION = 0xC6C
+ENEMY_HITBOX = 0xC78
+ENEMY_AXIS_SPEED = 0xC84
+ENEMY_ANGLE = 0xC90
+ENEMY_ANGULAR_VELOCITY = 0xC94
+ENEMY_SPEED = 0xC98
+ENEMY_ACCELERATION = 0xC9C
+ENEMY_LIFE = 0xCE4
+ENEMY_MAX_LIFE = 0xCE8
+ENEMY_SCORE = 0xCEC
+ENEMY_FLAGS = 0xE50
 
 MENU_GAME_STATE = G_MAIN_MENU + 0x81F0
 MENU_STATE_TIMER = G_MAIN_MENU + 0x81F4
@@ -229,6 +253,12 @@ require_bytes(
     EXPECTED_UPDATE_RETURN_BYTES,
     "Player::UpdatePlayerBullets return site",
 )
+require_bytes(CALC_DAMAGE_TO_ENEMY, EXPECTED_DAMAGE_BYTES, "Player::CalcDamageToEnemy entry")
+require_bytes(
+    CALC_DAMAGE_TO_ENEMY_RETURN,
+    EXPECTED_DAMAGE_RETURN_BYTES,
+    "Player::CalcDamageToEnemy EnemyManager return site",
+)
 require_bytes(MAIN_MENU_UPDATE, EXPECTED_MENU_BYTES, "main-menu update")
 require_bytes(CONTROLLER_GET_INPUT, EXPECTED_CONTROLLER_BYTES, "controller input")
 
@@ -283,6 +313,43 @@ def inject_shoot() -> None:
 
 def raw_vec(address: int, count: int) -> list[str]:
     return [f"0x{memory.u32(address + index * 4):08x}" for index in range(count)]
+
+
+def f32(address: int) -> float:
+    return struct.unpack("<f", memory.read(address, 4))[0]
+
+
+def capture_enemies() -> list[dict[str, object]]:
+    enemies: list[dict[str, object]] = []
+    for slot in range(ENEMY_COUNT):
+        enemy = ENEMY_ARRAY + slot * ENEMY_SIZE
+        flags = [memory.u8(enemy + ENEMY_FLAGS + index) for index in range(3)]
+        if flags[0] & 0x80 == 0:
+            continue
+        enemies.append(
+            {
+                "slot": slot,
+                "x": f32(enemy + ENEMY_POSITION),
+                "y": f32(enemy + ENEMY_POSITION + 4),
+                "life": memory.i32(enemy + ENEMY_LIFE),
+                "max_life": memory.i32(enemy + ENEMY_MAX_LIFE),
+                "score": memory.i32(enemy + ENEMY_SCORE),
+                "boss": bool(flags[1] & 0x08),
+                "ecl_sub": memory.u16(enemy + ENEMY_CONTEXT_SUB_ID),
+                "ecl_time": memory.i32(enemy + ENEMY_CONTEXT_TIMER + 8),
+                "ecl_timer_previous": memory.i32(enemy + ENEMY_CONTEXT_TIMER),
+                "ecl_timer_subframe_bits": f"0x{memory.u32(enemy + ENEMY_CONTEXT_TIMER + 4):08x}",
+                "position_bits": raw_vec(enemy + ENEMY_POSITION, 3),
+                "hitbox_bits": raw_vec(enemy + ENEMY_HITBOX, 3),
+                "axis_speed_bits": raw_vec(enemy + ENEMY_AXIS_SPEED, 3),
+                "angle_bits": f"0x{memory.u32(enemy + ENEMY_ANGLE):08x}",
+                "angular_velocity_bits": f"0x{memory.u32(enemy + ENEMY_ANGULAR_VELOCITY):08x}",
+                "speed_bits": f"0x{memory.u32(enemy + ENEMY_SPEED):08x}",
+                "acceleration_bits": f"0x{memory.u32(enemy + ENEMY_ACCELERATION):08x}",
+                "flags": flags,
+            }
+        )
+    return enemies
 
 
 def capture_active_player_bullets() -> tuple[
@@ -351,6 +418,8 @@ def capture_spawn_side() -> dict[str, object]:
 
 pending_spawn: dict[str, object] | None = None
 pending_bullet_update: dict[str, object] | None = None
+pending_damage: dict[str, object] | None = None
+frame_damage_calls: list[dict[str, object]] = []
 
 
 def capture_spawn_entry() -> None:
@@ -402,8 +471,57 @@ def capture_bullet_update_return() -> None:
     pending_bullet_update["after"] = capture_spawn_side()
 
 
+def capture_damage_entry() -> None:
+    global pending_damage
+    if pending_damage is not None:
+        raise RuntimeError("nested Player::CalcDamageToEnemy event")
+    esp = int(gdb.parse_and_eval("$esp"))
+    player = int(gdb.parse_and_eval("$ecx"))
+    enemy_position = memory.u32(esp + 4)
+    enemy_hitbox = memory.u32(esp + 8)
+    hit_with_laser = memory.u32(esp + 12)
+    if player != G_PLAYER:
+        raise RuntimeError(
+            f"unexpected Player::CalcDamageToEnemy this pointer: 0x{player:08x}"
+        )
+    relative = enemy_position - (ENEMY_ARRAY + ENEMY_POSITION)
+    if relative < 0 or relative % ENEMY_SIZE != 0 or relative // ENEMY_SIZE >= ENEMY_COUNT:
+        raise RuntimeError(
+            f"damage position does not belong to EnemyManager: 0x{enemy_position:08x}"
+        )
+    if enemy_hitbox != enemy_position + (ENEMY_HITBOX - ENEMY_POSITION):
+        raise RuntimeError("damage position/hitbox arguments do not share an Enemy")
+    pending_damage = {
+        "enemy_position_bits": raw_vec(enemy_position, 3),
+        "enemy_hitbox_bits": raw_vec(enemy_hitbox, 3),
+        "bomb_is_in_use": memory.u32(PLAYER_BOMB_IS_IN_USE),
+        "before": capture_spawn_side(),
+        "_hit_with_laser_address": hit_with_laser,
+    }
+
+
+def capture_damage_return() -> None:
+    global pending_damage
+    if pending_damage is None:
+        raise RuntimeError("unpaired Player::CalcDamageToEnemy return")
+    hit_with_laser = int(pending_damage.pop("_hit_with_laser_address"))
+    pending_damage.update(
+        {
+            "damage": int(gdb.parse_and_eval("$eax")) & 0xFFFF_FFFF,
+            "hit_with_laser_during_bomb": bool(
+                hit_with_laser != 0 and memory.u8(hit_with_laser) != 0
+            ),
+            "after": capture_spawn_side(),
+        }
+    )
+    if int(pending_damage["damage"]) >= 0x8000_0000:
+        pending_damage["damage"] = int(pending_damage["damage"]) - 0x1_0000_0000
+    frame_damage_calls.append(pending_damage)
+    pending_damage = None
+
+
 def capture_frame(index: int) -> None:
-    global pending_spawn, pending_bullet_update
+    global pending_spawn, pending_bullet_update, pending_damage, frame_damage_calls
     game_frame = memory.u32(GM_GAME_FRAMES)
     emit(
         {
@@ -464,14 +582,20 @@ def capture_frame(index: int) -> None:
             "player_bullet_update": pending_bullet_update,
             "player_last_enemy_hit_bits": raw_vec(PLAYER_LAST_ENEMY_HIT, 3),
             "player_bullets_frame": capture_spawn_side(),
+            "player_damage_calls": frame_damage_calls,
+            "player_damage_trace_overflow": False,
+            "enemies": capture_enemies(),
         }
     )
     if pending_spawn is not None and "after" not in pending_spawn:
         raise RuntimeError("frame boundary reached before Player::SpawnBullets returned")
     if pending_bullet_update is None or "after" not in pending_bullet_update:
         raise RuntimeError("frame boundary reached without a complete Player::UpdatePlayerBullets event")
+    if pending_damage is not None:
+        raise RuntimeError("frame boundary reached inside Player::CalcDamageToEnemy")
     pending_spawn = None
     pending_bullet_update = None
+    frame_damage_calls = []
 
 
 # Keep all control flow outside Breakpoint.stop().  Continuing automatically
@@ -487,6 +611,10 @@ spawn_return_breakpoint = gdb.Breakpoint(
 update_bullets_breakpoint = gdb.Breakpoint(f"*0x{UPDATE_PLAYER_BULLETS:08x}", internal=False)
 update_bullets_return_breakpoint = gdb.Breakpoint(
     f"*0x{UPDATE_PLAYER_BULLETS_RETURN:08x}", internal=False
+)
+damage_breakpoint = gdb.Breakpoint(f"*0x{CALC_DAMAGE_TO_ENEMY:08x}", internal=False)
+damage_return_breakpoint = gdb.Breakpoint(
+    f"*0x{CALC_DAMAGE_TO_ENEMY_RETURN:08x}", internal=False
 )
 replay_selected = False
 frame_count = 0
@@ -518,6 +646,12 @@ while frame_count < FRAME_LIMIT:
     if pc == UPDATE_PLAYER_BULLETS_RETURN:
         capture_bullet_update_return()
         continue
+    if pc == CALC_DAMAGE_TO_ENEMY:
+        capture_damage_entry()
+        continue
+    if pc == CALC_DAMAGE_TO_ENEMY_RETURN:
+        capture_damage_return()
+        continue
     if pc != FRAME_BOUNDARY:
         continue
     if memory.i32(SUPERVISOR_CUR_STATE) != 2:
@@ -538,6 +672,8 @@ spawn_breakpoint.delete()
 spawn_return_breakpoint.delete()
 update_bullets_breakpoint.delete()
 update_bullets_return_breakpoint.delete()
+damage_breakpoint.delete()
+damage_return_breakpoint.delete()
 output.close()
 gdb.execute("detach")
 gdb.execute("quit")

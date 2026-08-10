@@ -1,0 +1,474 @@
+{
+  "schema_version": 1,
+  "kind": "zkth06.early-enemy-collision-audit",
+  "inputs": {
+    "executable_sha256": "9f76483c46256804792399296619c1274363c31cd8f1775fafb55106fb852245",
+    "mapping_sha256": "0f20300d5b107b36c933a7f7dc448407ee5f01c5cd7faad132d406c023163191",
+    "stage1_ecl_sha256": "9d9a40e9f7e3ab9346d3874438134659cacf9d34f4aff57b96b4be4ea85b99d7",
+    "player_bullet_lifecycle_artifact_sha256": "a82bbf8c40b449e4d2280e805e642a971be719dee970788f344eb8ee1feef5e4"
+  },
+  "generator": {
+    "path": "tools/early_enemy_collision_audit.py",
+    "sha256": "29d8bcff65171f9c09361c734aaed2bf7154a78357e543ea85ebdb3d8cb0f4f8",
+    "x87_audit_sha256": "93c6aee778f489c92788dc7dfc6c51749fa5f20d075305a4190616d9b5d46290",
+    "disassembler": "GNU objdump (GNU Binutils for Ubuntu) 2.38"
+  },
+  "upstream": {
+    "url": "https://github.com/GensokyoClub/th06",
+    "revision": "cc475a0bc3fef38683b0f02224c87ddba0a021d9",
+    "source_files": {
+      "src/EclManager.cpp": "b4671d3bb277ffafafea18f58f8340f0900d61983816fca947bfc7f1d7f0a668",
+      "src/EnemyManager.cpp": "39a38a22282fdee6ce1a458087541e792e50d0a1dcd1994becda6705d96d6bba",
+      "src/Player.cpp": "5e3e81cff72796c98b9b87dc65d447333444917b63d9e4d493572f23145c26b5"
+    },
+    "anchors": [
+      {
+        "file": "src/EnemyManager.cpp",
+        "line": 99,
+        "anchor": "ARRAY_SIZE_SIGNED(this->enemies) - 1",
+        "role": "lowest-free-slot spawn scan"
+      },
+      {
+        "file": "src/EnemyManager.cpp",
+        "line": 104,
+        "anchor": "*newEnemy = this->enemyTemplate",
+        "role": "fixed Enemy template copy"
+      },
+      {
+        "file": "src/EnemyManager.cpp",
+        "line": 109,
+        "anchor": "newEnemy->position = *pos",
+        "role": "timeline position initialization"
+      },
+      {
+        "file": "src/EnemyManager.cpp",
+        "line": 110,
+        "anchor": "CallEclSub",
+        "role": "Sub0 context initialization"
+      },
+      {
+        "file": "src/EnemyManager.cpp",
+        "line": 111,
+        "anchor": "RunEcl(newEnemy)",
+        "role": "time-zero ECL execution at spawn"
+      },
+      {
+        "file": "src/EnemyManager.cpp",
+        "line": 173,
+        "anchor": "while (0 <= this->timelineInstr->time)",
+        "role": "ordered timeline scan"
+      },
+      {
+        "file": "src/EnemyManager.cpp",
+        "line": 183,
+        "anchor": "this->SpawnEnemy",
+        "role": "opcode-0 deterministic spawn"
+      },
+      {
+        "file": "src/EnemyManager.cpp",
+        "line": 532,
+        "anchor": "RunEclTimeline",
+        "role": "timeline precedes Enemy loop"
+      },
+      {
+        "file": "src/EnemyManager.cpp",
+        "line": 541,
+        "anchor": "curEnemy->Move",
+        "role": "movement precedes ECL and collision"
+      },
+      {
+        "file": "src/EnemyManager.cpp",
+        "line": 543,
+        "anchor": "hasBeenInBounds == 0",
+        "role": "one-way in-bounds gate"
+      },
+      {
+        "file": "src/EnemyManager.cpp",
+        "line": 565,
+        "anchor": "RunEcl(curEnemy)",
+        "role": "ECL precedes Player damage call"
+      },
+      {
+        "file": "src/EnemyManager.cpp",
+        "line": 597,
+        "anchor": "CalcDamageToEnemy",
+        "role": "Enemy AABB Player-damage call"
+      },
+      {
+        "file": "src/EnemyManager.cpp",
+        "line": 602,
+        "anchor": "(damage / 5) * 10",
+        "role": "per-hit score update"
+      },
+      {
+        "file": "src/EnemyManager.cpp",
+        "line": 634,
+        "anchor": "curEnemy->life -= damage",
+        "role": "damageable life update"
+      },
+      {
+        "file": "src/EnemyManager.cpp",
+        "line": 636,
+        "anchor": "positionOfLastEnemyHit.y",
+        "role": "highest-y target selection"
+      },
+      {
+        "file": "src/EnemyManager.cpp",
+        "line": 641,
+        "anchor": "0 >= curEnemy->life",
+        "role": "death gate"
+      },
+      {
+        "file": "src/EnemyManager.cpp",
+        "line": 661,
+        "anchor": "AddScore(curEnemy->score)",
+        "role": "death score"
+      },
+      {
+        "file": "src/EnemyManager.cpp",
+        "line": 662,
+        "anchor": "isSlotOccupied = 0",
+        "role": "death removes Enemy slot"
+      },
+      {
+        "file": "src/EnemyManager.cpp",
+        "line": 740,
+        "anchor": "timelineTime.Tick",
+        "role": "timeline tick after Enemy loop"
+      },
+      {
+        "file": "src/EnemyManager.cpp",
+        "line": 867,
+        "anchor": "position.x +=",
+        "role": "non-inverted x move"
+      },
+      {
+        "file": "src/EnemyManager.cpp",
+        "line": 873,
+        "anchor": "position.y +=",
+        "role": "y move"
+      },
+      {
+        "file": "src/EclManager.cpp",
+        "line": 330,
+        "anchor": "ECL_OPCODE_MOVEVELOCITY",
+        "role": "Sub0 angle/speed opcode"
+      },
+      {
+        "file": "src/EclManager.cpp",
+        "line": 336,
+        "anchor": "ECL_OPCODE_MOVEANGULARVELOCITY",
+        "role": "Sub0 turn opcode"
+      },
+      {
+        "file": "src/EclManager.cpp",
+        "line": 668,
+        "anchor": "ECL_OPCODE_ENEMYSETHITBOX",
+        "role": "Sub0 hitbox opcode"
+      },
+      {
+        "file": "src/EclManager.cpp",
+        "line": 936,
+        "anchor": "AddNormalizeAngle",
+        "role": "movement-mode angle update"
+      },
+      {
+        "file": "src/EclManager.cpp",
+        "line": 939,
+        "anchor": "sincosmul",
+        "role": "axis-speed trigonometry"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 356,
+        "anchor": "SetVecCorners",
+        "role": "Enemy AABB corners"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 362,
+        "anchor": "ARRAY_SIZE_SIGNED(this->bullets)",
+        "role": "80-slot damage scan"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 372,
+        "anchor": "bulletTopLeft.y",
+        "role": "AABB exclusion predicate"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 380,
+        "anchor": "damage += bullet->damage",
+        "role": "non-bomb damage"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 422,
+        "anchor": "anmFileIndex + 0x20",
+        "role": "collision ANM selection"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 424,
+        "anchor": "position.z = 0.1",
+        "role": "collision gameplay z"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 426,
+        "anchor": "PLAYER_BULLET_STATE_COLLIDED",
+        "role": "collision state"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 427,
+        "anchor": "velocity.x /= 8.0f",
+        "role": "collision slowdown"
+      }
+    ],
+    "correspondence_status": "manual-disassembly-source-alignment-unproved"
+  },
+  "mapped_functions": [
+    {
+      "name": "th06::EclManager::RunEcl",
+      "start": "0x004074a0",
+      "size": 13572
+    },
+    {
+      "name": "th06::EnemyManager::SpawnEnemy",
+      "start": "0x00411390",
+      "size": 290
+    },
+    {
+      "name": "th06::EnemyManager::RunEclTimeline",
+      "start": "0x00411530",
+      "size": 2099
+    },
+    {
+      "name": "th06::EnemyManager::OnUpdate",
+      "start": "0x004123e0",
+      "size": 2655
+    },
+    {
+      "name": "th06::Enemy::Move",
+      "start": "0x00413380",
+      "size": 170
+    },
+    {
+      "name": "th06::GameManager::IsInBounds",
+      "start": "0x0041b5e1",
+      "size": 130
+    },
+    {
+      "name": "th06::utils::AddNormalizeAngle",
+      "start": "0x0041e850",
+      "size": 127
+    },
+    {
+      "name": "th06::Player::CalcDamageToEnemy",
+      "start": "0x004264b0",
+      "size": 1917
+    }
+  ],
+  "checked_instruction_roles": [
+    {
+      "address": "0x004123f0",
+      "mnemonic": "call",
+      "role": "timeline before Enemy loop"
+    },
+    {
+      "address": "0x0041246a",
+      "mnemonic": "call",
+      "role": "Enemy movement"
+    },
+    {
+      "address": "0x0041258a",
+      "mnemonic": "call",
+      "role": "Enemy ECL execution"
+    },
+    {
+      "address": "0x004127d0",
+      "mnemonic": "call",
+      "role": "Player damage call"
+    },
+    {
+      "address": "0x004127d8",
+      "mnemonic": "cmp",
+      "role": "damage cap at 70"
+    },
+    {
+      "address": "0x004127ee",
+      "mnemonic": "idiv",
+      "role": "damage score division by five"
+    },
+    {
+      "address": "0x004127f0",
+      "mnemonic": "imul",
+      "role": "damage score multiplication by ten"
+    },
+    {
+      "address": "0x004127f9",
+      "mnemonic": "mov",
+      "role": "store score"
+    },
+    {
+      "address": "0x0041288d",
+      "mnemonic": "sub",
+      "role": "subtract Enemy life"
+    },
+    {
+      "address": "0x00412893",
+      "mnemonic": "mov",
+      "role": "store Enemy life"
+    },
+    {
+      "address": "0x0041289c",
+      "mnemonic": "fld",
+      "role": "load prior target y"
+    },
+    {
+      "address": "0x004128a2",
+      "mnemonic": "fcomp",
+      "role": "compare Enemy y"
+    },
+    {
+      "address": "0x004128d4",
+      "mnemonic": "cmp",
+      "role": "death check"
+    },
+    {
+      "address": "0x00412a2f",
+      "mnemonic": "add",
+      "role": "add death score"
+    },
+    {
+      "address": "0x00412a41",
+      "mnemonic": "and",
+      "role": "clear active flag"
+    },
+    {
+      "address": "0x00412a47",
+      "mnemonic": "mov",
+      "role": "store inactive flag"
+    },
+    {
+      "address": "0x00412e31",
+      "mnemonic": "call",
+      "role": "tick timeline timer"
+    },
+    {
+      "address": "0x004133a3",
+      "mnemonic": "fld",
+      "role": "load effective rate for x"
+    },
+    {
+      "address": "0x004133a9",
+      "mnemonic": "fmul",
+      "role": "multiply x axis speed"
+    },
+    {
+      "address": "0x004133b2",
+      "mnemonic": "fadd",
+      "role": "add prior x"
+    },
+    {
+      "address": "0x004133bb",
+      "mnemonic": "fstp",
+      "role": "round/store x"
+    },
+    {
+      "address": "0x004133e7",
+      "mnemonic": "fld",
+      "role": "load effective rate for y"
+    },
+    {
+      "address": "0x004133ed",
+      "mnemonic": "fmul",
+      "role": "multiply y axis speed"
+    },
+    {
+      "address": "0x004133f6",
+      "mnemonic": "fadd",
+      "role": "add prior y"
+    },
+    {
+      "address": "0x004133ff",
+      "mnemonic": "fstp",
+      "role": "round/store y"
+    }
+  ],
+  "decoded_stage1_profile": {
+    "timeline_times": [
+      128,
+      144,
+      160,
+      176,
+      192
+    ],
+    "post_calc_game_frames": [
+      129,
+      145,
+      161,
+      177,
+      193
+    ],
+    "sub_id": 0,
+    "x_bits": [
+      "0x42700000",
+      "0x42880000",
+      "0x42980000",
+      "0x42a80000",
+      "0x42b80000"
+    ],
+    "y_bits": "0xc2000000",
+    "life": [
+      8,
+      32,
+      32,
+      32,
+      32
+    ],
+    "score": 300,
+    "hitbox_bits": [
+      "0x41e00000",
+      "0x41e00000",
+      "0x42000000"
+    ],
+    "anm_script": 769,
+    "initial_angle_bits": "0x3fc90fdb",
+    "speed_bits": "0x40000000",
+    "turn_ecl_time": 40,
+    "angular_velocity_bits": "0xbcc90fdb",
+    "randomized_timeline_operands": false
+  },
+  "derived_profile_contract": {
+    "route": "Reimu A rank 1, Stage 1 Lunatic replay prefix",
+    "anchor_game_frame": 1,
+    "last_game_frame": 208,
+    "first_damage_call_game_frame": 137,
+    "first_collision_game_frame": 208,
+    "collision_damage": 48,
+    "collision_slot": 2,
+    "post_collision_score": 390,
+    "enemy_witnesses": "none; fixed timeline and prior Enemy state determine every call AABB",
+    "trigonometry": "40-entry axis-speed table indexed only by derived ECL time 41..80; both oracles match every reachable retained Enemy entry",
+    "reordered_dead_state_noninterference": "the killed slot's time-81 angle/axis update is omitted after its frame-208 position and collision are derived; the original immediately clears the slot and no selected consumer reads those dead fields",
+    "omitted_ecl_shooting_noninterference": "Sub0 bullet-shooting side effects are outside this projection; through frame 208 they do not write Enemy position, hitbox, life, Player bullets, target, or score"
+  },
+  "evidence_status": "pinned ECL hash plus source, mapping, and instruction signatures for timeline, movement, ECL-before-collision ordering, damage, target, life, death, and score; finite dual-oracle raw-bit validation is stored separately",
+  "open_obligations": [
+    "Mechanically decode the selected ECL records from the pinned data hash.",
+    "Prove the finite curved-axis table against x87 fsincos/sincosmul semantics.",
+    "Translation-validate the checked instruction/source alignment.",
+    "Prove alias-aware noninterference for omitted ECL shooting, effects, items, and ANM writes.",
+    "Extend beyond the first collision by modeling collided-bullet ANM lifetime and later Enemy groups."
+  ],
+  "counts": {
+    "mapped_functions": 8,
+    "source_anchors": 34,
+    "checked_instruction_roles": 25,
+    "timeline_spawns": 5
+  },
+  "artifact_sha256": "3724a636ca2c8751127683caf5314a2b3fe5ce6cc4fc00d11cc489b1ffbd6640"
+}

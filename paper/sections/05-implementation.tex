@@ -107,6 +107,10 @@ As of 10 August 2026, the following components are implemented:
   together with a 50-field retail/reference oracle, 29-instruction static
   audit, 206-transition linked vector, and fifth proof bundle whose 436-byte
   private input contains only replay masks;
+  \item an enclosing early-gameplay crate and sixth OpenVM adapter that compose
+  five fixed Stage-1 enemies through frame 208, together with a 225-frame raw
+  Enemy/collision oracle, 25-instruction-role audit, 207-transition vector, and
+  438-byte replay-only proof input;
   \item Linux CI that builds the reference runner and cross-checks both replay
   validators on three valid and three deliberately malformed cases, while also
   requiring canonical-record corruption to fail closed.
@@ -117,12 +121,13 @@ snapshot because that mirrors shipped playback and enables oracle development.
 It is not yet canonical proof playback.  The first backend micro-slice is
 frozen and proven, and the selected enclosing profile no longer accepts its
 movement environment as per-frame witness data.  No complete gameplay guest is
-claimed: the post-calc anchor is fixed, and collision/death/respawn, bombs,
+claimed: the post-calc anchor is fixed, and Player death/respawn, bombs,
 external time-stop writers, and non-full-speed timers fail closed or remain
   absent.  The local Reimu-A callback now includes allocation and initialized
 geometry, and a shorter enclosing prefix links update, bounds reclamation, ANM
-timers, and allocation through frame 207.  It stops before the first Enemy
-collision at frame 208.  The retail exporter currently covers a 50-field root
+timers, and allocation through frame 207.  The next enclosing kernel derives
+five early enemies and crosses the first Enemy collision and death at frame
+208.  The retail exporter currently covers a 50-field root
 projection,
 while canonical projection revision 0.2 contains eleven broader
 subsystems.  Bringing that complete schema to the retail boundary remains

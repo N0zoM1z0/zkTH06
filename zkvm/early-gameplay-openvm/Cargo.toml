@@ -1,0 +1,20 @@
+[workspace]
+
+[package]
+name = "zkth06-early-gameplay-openvm"
+version = "0.1.0"
+edition = "2021"
+license = "GPL-3.0-only"
+rust-version = "1.91.1"
+publish = false
+
+[dependencies]
+openvm = { git = "https://github.com/openvm-org/openvm.git", tag = "v2.0.1" }
+openvm-sha2 = { git = "https://github.com/openvm-org/openvm.git", tag = "v2.0.1" }
+zkth06-early-gameplay = { path = "../early-gameplay" }
+zkth06-player-bullet-lifecycle = { path = "../player-bullet-lifecycle" }
+
+[profile.release]
+codegen-units = 1
+lto = "fat"
+panic = "abort"

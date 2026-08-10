@@ -1,0 +1,217 @@
+{
+  "type": "zkth06.openvm-early-gameplay-proof",
+  "schema_version": 1,
+  "date_utc": "2026-08-10",
+  "backend": {
+    "name": "OpenVM",
+    "cargo_openvm_version": "2.0.1",
+    "cargo_openvm_revision": "b820b25baab6c5d9b055f64e0286b6b1058e707c",
+    "guest_target": "riscv32im-risc0-zkvm-elf",
+    "guest_toolchain": "nightly-2026-01-18",
+    "guest_rustc": "rustc 1.94.0-nightly (fe98ddcfc 2026-01-17)",
+    "vm_extensions": [
+      "rv32i",
+      "rv32m",
+      "io",
+      "sha2"
+    ]
+  },
+  "workload": {
+    "source_vector": "early-gameplay-002677-208-v1.bin",
+    "source_vector_bytes": 14780,
+    "source_vector_sha256": "c98b3ff3d90ba0f972f0691ffcd2d76573d1e6677d1ec75ed7a5ae59473feb3a",
+    "retail_target_executable_sha256": "9f76483c46256804792399296619c1274363c31cd8f1775fafb55106fb852245",
+    "replay_sha256": "01bc11b9226932bddeeeff675f1741b89b129f4c8820b3b1cf185a1cb19ad10f",
+    "retail_trace_sha256": "9222228ea96d85877f4d6891a9f6e42774e4cb40dd6d9f3ab8bc6d724f01f310",
+    "reference_trace_sha256": "7efcfbcd74c8ec32bbc7bdea0ae4a24e5bf53bdcc98a78d0a7398d2167d9ee85",
+    "retail_reference_comparison_sha256": "5452fa0fb09fc3069b1ef221495d615903781ad3498e6387e6d3cbb16afdf84f",
+    "static_audit_sha256": "4f6be6e067938a920dcf7bfdef46f7538550cf74374345e2bb5e1979655a0df7",
+    "static_audit_sealed_digest": "3724a636ca2c8751127683caf5314a2b3fe5ce6cc4fc00d11cc489b1ffbd6640",
+    "stage1_ecl_sha256": "9d9a40e9f7e3ab9346d3874438134659cacf9d34f4aff57b96b4be4ea85b99d7",
+    "profile": "reimu-a-rank-1-first-five-sub0-through-first-hit",
+    "source_frames": 225,
+    "anchor_game_frame": 1,
+    "final_game_frame": 208,
+    "transitions": 207,
+    "character": 0,
+    "shot_type": 0,
+    "fixed_power": 0,
+    "profile_flags": 1,
+    "damage_calls": 200,
+    "collision_events": 1,
+    "collided_slot": 2,
+    "maximum_enemies": 5,
+    "remaining_enemies": 4,
+    "score": 390,
+    "input_payload_bytes": 438,
+    "input_payload_sha256": "0c7522f57574fc12912c4b97a23511431bb0a38f104fa945636c2f3a7f532d1a",
+    "expected_projection_sha256": "d41d68f493c5b393d858338c66b8b5683f8b7503a5008106eec0eca52d109dcc",
+    "state_domain_ascii": "zkTH06/early-gameplay/projection/v1",
+    "state_domain_nul_terminated": true,
+    "statement_domain_ascii": "zkTH06/openvm/early-gameplay/v1",
+    "statement_domain_nul_terminated": true,
+    "expected_statement_sha256": "0909a289f39eb51f601649161ff98ca479a114dbc9b449a0939202c8b3f73f40",
+    "statement_preimage": "domain || input_payload || final_game_frame_le || transitions_le || score_le || damage_calls_le || collision_events_le || collided_slot_le || remaining_enemies_le || maximum_enemies_le || projection_sha256"
+  },
+  "source_bindings": {
+    "zkvm/player-motion/Cargo.toml": "8c859effb9b0f39bb84531819b12b4cb0bd8864fa9c7035308e49a46ead9ce48",
+    "zkvm/player-motion/src/lib.rs": "75b2b76638df83addee4bf6feb35cd321a370790739e635c54b3135ef9d21820",
+    "zkvm/player-motion/src/pc24.rs": "a8960adeec05c5ddaf5343902ae50895a8db9e030f77f5d5c5d664985b84945e",
+    "zkvm/player-shooting/Cargo.toml": "eda906f997f9d56f7468d0fa7147499641ed9b149a7589e528d9e10fa6f1d93b",
+    "zkvm/player-shooting/src/lib.rs": "89748d916d9110db930e9ca5fc876e68c42e74ffe500c52d48736f4aaf9607d1",
+    "zkvm/player-bullets/Cargo.toml": "0a75c59c7d4256a962236cd5bb90d924e6cb1a3c21ff9dfd2d506d788236fc30",
+    "zkvm/player-bullets/src/lib.rs": "6808d5b51001e542f1c0a71cdee1dcd125c3dc12682bb08d8495f1e6adf4b328",
+    "zkvm/player-bullet-lifecycle/Cargo.toml": "7b9c47a129fc78d1260a3b1401ee026bbeb683287448e7132ceef16bd9d0f72c",
+    "zkvm/player-bullet-lifecycle/src/lib.rs": "8f4ee335a5c79b88bbd332eb69f1fdd6a84d7c6e96e98518459e12756f7bfb54",
+    "zkvm/early-gameplay/Cargo.toml": "5fb71d4c9e4789212c38915c521a4a896efb0723455ea11c7fd9b22fe19322b9",
+    "zkvm/early-gameplay/src/lib.rs": "03478cc7cf0242c2b0df72e8ee6b00ea44049c344ad6b46ec03b693e4de29707",
+    "zkvm/early-gameplay-openvm/Cargo.lock": "f346f115e2c20ce383f972ee47dabbafd3a3f1bc075df9107292198eea3ea8ee",
+    "zkvm/early-gameplay-openvm/Cargo.toml": "8b6ac5ccbe15f83886396e40a88ba99b1b340c4bf72b1d88f3ac53b7d82e8f89",
+    "zkvm/early-gameplay-openvm/openvm.toml": "66176cd349514666978faed7a789df0653eced83be1a2bcc70b0b5cc2c06ffcc",
+    "zkvm/early-gameplay-openvm/src/main.rs": "9efdf082ce0f9b53cbf6b9bfe783fc796f91f2c9bd296fc6bb3e4544a5549e79",
+    "tools/build_early_gameplay_openvm_input.py": "876abe8c7a9041399ae6d256cfcc7cddf80cec1eb7d959cee5b21726d5900da7"
+  },
+  "evidence_bindings": {
+    "arithmetic/early-enemy-collision-v1.json": "4f6be6e067938a920dcf7bfdef46f7538550cf74374345e2bb5e1979655a0df7",
+    "evidence/early-gameplay-002677-208-v1.bin": "c98b3ff3d90ba0f972f0691ffcd2d76573d1e6677d1ec75ed7a5ae59473feb3a",
+    "evidence/early-gameplay-002677-208-v1.json": "11d7ae33e45f1d4dc0aa07319dddfc2f400b3b131c4b6c7ce14fcb5387b24893",
+    "evidence/retail-reference-002677-225-enemy-collisions-v1.json": "5452fa0fb09fc3069b1ef221495d615903781ad3498e6387e6d3cbb16afdf84f",
+    "tools/build_early_gameplay_vector.py": "a5f8437b6f4e85cde58b319ad9f0ea0294c272940038050e0957ddb55864c9c6",
+    "tools/early_enemy_collision_audit.py": "29d8bcff65171f9c09361c734aaed2bf7154a78357e543ea85ebdb3d8cb0f4f8"
+  },
+  "artifacts": {
+    "guest_elf": {
+      "bytes": 44860,
+      "sha256": "f9117142304384b0d2bc1cc433b1c433ccc3edb3195eaca7d296f75339dd5f4a",
+      "tracked": false
+    },
+    "vm_executable": {
+      "path": "openvm-early-gameplay-v1.vmexe",
+      "bytes": 387004,
+      "sha256": "a8ff978e015fc168aa059a06643ca9a69d0677ca8d418f469b3e7e6e7d05314d",
+      "app_exe_commit": "0x0071e0a8d5dc04be602ddeda852f7e314442a9ed5aa25d87f9ef2f5a24e14501"
+    },
+    "app_proving_key": {
+      "bytes": 242775,
+      "sha256": "4e50cc10cecc2d74728d09fce80e583ddd3ff86602ce38e6e3107a77e18a86bf",
+      "tracked": false,
+      "reason": "deterministically regenerable and not required for verification"
+    },
+    "app_verifying_key": {
+      "path": "openvm-early-gameplay-v1.app.vk",
+      "bytes": 241614,
+      "sha256": "09b509a234f028b4f251779a26adf4d87b66d40e07174f0f5e3a2d9782de958b"
+    },
+    "app_commit_descriptor": {
+      "path": "openvm-early-gameplay-v1.app-commit.json",
+      "bytes": 182,
+      "sha256": "07432fc5cd8675f314e342b2e51d4507d4cbc04dddf23badbbc291b4f1b8fe7a",
+      "note": "OpenVM v2.0.1 verify app consumes app_exe_commit only; app_vm_commit is canonical zero"
+    },
+    "app_proof": {
+      "path": "openvm-early-gameplay-207-v1.app.proof",
+      "bytes": 2513550,
+      "sha256": "c45eb42516f7c74776aa09e2d3fca3811fa22cb9de3c5efc943abc8dadf580de"
+    }
+  },
+  "meter": [
+    {
+      "transitions": 1,
+      "instructions": 66121,
+      "cells": 2598121,
+      "statement_sha256": "4f28b5ebabc13c204498979a1b6734196fcbeacb92f0e15895f71f4a50dff798"
+    },
+    {
+      "transitions": 10,
+      "instructions": 607280,
+      "cells": 23638475,
+      "statement_sha256": "d67c55dcf95cfd81db5457725642899c31fba75d2cf3d57e74e5cd77621e465f"
+    },
+    {
+      "transitions": 100,
+      "instructions": 7057753,
+      "cells": 274253314,
+      "statement_sha256": "d1970ec24d99f5b72ccb100a4e2adf18f9d39ce32c49fec831969ec1b5641bef"
+    },
+    {
+      "transitions": 207,
+      "instructions": 19787280,
+      "cells": 769444525,
+      "statement_sha256": "0909a289f39eb51f601649161ff98ca479a114dbc9b449a0939202c8b3f73f40"
+    }
+  ],
+  "public_values_audit": {
+    "method": "OpenVM v2.0.1 SDK deserialization as ContinuationVmProof<SC>",
+    "tool_source_bindings": {
+      "tools/openvm-proof-inspect/Cargo.lock": "cb328a765cb2214d7b6284c9eb769cb952815242e356a12f656aa8a40fef332a",
+      "tools/openvm-proof-inspect/Cargo.toml": "5707b336099df1467ce2a7121439c1c46ce7eef0d0a18f9801b4979fbc1ff964",
+      "tools/openvm-proof-inspect/src/main.rs": "524b728225089418f27b147374f64534948c79c1d673a5dbee07a916cce732ec"
+    },
+    "decoded_bytes": [
+      9,
+      9,
+      162,
+      137,
+      243,
+      158,
+      181,
+      31,
+      96,
+      22,
+      73,
+      22,
+      31,
+      249,
+      140,
+      164,
+      121,
+      161,
+      20,
+      219,
+      201,
+      180,
+      73,
+      160,
+      147,
+      146,
+      2,
+      200,
+      179,
+      247,
+      63,
+      64
+    ],
+    "matches_expected_statement_sha256": true,
+    "one_bit_wrong_expected_digest_rejected": true
+  },
+  "proving": {
+    "elapsed_seconds": 203.58,
+    "user_cpu_seconds": 6473.21,
+    "system_cpu_seconds": 1055.38,
+    "cpu_utilization_percent": 3698,
+    "max_rss_kib": 52632376,
+    "swaps": 0,
+    "exit_status": 0
+  },
+  "verification": {
+    "elapsed_seconds": 0.22,
+    "max_rss_kib": 53520,
+    "expected_executable_commit_accepted": true,
+    "one_bit_wrong_executable_commit_rejected": true,
+    "public_statement_digest_matches": true,
+    "one_bit_wrong_public_digest_rejected": true
+  },
+  "design_iteration": {
+    "previous_lifecycle_payload_bytes": 436,
+    "enclosing_gameplay_payload_bytes": 438,
+    "payload_increase_bytes": 2,
+    "previous_lifecycle_instructions": 12192123,
+    "enclosing_gameplay_instructions": 19787280,
+    "instruction_increase": 7595157,
+    "previous_lifecycle_cells": 474516189,
+    "enclosing_gameplay_cells": 769444525,
+    "cell_increase": 294928336,
+    "comparison_note": "One additional replay mask crosses frame 208; Enemy/ECL state, 200 damage calls, collision, death, target, and score remain derived rather than witness-supplied."
+  },
+  "claim_boundary": "This proof starts from the fixed empty gameplay-frame-1 state and executes 207 linked Reimu-A rank-1 transitions using only replay input masks. It composes the prior Player/bullet lifecycle with five fixed Stage-1 Sub0 timeline spawns, profile-bound movement and ECL-time updates, in-bounds gating, 200 AABB damage calls, the unique slot-2 collision transition, first-enemy death, target selection, and score 390. Every retained Enemy projection is publicly committed. The retail and independently built reference oracles match over 225 frames. This is finite differential and static-mapping evidence, not a universal retail-binary equivalence proof. The curved-axis lookup is indexed only by derived ECL time but still requires x87 fsincos refinement; omitted Sub0 shooting effects require noninterference, and the proof does not cover RNG, enemy bullets, items, bombs, Player death/respawn, dialogue, later ECL paths, other routes, or complete gameplay."
+}

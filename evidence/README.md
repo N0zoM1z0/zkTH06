@@ -129,14 +129,30 @@ contain 173 spawn calls, 35 initializations, and 30 update reclamations.
 `openvm-player-bullet-lifecycle-206-v1.json` records the fifth OpenVM
 application proof. Its private payload is only 436 bytes: a fixed header and
 206 replay input masks, with no observed slot-state witnesses. The guest
-commits every intermediate Player/bullet state and executes 10,859,285
-instructions over 423,247,443 metered cells. The tracked proof verifies at the
+commits every intermediate Player/bullet state and executes 12,192,123
+instructions over 474,516,189 metered cells. The tracked proof verifies at the
 exact executable commitment; its decoded public digest is
 `e9e19abd79e48af83a3b43fc33a72f49089e83e59e328a97c3e7d1711a7a6ca3`,
 and one-bit-wrong commitment and digest checks fail. This closes only the
 collision-free Reimu-A rank-1 prefix. Enemy/ECL collision, ANM-data and
 compiler correspondence, alias-complete writer noninterference, other routes,
 bombs, death, power/items, and the complete gameplay kernel remain open.
+
+`early-gameplay-002677-208-v1.bin` (`ZKEGP1`) composes that stopping writer.
+Its 207 transitions derive five fixed Stage-1 `Sub0` enemies and compare their
+raw movement/ECL/life projection through the first hit. The prefix contains 200
+damage calls, one damaging slot-2 collision, the first Enemy death, four
+remaining enemies, target selection, and score 390. No Enemy state appears in
+the transition input.
+
+`openvm-early-gameplay-207-v1.json` records the sixth OpenVM application proof.
+Its 438-byte private payload is a fixed header plus 207 replay masks. The guest
+executes 19,787,280 instructions over 769,444,525 metered cells and exposes
+public digest
+`0909a289f39eb51f601649161ff98ca479a114dbc9b449a0939202c8b3f73f40`.
+The proof, verifying key, vm executable, executable commitment, source hashes,
+and negative checks are tracked. The x87 curve-table refinement, omitted Sub0
+shooting noninterference, and all later gameplay paths remain open.
 
 `source/openvm-player-motion-v1/player-motion-lib.rs` preserves the exact
 library source compiled into the earlier immutable proof.  The live crate later

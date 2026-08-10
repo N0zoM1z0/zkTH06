@@ -58,9 +58,23 @@ cadence, rank-1 straight-bullet movement, 14-by-14 bounds reclamation, fixed
 nonterminating ANM/timer effects, and allocation through frame 207. All 35
 initializations and 30 reclamations agree with the 50-field retail/reference
 oracle at every frame. The 436-byte private payload contains no per-frame slot
-state. The proof costs 10,859,285 instructions and 423,247,443 metered cells.
+state. The synchronized proof costs 12,192,123 instructions and 474,516,189
+metered cells.
 It deliberately rejects frame 208, where EnemyManager first changes a fired
 bullet to collided; Enemy/ECL composition is the next soundness boundary.
+
+That boundary is now crossed by an enclosing early-gameplay kernel. A sixth
+OpenVM guest consumes 207 replay masks and derives the first five Stage-1
+`Sub0` timeline spawns, movement, ECL time and angle, in-bounds gating, 200
+damage calls, the unique slot-2 bullet collision, first-enemy death, target
+selection, and score 390 through frame 208. Retail Wine and the independently
+built reference agree over a 225-frame raw Enemy/collision projection. The
+438-byte private payload contains no Player, bullet, Enemy, ECL, collision,
+life, target, or score witnesses. Its tracked proof costs 19,787,280
+instructions and 769,444,525 metered cells. The curved-axis table is selected
+only by derived ECL time, but proving it refines the pinned x87 `fsincos` path
+and proving omitted Sub0 shooting effects noninterfering remain explicit
+soundness obligations.
 
 A first owner-local Lean model now machine-checks why active-only Effect slots
 violate one-step noninterference and how a narrow dormant reuse shadow repairs
@@ -162,9 +176,9 @@ The first 2,000-frame Normal anchor is complete for its enhanced 50-field
 projection. Its enclosing player-state subprojection drives 1,999 transitions
 from a fixed post-calc anchor, checks the life-state change at frame 240, and
 now checks focus/previous-input/fire-timer recurrence and the nested local
-`SpawnBullets` and Player-bullet lifecycle projections. A collision-free prefix
-now also links the complete 80-slot pool through frame 207 without slot-state
-witnesses.
+`SpawnBullets` and Player-bullet lifecycle projections. A linked prefix now
+carries the complete 80-slot pool through the first real Enemy hit at frame 208
+without slot- or Enemy-state witnesses.
 The full canonical subsystem projection and broader replay matrix remain open.
 
 ### M1 — canonical gameplay kernel
@@ -197,11 +211,19 @@ took 0.12 seconds. The exact proof bundle and its cross-call limitation are in
 [`evidence/openvm-player-bullets-1590-v1.json`](evidence/openvm-player-bullets-1590-v1.json).
 The enclosing successor now derives 206 consecutive Player/bullet transitions
 from a fixed empty pool and 436 bytes of replay-only private input. It initializes
-35 bullets, reclaims 30, meters 423,247,443 cells, and has a tracked application
+35 bullets, reclaims 30, meters 474,516,189 cells, and has a tracked application
 proof described in
 [`evidence/openvm-player-bullet-lifecycle-206-v1.json`](evidence/openvm-player-bullet-lifecycle-206-v1.json).
-The next Player work is to compose the frame-208 Enemy/ECL collision and then
-collision/death/respawn, bomb, power, and item interaction.
+The next enclosing successor crosses the frame-208 boundary with only two more
+private bytes. It derives five early Stage-1 enemies, 200 damage calls, one
+collision and death, target selection, and score 390 in 19,787,280 instructions
+and 769,444,525 cells. Proving took 203.58 seconds with 52,632,376 KiB peak RSS;
+verification took 0.22 seconds. The exact bundle and remaining x87/slicing
+obligations are in
+[`evidence/openvm-early-gameplay-207-v1.json`](evidence/openvm-early-gameplay-207-v1.json).
+The next Player work is to extend collision/death/respawn, bomb, power, and item
+interaction while expanding Enemy/ECL and enemy-bullet state beyond this fixed
+early prefix.
 Deriving the post-calc anchor, external time-stop writers, and
 non-full-speed timer paths remain soundness gates rather than hidden premises.
 

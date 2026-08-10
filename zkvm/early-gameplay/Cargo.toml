@@ -1,0 +1,19 @@
+[package]
+name = "zkth06-early-gameplay"
+version = "0.1.0"
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+description = "Linked TH06 Player and early Stage-1 Enemy collision transition"
+publish = false
+
+[lib]
+path = "src/lib.rs"
+
+[dependencies]
+zkth06-player-motion = { path = "../player-motion" }
+zkth06-player-bullets = { path = "../player-bullets" }
+zkth06-player-bullet-lifecycle = { path = "../player-bullet-lifecycle" }
+
+[lints.rust]
+unsafe_code = "forbid"

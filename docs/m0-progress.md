@@ -392,13 +392,13 @@ hashes every intermediate Player/bullet state, not merely the endpoint.
 
 | Transitions | Guest instructions | Metered cells |
 | ---: | ---: | ---: |
-| 1 | 33,274 | 1,303,205 |
-| 10 | 274,335 | 10,582,978 |
-| 100 | 4,722,519 | 183,801,013 |
-| 206 | 10,859,285 | 423,247,443 |
+| 1 | 40,273 | 1,575,949 |
+| 10 | 344,217 | 13,306,422 |
+| 100 | 5,380,025 | 209,163,788 |
+| 206 | 12,192,123 | 474,516,189 |
 
-Application proving took 117.26 seconds, 4,030.61 user CPU seconds, and
-51,101,780 KiB peak RSS without swapping. Verification took 0.18 seconds and
+Application proving took 118.01 seconds, 4,279.43 user CPU seconds, and
+50,859,740 KiB peak RSS without swapping. Verification took 0.18 seconds and
 50,116 KiB peak RSS. Exact executable-commitment and decoded public-digest
 checks pass; one-bit-wrong commitment and digest checks fail. The tracked
 bundle is
@@ -409,6 +409,54 @@ collision-free Reimu-A rank-1 prefix. It does not yet derive the frame-208
 Enemy/ECL collision, bind script 1088 directly to ANM data, prove complete
 writer noninterference or compiler correspondence, or cover homing, other
 routes/ranks, bombs, death, power, items, or whole-game state.
+
+## Enclosing early-Enemy collision proof gate
+
+The next transition composes the former stopping writer instead of weakening
+the boundary. Starting from the same empty frame-1 anchor, it derives Stage-1
+timeline spawns at frames 129, 145, 161, 177, and 193; moves each fixed `Sub0`
+enemy in manager order; carries the in-bounds bit; advances ECL time, angle,
+angular velocity, and axis speed; and executes Player-bullet AABB damage before
+life, target, death, and score updates. The 207 transitions reach frame 208,
+where slot 2 deals 48 damage to the first eight-life enemy, enters the collided
+animation, removes Enemy slot 0, updates the target, and raises score to 390.
+
+New address-bound instrumentation records every `Player::CalcDamageToEnemy`
+entry/return with the complete 80-slot pool and a raw Enemy/ECL projection. In
+225 frames the retail and reference traces match exactly: 249 calls, four
+damaging calls, first damage at frame 208, at most five enemies, and no trace
+overflow. The proof prefix selects 200 calls and the unique first hit. A sealed
+static audit maps 25 instruction roles across eight retail functions and binds
+the Stage-1 ECL data. The compact `ZKEGP1` vector checks all 207 transitions
+against the Rust state without supplying Enemy state as witness.
+
+The `ZKEGI1` OpenVM payload is a 24-byte fixed header plus 207 replay masks, or
+438 bytes total. The public digest commits every retained Enemy projection and
+the final collision metrics.
+
+| Transitions | Guest instructions | Metered cells |
+| ---: | ---: | ---: |
+| 1 | 66,121 | 2,598,121 |
+| 10 | 607,280 | 23,638,475 |
+| 100 | 7,057,753 | 274,253,314 |
+| 207 | 19,787,280 | 769,444,525 |
+
+Application proving took 203.58 seconds, 6,473.21 user CPU seconds, and
+52,632,376 KiB peak RSS without swapping. The 2,513,550-byte proof verifies in
+0.22 seconds with 53,520 KiB peak RSS. SDK deserialization yields public digest
+`0909a289f39eb51f601649161ff98ca479a114dbc9b449a0939202c8b3f73f40`;
+one-bit-wrong executable and public commitments are rejected. The tracked
+bundle is
+[`evidence/openvm-early-gameplay-207-v1.json`](../evidence/openvm-early-gameplay-207-v1.json).
+
+This remains a finite Reimu-A rank-1 prefix, not a universal equivalence
+theorem. The 40-entry curve table is program data indexed only by derived ECL
+time and agrees with both oracles, but still needs refinement to the pinned x87
+`fsincos` behavior. Sub0 shooting effects are omitted from this projection and
+need a noninterference proof; the post-death time-81 update is omitted only
+after collision position and removal are derived. RNG, enemy bullets, items,
+bombs, Player death/respawn, dialogue, other routes, and later ECL paths remain
+outside the kernel.
 
 ## Local corpus result
 

@@ -42,11 +42,22 @@ Player motion and shooting cadence together with rank-1 bullet movement,
 14-by-14 bounds reclamation, fixed ANM/timer behavior, and allocation through
 frame 207.  Its 436-byte private payload contains no slot pre-states, and its
 public digest commits all intermediate states, 35 initializations, and 30
-reclamations.  The 206-step workload costs 10,859,285 instructions and
-423,247,443 cells; proving takes 117.26 seconds at 51,101,780 KiB peak RSS and
+reclamations.  The synchronized 206-step workload costs 12,192,123 instructions
+and 474,516,189 cells; proving takes 118.01 seconds at 50,859,740 KiB peak RSS and
 verification takes 0.18 seconds.  The transition rejects another step because
 EnemyManager first writes collided bullet state at frame 208.  This is a
 soundness boundary, not an Enemy/ECL proof.
+
+A sixth guest now composes that stopping writer rather than importing observed
+Enemy state.  With 207 replay masks and a 438-byte private payload, it derives
+five Stage-1 enemies, 200 damage calls, the unique slot-2 collision, first-enemy
+death, target selection, and score 390 through frame 208.  Its public digest
+commits every retained Enemy projection.  The workload costs 19,787,280
+instructions and 769,444,525 cells; the 2,513,550-byte proof completes in
+203.58 seconds at 52,632,376 KiB peak RSS and verifies in 0.22 seconds.  This
+crosses one authentic Enemy/ECL boundary, while the finite x87 curve lookup and
+omitted Sub0 shooting effects remain explicit refinement and noninterference
+obligations.
 
 An experimental shared binary protocol now emits real per-frame subsystem and
 root digests with raw floating-point bits, stable identities, and fail-closed
@@ -54,9 +65,9 @@ decoding.  Complete repeated Linux runs are byte-identical, and the first broad
 ANM experiment already exposed the distinction between allocated memory and
 future-live semantic state.  The retail probe already turns a mismatch in its
 narrow root projection into a reproducible first-frame/first-field diagnosis.
-The next concrete Player milestone is to compose Enemy/ECL state so the
-frame-208 collision is derived, then add or rule out collision/death/respawn,
-bomb, power, and item paths.  Deriving the fixed
+The next concrete gameplay milestone is to extend the enclosing Enemy/ECL and
+enemy-bullet state beyond this early fixed profile, while adding or ruling out
+Player death/respawn, bomb, power, and item paths.  Deriving the fixed
 post-calc anchor from registration/pre-stage scheduling, time-stop writers, and
 non-full-speed paths remains necessary while resolving the
 known reuse and dynamic-job omissions and enlarging the shipped-executable

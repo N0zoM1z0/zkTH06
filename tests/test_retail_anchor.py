@@ -16,6 +16,9 @@ SHOOTING_EVIDENCE = ROOT / "evidence" / "retail-reference-002677-2000-shooting-v
 PLAYER_BULLETS_EVIDENCE = (
     ROOT / "evidence" / "retail-reference-002677-2000-player-bullets-v1.json"
 )
+ENEMY_COLLISION_EVIDENCE = (
+    ROOT / "evidence" / "retail-reference-002677-225-enemy-collisions-v1.json"
+)
 TARGET_SHA256 = "9f76483c46256804792399296619c1274363c31cd8f1775fafb55106fb852245"
 
 
@@ -118,6 +121,7 @@ def run_comparator(
     player_shooting: bool = False,
     player_bullets: bool = False,
     player_bullet_frames: bool = False,
+    enemy_collisions: bool = False,
 ) -> subprocess.CompletedProcess[str]:
     command = ["python3", str(COMPARATOR), str(retail), str(reference), "--report", str(report)]
     if enclosing_player:
@@ -128,6 +132,8 @@ def run_comparator(
         command.append("--player-bullets")
     if player_bullet_frames:
         command.append("--player-bullet-frames")
+    if enemy_collisions:
+        command.append("--enemy-collisions")
     return subprocess.run(
         command,
         check=False,
@@ -171,6 +177,19 @@ def main() -> int:
     assert player_bullets_evidence["comparison_profile"] == "player-bullets"
     assert player_bullets_evidence["compared_frames"] == 2_000
     assert len(player_bullets_evidence["compared_fields"]) == 47
+    enemy_collision_evidence_text = ENEMY_COLLISION_EVIDENCE.read_text(encoding="utf-8")
+    assert "/home/" not in enemy_collision_evidence_text
+    enemy_collision_evidence = json.loads(enemy_collision_evidence_text)
+    assert enemy_collision_evidence["status"] == "match"
+    assert enemy_collision_evidence["comparison_profile"] == "enemy-collisions"
+    assert enemy_collision_evidence["compared_frames"] == 225
+    assert enemy_collision_evidence["observed_enemy_collision_metrics"] == {
+        "damage_calls": 249,
+        "damaging_calls": 4,
+        "first_damaging_game_frame": 208,
+        "maximum_active_enemies": 5,
+        "trace_overflow_frames": 0,
+    }
 
     header = {
         "type": "zkth06.retail-anchor-header",
@@ -323,6 +342,58 @@ def main() -> int:
         assert bullet_frames_report["semantic_projection_exclusions"][0][
             "observed_differences"
         ] == 0
+
+        enemy = {
+            "slot": 0,
+            "x": 60,
+            "y": -30,
+            "position_bits": ["0x42700000", "0xc1f00000", "0x00000000"],
+            "hitbox_bits": ["0x41e00000", "0x41e00000", "0x42000000"],
+        }
+        damage_call = {
+            "enemy_position_bits": enemy["position_bits"],
+            "enemy_hitbox_bits": enemy["hitbox_bits"],
+            "bomb_is_in_use": 0,
+            "damage": 0,
+            "hit_with_laser_during_bomb": False,
+            "before": bullet_side,
+            "after": bullet_side,
+        }
+        shooting_retail.update(
+            {
+                "enemies": [enemy],
+                "player_damage_calls": [damage_call],
+                "player_damage_trace_overflow": False,
+            }
+        )
+        shooting_reference.update(
+            {
+                "enemies": [{**enemy, "x": 60.0, "y": -30.0}],
+                "player_damage_calls": [damage_call],
+                "player_damage_trace_overflow": False,
+            }
+        )
+        write_jsonl(retail, [header, shooting_retail])
+        write_jsonl(reference, [shooting_reference])
+        enemy_collisions = run_comparator(
+            retail, reference, report, enemy_collisions=True
+        )
+        assert enemy_collisions.returncode == 0, enemy_collisions.stderr
+        enemy_report = json.loads(report.read_text(encoding="utf-8"))
+        assert enemy_report["comparison_profile"] == "enemy-collisions"
+        assert len(enemy_report["compared_fields"]) == 53
+        assert enemy_report["observed_enemy_collision_metrics"]["damage_calls"] == 1
+
+        shooting_reference["player_damage_calls"] = [{**damage_call, "damage": 48}]
+        write_jsonl(reference, [shooting_reference])
+        enemy_mismatch = run_comparator(
+            retail, reference, report, enemy_collisions=True
+        )
+        assert enemy_mismatch.returncode == 1
+        enemy_nested = json.loads(report.read_text(encoding="utf-8"))["first_mismatch"][
+            "differing_fields"
+        ]["player_damage_calls"]
+        assert enemy_nested["path"] == "player_damage_calls[0].damage"
 
         shooting_reference["player_bullet_update"] = {
             **bullet_update,

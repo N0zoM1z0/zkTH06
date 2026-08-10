@@ -82,6 +82,7 @@ pub struct PlayerBulletLifecycleState {
 pub enum LifecycleError {
     WrongRoute(PlayerConfig),
     ProfileEnded(u32),
+    FirstCollisionPhaseRequiresFrame(u32),
     Shooting(ShootingError),
     Spawn(SpawnError),
     Arithmetic(ArithmeticError),
@@ -321,18 +322,13 @@ fn spawn_bullets(
 }
 
 /// Advances one frame using only the prior closed state and replay input mask.
-pub fn step_player_bullet_lifecycle(
+fn step_player_phase(
     config: PlayerConfig,
     state: PlayerBulletLifecycleState,
     input: u16,
 ) -> Result<PlayerBulletLifecycleState, LifecycleError> {
     if config != reimu_a() {
         return Err(LifecycleError::WrongRoute(config));
-    }
-    if state.shooting.enclosing.game_frame >= PROFILE_LAST_GAME_FRAME {
-        return Err(LifecycleError::ProfileEnded(
-            state.shooting.enclosing.game_frame,
-        ));
     }
     let (shooting, effects) = step_shooting_player(config, state.shooting, input)?;
     let mut bullets = state.bullets;
@@ -341,6 +337,38 @@ pub fn step_player_bullet_lifecycle(
         spawn_bullets(&mut bullets, shooting, timer)?;
     }
     Ok(PlayerBulletLifecycleState { shooting, bullets })
+}
+
+/// Advances one frame using only the prior closed state and replay input mask.
+pub fn step_player_bullet_lifecycle(
+    config: PlayerConfig,
+    state: PlayerBulletLifecycleState,
+    input: u16,
+) -> Result<PlayerBulletLifecycleState, LifecycleError> {
+    if state.shooting.enclosing.game_frame >= PROFILE_LAST_GAME_FRAME {
+        return Err(LifecycleError::ProfileEnded(
+            state.shooting.enclosing.game_frame,
+        ));
+    }
+    step_player_phase(config, state, input)
+}
+
+/// Executes only the Player phase at the first Enemy-collision boundary.
+///
+/// The returned frame-208 pool is deliberately pre-EnemyManager. Callers must
+/// immediately compose the pinned Enemy transition; it is not a valid linked
+/// lifecycle state on its own.
+pub fn step_player_phase_at_first_collision(
+    config: PlayerConfig,
+    state: PlayerBulletLifecycleState,
+    input: u16,
+) -> Result<PlayerBulletLifecycleState, LifecycleError> {
+    if state.shooting.enclosing.game_frame != PROFILE_LAST_GAME_FRAME {
+        return Err(LifecycleError::FirstCollisionPhaseRequiresFrame(
+            state.shooting.enclosing.game_frame,
+        ));
+    }
+    step_player_phase(config, state, input)
 }
 
 #[cfg(test)]

@@ -262,6 +262,26 @@ void WritePlayerBulletUpdateTrace(FILE *output, const HeadlessPlayerBulletUpdate
     WritePlayerSpawnSide(output, trace.after);
     std::fputc('}', output);
 }
+
+void WritePlayerDamageTrace(FILE *output, const HeadlessPlayerDamageTrace &trace)
+{
+    if (!trace.returned)
+    {
+        std::fputs("{\"error\":\"CalcDamageToEnemy did not return\"}", output);
+        return;
+    }
+    std::fputs("{\"enemy_position_bits\":", output);
+    WriteU32Vector(output, trace.enemyPositionBits, 3);
+    std::fputs(",\"enemy_hitbox_bits\":", output);
+    WriteU32Vector(output, trace.enemyHitboxBits, 3);
+    std::fprintf(output,
+                 ",\"bomb_is_in_use\":%u,\"damage\":%d,\"hit_with_laser_during_bomb\":%s,\"before\":",
+                 trace.bombIsInUse, trace.damage, trace.hitWithLaserDuringBomb ? "true" : "false");
+    WritePlayerSpawnSide(output, trace.before);
+    std::fputs(",\"after\":", output);
+    WritePlayerSpawnSide(output, trace.after);
+    std::fputc('}', output);
+}
 } // namespace
 
 void HeadlessRuntime::BeginPlayerSpawnTrace(const Player *player, u32 timer)
@@ -330,6 +350,59 @@ void HeadlessRuntime::EndPlayerBulletUpdateTrace(const Player *player)
     {
         return;
     }
+    for (size_t slot = 0; slot < 80; slot++)
+    {
+        trace.after[slot] = CapturePlayerBullet(player->bullets[slot]);
+    }
+    trace.returned = true;
+}
+
+void HeadlessRuntime::BeginPlayerDamageTrace(const Player *player, const ZunVec3 *enemyPosition,
+                                             const ZunVec3 *enemyHitbox)
+{
+    if (!this->enabled || this->traceFile == NULL)
+    {
+        return;
+    }
+    if (this->playerDamageTraceCount >= HEADLESS_PLAYER_DAMAGE_TRACE_CAPACITY)
+    {
+        this->playerDamageTraceOverflow = true;
+        return;
+    }
+    HeadlessPlayerDamageTrace &trace = this->playerDamageTraces[this->playerDamageTraceCount++];
+    trace = {};
+    trace.enemyPositionBits[0] = bit_cast_from_size(enemyPosition->x);
+    trace.enemyPositionBits[1] = bit_cast_from_size(enemyPosition->y);
+    trace.enemyPositionBits[2] = bit_cast_from_size(enemyPosition->z);
+    trace.enemyHitboxBits[0] = bit_cast_from_size(enemyHitbox->x);
+    trace.enemyHitboxBits[1] = bit_cast_from_size(enemyHitbox->y);
+    trace.enemyHitboxBits[2] = bit_cast_from_size(enemyHitbox->z);
+    trace.bombIsInUse = player->bombInfo.isInUse;
+    for (size_t slot = 0; slot < 80; slot++)
+    {
+        trace.before[slot] = CapturePlayerBullet(player->bullets[slot]);
+    }
+}
+
+void HeadlessRuntime::EndPlayerDamageTrace(const Player *player, i32 damage, bool hitWithLaserDuringBomb)
+{
+    if (!this->enabled || this->traceFile == NULL || this->playerDamageTraceOverflow)
+    {
+        return;
+    }
+    if (this->playerDamageTraceCount == 0)
+    {
+        this->playerDamageTraceOverflow = true;
+        return;
+    }
+    HeadlessPlayerDamageTrace &trace = this->playerDamageTraces[this->playerDamageTraceCount - 1];
+    if (trace.returned)
+    {
+        this->playerDamageTraceOverflow = true;
+        return;
+    }
+    trace.damage = damage;
+    trace.hitWithLaserDuringBomb = hitWithLaserDuringBomb;
     for (size_t slot = 0; slot < 80; slot++)
     {
         trace.after[slot] = CapturePlayerBullet(player->bullets[slot]);
@@ -1046,6 +1119,14 @@ void HeadlessRuntime::WriteState(const char *terminalReason)
                  bit_cast_from_size(g_Player.positionOfLastEnemyHit.z));
     std::fputs(",\"player_bullets_frame\":", this->traceFile);
     WriteLivePlayerBullets(this->traceFile, g_Player);
+    std::fputs(",\"player_damage_calls\":[", this->traceFile);
+    for (size_t index = 0; index < this->playerDamageTraceCount; index++)
+    {
+        std::fputs(index == 0 ? "" : ",", this->traceFile);
+        WritePlayerDamageTrace(this->traceFile, this->playerDamageTraces[index]);
+    }
+    std::fprintf(this->traceFile, "],\"player_damage_trace_overflow\":%s",
+                 this->playerDamageTraceOverflow ? "true" : "false");
     std::fputs(",\"bullets\":[", this->traceFile);
     bool first = true;
     for (const Bullet &bullet : g_BulletManager.bullets)
@@ -1076,24 +1157,44 @@ void HeadlessRuntime::WriteState(const char *terminalReason)
     }
     std::fprintf(this->traceFile, "],\"enemies\":[");
     first = true;
-    for (const Enemy &enemy : g_EnemyManager.enemies)
+    for (size_t slot = 0; slot < sizeof(g_EnemyManager.enemies) / sizeof(g_EnemyManager.enemies[0]); slot++)
     {
+        const Enemy &enemy = g_EnemyManager.enemies[slot];
         if (!enemy.flags.active)
         {
             continue;
         }
         std::fprintf(this->traceFile,
-                     "%s{\"x\":%.9g,\"y\":%.9g,\"life\":%d,\"boss\":%s,\"ecl_sub\":%u,"
-                     "\"ecl_time\":%d}",
-                     first ? "" : ",", enemy.position.x, enemy.position.y, enemy.life,
+                     "%s{\"slot\":%zu,\"x\":%.9g,\"y\":%.9g,\"life\":%d,\"max_life\":%d,"
+                     "\"score\":%d,\"boss\":%s,\"ecl_sub\":%u,\"ecl_time\":%d,"
+                     "\"ecl_timer_previous\":%d,\"ecl_timer_subframe_bits\":\"0x%08x\","
+                     "\"position_bits\":[\"0x%08x\",\"0x%08x\",\"0x%08x\"],"
+                     "\"hitbox_bits\":[\"0x%08x\",\"0x%08x\",\"0x%08x\"],"
+                     "\"axis_speed_bits\":[\"0x%08x\",\"0x%08x\",\"0x%08x\"],"
+                     "\"angle_bits\":\"0x%08x\",\"angular_velocity_bits\":\"0x%08x\","
+                     "\"speed_bits\":\"0x%08x\",\"acceleration_bits\":\"0x%08x\","
+                     "\"flags\":[%u,%u,%u]}",
+                     first ? "" : ",", slot, enemy.position.x, enemy.position.y, enemy.life, enemy.maxLife,
+                     enemy.score,
                      enemy.flags.isBoss ? "true" : "false", enemy.currentContext.subId,
-                     enemy.currentContext.time.current);
+                     enemy.currentContext.time.current, enemy.currentContext.time.previous,
+                     bit_cast_from_size(enemy.currentContext.time.subFrame), bit_cast_from_size(enemy.position.x),
+                     bit_cast_from_size(enemy.position.y), bit_cast_from_size(enemy.position.z),
+                     bit_cast_from_size(enemy.hitboxDimensions.x), bit_cast_from_size(enemy.hitboxDimensions.y),
+                     bit_cast_from_size(enemy.hitboxDimensions.z), bit_cast_from_size(enemy.axisSpeed.x),
+                     bit_cast_from_size(enemy.axisSpeed.y), bit_cast_from_size(enemy.axisSpeed.z),
+                     bit_cast_from_size(enemy.angle), bit_cast_from_size(enemy.angularVelocity),
+                     bit_cast_from_size(enemy.speed), bit_cast_from_size(enemy.acceleration),
+                     reinterpret_cast<const u8 *>(&enemy.flags)[0], reinterpret_cast<const u8 *>(&enemy.flags)[1],
+                     reinterpret_cast<const u8 *>(&enemy.flags)[2]);
         first = false;
     }
     std::fprintf(this->traceFile, "]}\n");
     std::fflush(this->traceFile);
     this->playerSpawnTrace = {};
     this->playerBulletUpdateTrace = {};
+    this->playerDamageTraceCount = 0;
+    this->playerDamageTraceOverflow = false;
 }
 
 bool HeadlessRuntime::AdvanceTick()

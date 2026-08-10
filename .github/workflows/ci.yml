@@ -72,6 +72,9 @@ jobs:
           python3 tests/test_player_bullet_lifecycle_vector.py
           python3 tests/test_player_bullet_lifecycle_openvm_input.py
           python3 tests/test_player_bullet_lifecycle_openvm_evidence.py
+          python3 tests/test_early_enemy_collision_audit.py
+          python3 tests/test_early_gameplay_vector.py
+          python3 tests/test_early_gameplay_openvm_evidence.py
           python3 tests/test_retail_anchor.py
           python3 tests/test_x87_audit.py
           reference/th06 --canonical-self-test

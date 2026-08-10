@@ -318,11 +318,29 @@ EnemyManager first writes collided state at frame 208.  We therefore close 206
 transitions and reject the next step.  The private payload falls from 197,180
 bytes of independently observed callback records to 436 bytes of replay masks,
 while the public digest covers every intermediate state.  The fifth guest costs
-423,247,443 cells.  This is the intended soundness pattern for future growth:
+474,516,189 cells.  This is the intended soundness pattern for future growth:
 derive state while the writer inventory is closed, and make the first omitted
 writer an enforced boundary rather than an unspoken assumption.  The next
 obligation is now concrete Enemy/ECL collision composition, not generic
 ``bullet support.''
+
+\paragraph{Phase AA: compose the stopping writer without importing it as a
+witness.}
+The frame-208 boundary could have been crossed by supplying observed Enemy
+positions or collision results, but that would recreate the witness-trust
+problem eliminated in Phase Z.  Instead, a new enclosing state derives five
+fixed Stage-1 timeline spawns and their manager-ordered movement, in-bounds and
+ECL transitions before executing damage, target, death, and score updates.  A
+225-frame dual-oracle trace exposes every damage call and a raw Enemy/ECL
+projection; the selected 207-transition vector contains 200 calls and the
+unique first hit.  The sixth OpenVM proof adds only one replay mask---two bytes
+of private payload---while its public digest binds the derived Enemy
+projection and collision metrics.  The resulting 769,444,525-cell proof
+demonstrates the intended expansion rule: new subsystem state must be a
+consequence of the preceding closed state, fixed resources, and replay input.
+The finite x87 curve table and omitted Sub0 shooting path are recorded as
+refinement and noninterference obligations rather than silently promoted to
+equivalence claims.
 
 Future changes to the central claim or state boundary should be appended here
 with the evidence that motivated them.
