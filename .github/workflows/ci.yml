@@ -78,6 +78,9 @@ jobs:
           python3 tests/test_first_wave_audit.py
           python3 tests/test_first_wave_vector.py
           python3 tests/test_first_wave_openvm_evidence.py
+          python3 tests/test_first_item_audit.py
+          python3 tests/test_first_item_vector.py
+          python3 tests/test_first_item_openvm_evidence.py
           python3 tests/test_retail_anchor.py
           python3 tests/test_x87_audit.py
           reference/th06 --canonical-self-test
@@ -92,3 +95,4 @@ jobs:
         run: |
           cargo +1.91.1 test --workspace --locked
           cargo +1.91.1 test --manifest-path first-wave/Cargo.toml --locked
+          cargo +1.91.1 test --manifest-path first-item/Cargo.toml --locked

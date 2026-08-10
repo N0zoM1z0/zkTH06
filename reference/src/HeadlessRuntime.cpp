@@ -7,6 +7,7 @@
 #include "EnemyManager.hpp"
 #include "GameManager.hpp"
 #include "Gui.hpp"
+#include "ItemManager.hpp"
 #include "Player.hpp"
 #include "ReplayFile.hpp"
 #include "Rng.hpp"
@@ -240,6 +241,53 @@ void WriteLivePlayerBullets(FILE *output, const Player &player)
         bullets[slot] = CapturePlayerBullet(player.bullets[slot]);
     }
     WritePlayerSpawnSide(output, bullets);
+}
+
+void WriteLiveItems(FILE *output, const ItemManager &manager)
+{
+    std::fprintf(output,
+                 "{\"next_index\":%d,\"item_count\":%u,\"random_spawn_index\":%u,"
+                 "\"random_table_index\":%u,\"active_slots\":[",
+                 manager.nextIndex, manager.itemCount, g_EnemyManager.randomItemSpawnIndex,
+                 g_EnemyManager.randomItemTableIndex);
+    bool first = true;
+    for (size_t slot = 0; slot + 1 < sizeof(manager.items) / sizeof(manager.items[0]); slot++)
+    {
+        const Item &item = manager.items[slot];
+        if (!item.isInUse)
+        {
+            continue;
+        }
+        std::fprintf(output, "%s{\"slot\":%zu,\"current_position_bits\":", first ? "" : ",", slot);
+        const u32 currentPosition[] = {
+            bit_cast_from_size(item.currentPosition.x),
+            bit_cast_from_size(item.currentPosition.y),
+            bit_cast_from_size(item.currentPosition.z),
+        };
+        WriteU32Vector(output, currentPosition, 3);
+        std::fputs(",\"start_position_bits\":", output);
+        const u32 startPosition[] = {
+            bit_cast_from_size(item.startPosition.x),
+            bit_cast_from_size(item.startPosition.y),
+            bit_cast_from_size(item.startPosition.z),
+        };
+        WriteU32Vector(output, startPosition, 3);
+        std::fputs(",\"target_position_bits\":", output);
+        const u32 targetPosition[] = {
+            bit_cast_from_size(item.targetPosition.x),
+            bit_cast_from_size(item.targetPosition.y),
+            bit_cast_from_size(item.targetPosition.z),
+        };
+        WriteU32Vector(output, targetPosition, 3);
+        std::fprintf(output,
+                     ",\"timer_previous\":%d,\"timer_subframe_bits\":\"0x%08x\","
+                     "\"timer_current\":%d,\"item_type\":%d,\"is_in_use\":%d,"
+                     "\"unk_142\":%d,\"state\":%d}",
+                     item.timer.previous, bit_cast_from_size(item.timer.subFrame), item.timer.current,
+                     item.itemType, item.isInUse, item.unk_142, item.state);
+        first = false;
+    }
+    std::fputs("]}", output);
 }
 
 void WritePlayerBulletUpdateTrace(FILE *output, const HeadlessPlayerBulletUpdateTrace &trace)
@@ -1127,6 +1175,8 @@ void HeadlessRuntime::WriteState(const char *terminalReason)
     }
     std::fprintf(this->traceFile, "],\"player_damage_trace_overflow\":%s",
                  this->playerDamageTraceOverflow ? "true" : "false");
+    std::fputs(",\"items_frame\":", this->traceFile);
+    WriteLiveItems(this->traceFile, g_ItemManager);
     std::fputs(",\"bullets\":[", this->traceFile);
     bool first = true;
     for (const Bullet &bullet : g_BulletManager.bullets)

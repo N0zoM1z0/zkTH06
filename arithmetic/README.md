@@ -296,6 +296,12 @@ its conservative base status:
   breakpoint experiment over 2,081 point-item collections in four Linux replay
   runs. All observed values were finite and inside the candidate collection
   interval, but this remains reconstruction-only counterexample search.
+- [`first-item-v1.json`](first-item-v1.json) composes the first-wave and
+  Item-score audits with 21 source anchors for random-drop cadence, Item
+  allocation/motion/AABB collection, retained feedback, and collision-ANM
+  reclamation. It records the exact Normal Reimu-A frame-219 spawn/frame-249
+  collection contract and its finite-prefix noninterference assumptions; it is
+  static correspondence evidence rather than a binary/refinement proof.
 
 These artifacts have proprietary-input-free structural tests in lightweight
 CI. Local owners can reproduce them with:
@@ -330,6 +336,10 @@ python3 tools/item_score_audit.py \
   local/original-th06/東方紅魔郷.exe \
   --mapping repos/th06/config/mapping.csv \
   --check arithmetic/item-score-v1.json
+python3 tools/first_item_audit.py \
+  local/original-th06/東方紅魔郷.exe \
+  --source-root repos/th06 \
+  --check arithmetic/first-item-v1.json
 ```
 
 The corpus report additionally requires a debug build, GDB, the four pinned

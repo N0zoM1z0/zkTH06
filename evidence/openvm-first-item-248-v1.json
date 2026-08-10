@@ -1,0 +1,249 @@
+{
+  "type": "zkth06.openvm-first-item-proof",
+  "schema_version": 1,
+  "date_utc": "2026-08-10",
+  "backend": {
+    "name": "OpenVM",
+    "cargo_openvm_version": "2.0.1",
+    "cargo_openvm_revision": "b820b25baab6c5d9b055f64e0286b6b1058e707c",
+    "guest_target": "riscv32im-risc0-zkvm-elf",
+    "guest_toolchain": "nightly-2026-01-18",
+    "guest_rustc": "rustc 1.94.0-nightly (fe98ddcfc 2026-01-17)",
+    "vm_extensions": [
+      "rv32i",
+      "rv32m",
+      "io",
+      "sha2"
+    ]
+  },
+  "workload": {
+    "source_vector": "first-item-002677-249-v1.bin",
+    "source_vector_bytes": 140484,
+    "source_vector_sha256": "2454c98c1ee1b0595db14758de40a9604918a45351c8026edda6c9e1ab300ebb",
+    "retail_target_executable_sha256": "9f76483c46256804792399296619c1274363c31cd8f1775fafb55106fb852245",
+    "replay_sha256": "01bc11b9226932bddeeeff675f1741b89b129f4c8820b3b1cf185a1cb19ad10f",
+    "retail_trace_sha256": "5742614792bf500b48e4dd480cb592c6f5ff2da4ab21c13cde5884cc25b0b0cc",
+    "reference_trace_sha256": "f8b8e8b2c2e31c1eef916e582cbc464760d86676283a5865b4b25cf4e7a65ef8",
+    "retail_reference_comparison_sha256": "4068d24a6fd7987d33eb4958943f4b7b27016851cf7a19fed16d72bdf02c0ce2",
+    "static_audit_sha256": "21b28dfd9a3e163980ca323d6160c6e80368006afad1a42e3c67c0feb9f02682",
+    "static_audit_sealed_digest": "1dcc3f77e38f695def1535760bc15e813e98dda899f039c938a1f92c8a19416b",
+    "parent_first_wave_vector_sha256": "b645bc3e25dd9fcc8ec1cce29cd4971d522b70e48e69243842c3a2b5500cbbf3",
+    "profile": "normal-reimu-a-power-rank-1-first-death-item-feedback",
+    "source_frames": 300,
+    "anchor_game_frame": 1,
+    "incremental_anchor_game_frame": 208,
+    "final_game_frame": 249,
+    "transitions": 248,
+    "incremental_transitions": 41,
+    "character": 0,
+    "shot_type": 0,
+    "difficulty": 1,
+    "profile_flags": 7,
+    "item_spawn_game_frame": 219,
+    "item_collection_game_frame": 249,
+    "collision_anm_reclamation_frames": [
+      238,
+      243,
+      249
+    ],
+    "random_item_spawn_index": 6,
+    "random_item_table_index": 1,
+    "item_allocator_next_index": 1,
+    "item_count": 1,
+    "active_items": 0,
+    "current_power": 1,
+    "subrank": 1,
+    "collided_bullets": 2,
+    "active_bullets": 3,
+    "maximum_enemies": 5,
+    "remaining_enemies": 0,
+    "score": 1960,
+    "input_payload_bytes": 520,
+    "input_payload_sha256": "2eb6698832ec4965ec738e65c32b9d022124328085a9c54cf5d212eb021b9626",
+    "expected_projection_sha256": "f76f66ae95ad6d7ce87e001129737d404a23cec1471f7424c0607d763126c1d3",
+    "state_domain_ascii": "zkTH06/first-item/projection/v1",
+    "state_domain_nul_terminated": true,
+    "statement_domain_ascii": "zkTH06/openvm/first-item/v1",
+    "statement_domain_nul_terminated": true,
+    "expected_statement_sha256": "552ea02d7946a1da7c2cc1d7d0a9600ea21156cb2a1aa4842ef7623d6dd19cc6",
+    "statement_preimage": "domain || input_payload || final_game_frame_le || transitions_le || score_le || current_power_le_u32 || subrank_le_i32 || random_spawn_index_le_u32 || random_table_index_le_u32 || item_count_le_u32 || active_item_count_le_u32 || collision_count_le_u32 || bullet_count_le_u32 || enemy_count_le_u32 || maximum_enemies_le_u32 || projection_sha256"
+  },
+  "source_bindings": {
+    "zkvm/player-motion/Cargo.toml": "8c859effb9b0f39bb84531819b12b4cb0bd8864fa9c7035308e49a46ead9ce48",
+    "zkvm/player-motion/src/lib.rs": "75b2b76638df83addee4bf6feb35cd321a370790739e635c54b3135ef9d21820",
+    "zkvm/player-motion/src/pc24.rs": "a8960adeec05c5ddaf5343902ae50895a8db9e030f77f5d5c5d664985b84945e",
+    "zkvm/player-shooting/Cargo.toml": "eda906f997f9d56f7468d0fa7147499641ed9b149a7589e528d9e10fa6f1d93b",
+    "zkvm/player-shooting/src/lib.rs": "89748d916d9110db930e9ca5fc876e68c42e74ffe500c52d48736f4aaf9607d1",
+    "zkvm/player-bullets/Cargo.toml": "0a75c59c7d4256a962236cd5bb90d924e6cb1a3c21ff9dfd2d506d788236fc30",
+    "zkvm/player-bullets/src/lib.rs": "6808d5b51001e542f1c0a71cdee1dcd125c3dc12682bb08d8495f1e6adf4b328",
+    "zkvm/player-bullet-lifecycle/Cargo.toml": "7b9c47a129fc78d1260a3b1401ee026bbeb683287448e7132ceef16bd9d0f72c",
+    "zkvm/player-bullet-lifecycle/src/lib.rs": "8f4ee335a5c79b88bbd332eb69f1fdd6a84d7c6e96e98518459e12756f7bfb54",
+    "zkvm/early-gameplay/Cargo.toml": "5fb71d4c9e4789212c38915c521a4a896efb0723455ea11c7fd9b22fe19322b9",
+    "zkvm/early-gameplay/src/lib.rs": "03478cc7cf0242c2b0df72e8ee6b00ea44049c344ad6b46ec03b693e4de29707",
+    "zkvm/first-wave/Cargo.toml": "5f5b914a1a958e83176d38580f9b8a952c5f625e2a8b8d7fb84585da2fe16cee",
+    "zkvm/first-wave/src/lib.rs": "591e22e2a4270f3c9b0de84f1428e53ea0e6aa6179a3f5dfbc18c5c3b9c0374c",
+    "zkvm/first-item/Cargo.toml": "cecf0de93a18428804a2b00e23c6a4eae8cdb06625c676ad040387f38970604d",
+    "zkvm/first-item/src/lib.rs": "5283e30f5b671da5a66d76d86f1d43a92ba8d4603fad15225f697b38a251444c",
+    "zkvm/first-item-openvm/Cargo.lock": "0f5c4d31dbecc4bc9e5780b94e3118016a26358b143c4f0e08e98b7a1ca5f5ff",
+    "zkvm/first-item-openvm/Cargo.toml": "079efafd9d48ee05c569c9a06f6cfe60bf3342ffd56e8d368fc437b60af1179b",
+    "zkvm/first-item-openvm/openvm.toml": "66176cd349514666978faed7a789df0653eced83be1a2bcc70b0b5cc2c06ffcc",
+    "zkvm/first-item-openvm/src/main.rs": "9c4b0ab57c7c56c7bb1d9c11ea10c664b2907f22d0abb0658a460fc565cf3ffa",
+    "tools/build_first_item_openvm_input.py": "e1f2463c3ba5aa988157dfbcbe52522aed02da81dbde2472a93a24fc19175dd8",
+    "reference/src/HeadlessRuntime.cpp": "6e7aff79b52372e210000beff7837cd338ffdafee16973f929af7d649a455248",
+    "tools/gdb/retail_anchor_trace.py": "de66ed3de0adc643ec0eaf42dd09edd48f53ef55da523eb5632d95980503292c",
+    "tools/compare_retail_anchor.py": "7533b8fc2530a2281ebca1a4ba62acea2ed45a94b50279371dcd9547c1df69a0"
+  },
+  "evidence_bindings": {
+    "arithmetic/first-item-v1.json": "21b28dfd9a3e163980ca323d6160c6e80368006afad1a42e3c67c0feb9f02682",
+    "evidence/first-item-002677-249-v1.bin": "2454c98c1ee1b0595db14758de40a9604918a45351c8026edda6c9e1ab300ebb",
+    "evidence/first-item-002677-249-v1.json": "d05d3e2c7d91bdceb1c6feab658a3bb6af1846f661fa8f4b104177841a902e2e",
+    "evidence/retail-reference-002677-300-items-v1.json": "4068d24a6fd7987d33eb4958943f4b7b27016851cf7a19fed16d72bdf02c0ce2",
+    "tools/build_first_item_vector.py": "887b5e79a42d3973ee66788379c8aaa5aeca89ae0fdf6800f82353263d8c0043",
+    "tools/first_item_audit.py": "0fa0f163e2563e2029cd15351d8501d00388f757881ca3b20aaab827b8b5b520"
+  },
+  "artifacts": {
+    "guest_elf": {
+      "bytes": 70088,
+      "sha256": "a417f1231befb448717432775f3c4a669dec642be42533853bf3000453f2b7d2",
+      "tracked": false
+    },
+    "vm_executable": {
+      "path": "first-item-v1/zkth06-first-item-openvm.vmexe",
+      "bytes": 692311,
+      "sha256": "c6d451971178fdedcac2bb4fa65886ef86d295079ae3ee35b25427d00ad9a0f5",
+      "app_exe_commit": "0x0009fa1bfbd04c8fe980c355d4aac0a38fcd77f85c33f75a0fc309ca1137d949"
+    },
+    "app_proving_key": {
+      "bytes": 242775,
+      "tracked": false,
+      "reason": "deterministically regenerable and not required for verification"
+    },
+    "app_verifying_key": {
+      "path": "first-item-v1/app.vk",
+      "bytes": 241614,
+      "sha256": "09b509a234f028b4f251779a26adf4d87b66d40e07174f0f5e3a2d9782de958b"
+    },
+    "app_commit_descriptor": {
+      "path": "first-item-v1/app-commit.json",
+      "bytes": 181,
+      "sha256": "5021ba37e9368021fcce33cbaf2ece55b71dc1cacb0936b7c03a6aa59962e7dc"
+    },
+    "app_proof": {
+      "path": "openvm-first-item-248-v1.app.proof",
+      "bytes": 3472435,
+      "sha256": "3a909f13a8a71690aa579812b4a61f844f7186e4a30ccd426a4ae482270fdf97"
+    }
+  },
+  "meter": [
+    {
+      "transitions": 1,
+      "instructions": 76117,
+      "cells": 2973497,
+      "statement_sha256": "ddeea76b7663728fe14d6f512a82970d2efd8b0eb8b94552e6617877d6d00600"
+    },
+    {
+      "transitions": 10,
+      "instructions": 690887,
+      "cells": 26852082,
+      "statement_sha256": "aadd5f2ee144cd20c42abf864f8af5b802804e26b6c60fe4e92c3377ba254da8"
+    },
+    {
+      "transitions": 100,
+      "instructions": 8787114,
+      "cells": 342469754,
+      "statement_sha256": "df5cb38d3cc3a91d42ff28288a2941017ce7e932df011642bae8d5b959197251"
+    },
+    {
+      "transitions": 207,
+      "instructions": 23918663,
+      "cells": 932639163,
+      "statement_sha256": "9c55ca3b359963e06505d9babe0346a217584a39f89958f09cc31bcd2e086eb2"
+    },
+    {
+      "transitions": 228,
+      "instructions": 27136950,
+      "cells": 1060183752,
+      "statement_sha256": "61497df44595593180e3be476afd93f0d7876b214f0a6e8c7ee371386ddbad38"
+    },
+    {
+      "transitions": 248,
+      "instructions": 29288817,
+      "cells": 1146265201,
+      "statement_sha256": "552ea02d7946a1da7c2cc1d7d0a9600ea21156cb2a1aa4842ef7623d6dd19cc6"
+    }
+  ],
+  "public_values_audit": {
+    "method": "OpenVM v2.0.1 SDK deserialization as ContinuationVmProof<SC>",
+    "tool_source_bindings": {
+      "tools/openvm-proof-inspect/Cargo.lock": "cb328a765cb2214d7b6284c9eb769cb952815242e356a12f656aa8a40fef332a",
+      "tools/openvm-proof-inspect/Cargo.toml": "5707b336099df1467ce2a7121439c1c46ce7eef0d0a18f9801b4979fbc1ff964",
+      "tools/openvm-proof-inspect/src/main.rs": "524b728225089418f27b147374f64534948c79c1d673a5dbee07a916cce732ec"
+    },
+    "decoded_bytes": [
+      85,
+      46,
+      160,
+      45,
+      121,
+      70,
+      161,
+      218,
+      124,
+      44,
+      193,
+      215,
+      208,
+      169,
+      96,
+      14,
+      162,
+      17,
+      86,
+      203,
+      42,
+      26,
+      164,
+      132,
+      46,
+      247,
+      98,
+      61,
+      109,
+      209,
+      156,
+      198
+    ],
+    "matches_expected_statement_sha256": true,
+    "one_bit_wrong_expected_digest_rejected": true
+  },
+  "proving": {
+    "elapsed_seconds": 290.44,
+    "user_cpu_seconds": 9494.38,
+    "system_cpu_seconds": 980.85,
+    "cpu_utilization_percent": 3606,
+    "max_rss_kib": 52115224,
+    "swaps": 0,
+    "exit_status": 0
+  },
+  "verification": {
+    "elapsed_seconds": 0.29,
+    "max_rss_kib": 55396,
+    "expected_executable_commit_accepted": true,
+    "one_bit_wrong_executable_commit_rejected": true,
+    "public_statement_digest_matches": true,
+    "one_bit_wrong_public_digest_rejected": true
+  },
+  "design_iteration": {
+    "previous_first_wave_payload_bytes": 480,
+    "first_item_payload_bytes": 520,
+    "payload_increase_bytes": 40,
+    "previous_first_wave_instructions": 28276048,
+    "first_item_instructions": 29288817,
+    "instruction_increase": 1012769,
+    "previous_first_wave_cells": 1104665874,
+    "first_item_cells": 1146265201,
+    "cell_increase": 41599327,
+    "comparison_note": "Twenty replay masks add Item spawn, thirty frames of raw-bit movement, collision, retained score/power/subrank feedback, random-drop and allocator cursors, while all new gameplay state remains derived rather than witnessed."
+  },
+  "claim_boundary": "This proof starts from the fixed empty gameplay-frame-1 state and executes 248 linked Normal Reimu-A power-rank-1 transitions using only replay input masks. It composes the complete first wave with Enemy-death random-drop cadence, the frame-219 small-power Item spawn, raw-bit Item motion and timer state, collision-ANM slot reclamation, the frame-249 Player collection, score 1960, power 1, subrank 1, and Item/random allocator cursors. Every retained Player bullet, Enemy, Item, target, score, power, subrank, and cursor field is publicly committed at every frame. Retail Wine and the independently built Linux reference match over 300 frames. This is finite differential and static-mapping evidence, not a universal retail-binary equivalence proof. The prior first omitted-state feedback boundary is closed; the kernel stops at frame 249 before composing the second Enemy wave, RNG/ECL context, and Enemy bullets. RNG/effect and Sub0 shooting noninterference, direct Item/collision-ANM decoding, x87 fsincos refinement, translation validation, and later gameplay subsystems remain explicit obligations."
+}

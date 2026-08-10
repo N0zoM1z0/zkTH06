@@ -173,6 +173,25 @@ hashes, and negative checks are tracked. This finite prefix deliberately ends
 at frame 229: omitted death-item state first writes retained score/power at
 frame 249 and must be composed before the kernel advances across that writer.
 
+`first-item-002677-249-v1.bin` (`ZKFIV1`) closes that first omitted-feedback
+boundary. It derives the random-drop cursor across all five deaths, spawns one
+small-power Item in slot 0 at frame 219, advances its raw binary32 position and
+velocity, and collects it at frame 249. The retained result is score 1960,
+power 1, subrank 1, random-spawn cursor 6, table cursor 1, and allocator cursor
+1. Collision-script reclamation also removes slots at frames 238, 243, and
+249. The companion 300-frame Wine/reference report exactly matches every
+compared Item, cursor, Player, bullet, Enemy, RNG, and retained-score field.
+
+`openvm-first-item-248-v1.json` records the eighth OpenVM application proof.
+Its 520-byte private payload is a fixed 24-byte header plus 248 replay masks;
+Item geometry, collision, random-drop/allocator state, power, subrank, and
+score are all guest-derived. The guest executes 29,288,817 instructions over
+1,146,265,201 metered cells and exposes public digest
+`552ea02d7946a1da7c2cc1d7d0a9600ea21156cb2a1aa4842ef7623d6dd19cc6`.
+The proof, vm executable, verifying key, executable commitment, source/evidence
+hashes, and one-bit negative checks are tracked. The next sound boundary is
+the uncomposed second Enemy wave with its RNG/ECL and Enemy-bullet state.
+
 `source/openvm-player-motion-v1/player-motion-lib.rs` preserves the exact
 library source compiled into the earlier immutable proof.  The live crate later
 gained the enclosing-state module, so retaining the old source by hash keeps

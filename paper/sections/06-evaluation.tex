@@ -422,11 +422,11 @@ damage calls.  No bullet state, Enemy state, collision result, life, target, or
 score is witness-supplied.
 
 The address-bound Wine trace and independent Linux reference agree over 260
-frames on the enlarged raw projection.  The code{ZKFWV1} vector additionally
+frames on the enlarged raw projection.  The \code{ZKFWV1} vector additionally
 stores the complete 104-byte projection of every active bullet so that the
 shared Rust transition is checked field by field.  The OpenVM public digest
 commits the same active-bullet and Enemy records at every frame, not only the
-endpoint.  Its 480-byte private code{ZKFWI1} input consists of the 24-byte
+endpoint.  Its 480-byte private \code{ZKFWI1} input consists of the 24-byte
 fixed header and 228 replay masks.  The authenticated digest is
 \begin{center}
 \small\ttfamily
@@ -459,7 +459,56 @@ cutoff: Enemy deaths have spawned omitted Item state, whose first observed
 feedback is a small-power collection that adds 10 score and power at frame
 249.  Extending past frame 229 therefore requires composing Item state.
 RNG/effect and Sub0-shooting noninterference, direct collision-ANM decoding,
-x87 code{fsincos} refinement, and code correspondence remain open.
+x87 \code{fsincos} refinement, and code correspondence remain open.
+
+\subsection{First Item-feedback application proof}
+
+The eighth guest composes the first concrete feedback from previously omitted
+state.  The random-drop cursor advances on all five first-wave deaths; its third
+death selects a small-power Item and allocates slot 0 at frame 219.  The guest
+then derives the Item timer, raw binary32 velocity/position recurrence, ordered
+Player AABB comparisons, and collection at frame 249.  That collection changes
+score from 1950 to 1960, power from 0 to 1, and subrank from 0 to 1.  The same
+transition reclaims collided-bullet ANM slots at frames 238, 243, and 249.  No
+Item, allocator/random cursor, collision, power, subrank, score, bullet, or
+Enemy value is witness-supplied.
+
+The address-bound Wine trace and independent Linux reference agree over 300
+frames on the complete added raw projection.  The 140,484-byte \code{ZKFIV1}
+vector checks all 248 linked transitions from the fixed frame-1 anchor.  The
+private \code{ZKFII1} input is 520 bytes---a 24-byte fixed header plus 248 replay
+masks---and authenticates public digest
+\begin{center}
+\small\ttfamily
+552ea02d7946a1da7c2cc1d7d0a9600ea21156cb2a1aa4842ef7623d6dd19cc6.
+\end{center}
+
+\begin{table}[h]
+  \centering
+  \small
+  \begin{tabular}{@{}rrr@{}}
+    \toprule
+    Transitions & Guest instructions & Metered cells \\
+    \midrule
+    1   & 76,117     & 2,973,497 \\
+    10  & 690,887    & 26,852,082 \\
+    100 & 8,787,114  & 342,469,754 \\
+    207 & 23,918,663 & 932,639,163 \\
+    228 & 27,136,950 & 1,060,183,752 \\
+    248 & 29,288,817 & 1,146,265,201 \\
+    \bottomrule
+  \end{tabular}
+  \caption{OpenVM v2.0.1 first Item-feedback meter results.}
+  \label{tab:openvm-first-item-meter}
+\end{table}
+
+Application proving takes 290.44 seconds and peaks at 52,115,224 KiB RSS
+without swapping.  The 3,472,435-byte proof verifies in 0.29 seconds and
+55,396 KiB RSS.  Exact executable/public commitments pass and one-bit variants
+fail.  This closes the first observed omitted-state feedback boundary, but the
+guest still fails closed before the second Enemy wave.  Its RNG/ECL context and
+Enemy bullets, direct Item/collision-ANM decoding, omitted-path
+noninterference, x87 refinement, and code correspondence remain open.
 
 \subsection{Canonical projection experiment}
 

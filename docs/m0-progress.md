@@ -501,6 +501,55 @@ spawn/motion/collision rather than claiming it noninterfering. Direct collision
 ANM decoding, alias-complete RNG/effect and Sub0-shooting noninterference, x87
 `fsincos` refinement, and source/binary/guest correspondence remain open.
 
+## First Item-feedback proof gate
+
+The next enclosing state now composes the stopping Item writer instead of
+extending the earlier omission claim. Enemy deaths advance a derived
+random-drop cursor; the third death at frame 219 selects the first random-table
+entry and allocates one small-power Item in slot 0. Its initial vertical
+velocity is raw binary32 `0xc00ccccd` (-2.2), then the transition applies raw
+binary32 acceleration `0x3cf5c28f` (+0.03 per frame), advances the Item timer,
+and evaluates the retail-ordered Player/Item AABB comparisons.
+
+The Item remains active from frames 219 through 248. Collection at frame 249
+changes score 1950 to 1960, power 0 to 1, and subrank 0 to 1. The manager's
+`itemCount` is intentionally still 1 in that post-frame snapshot because the
+active count is accumulated before collection; it becomes zero on the next
+manager pass. The transition also derives collided-bullet ANM slot reclamation
+at frames 238, 243, and 249. The endpoint has two collided bullets, three
+active bullets, no live Enemy, and no active Item.
+
+The address-bound Wine trace and independent Linux reference agree for 300
+frames over the added Item records, allocator/random cursors, power, subrank,
+and all preceding fields. The `ZKFIV1` vector retains every active Item field
+and checks all 248 linked transitions from the same fixed frame-1 anchor. The
+`ZKFII1` OpenVM payload is 520 bytes: a fixed 24-byte header plus 248 replay
+masks. No Item, cursor, collision, power, subrank, score, bullet, or Enemy value
+is witness-supplied. Its public digest is
+`552ea02d7946a1da7c2cc1d7d0a9600ea21156cb2a1aa4842ef7623d6dd19cc6`.
+
+| Transitions | Guest instructions | Metered cells |
+| ---: | ---: | ---: |
+| 1 | 76,117 | 2,973,497 |
+| 10 | 690,887 | 26,852,082 |
+| 100 | 8,787,114 | 342,469,754 |
+| 207 | 23,918,663 | 932,639,163 |
+| 228 | 27,136,950 | 1,060,183,752 |
+| 248 | 29,288,817 | 1,146,265,201 |
+
+Application proving took 290.44 seconds and 52,115,224 KiB peak RSS without
+swapping; the 3,472,435-byte proof verifies in 0.29 seconds. Exact executable
+and public commitments pass, while one-bit variants fail. The tracked bundle
+is [`evidence/openvm-first-item-248-v1.json`](../evidence/openvm-first-item-248-v1.json).
+
+This closes the first concrete omitted-state feedback counterexample. It is
+still finite differential/static evidence rather than a universal refinement
+proof. The new fail-closed boundary is frame 249: before proceeding, the
+second Enemy wave must bring its ECL context, RNG effects, and Enemy bullets
+into the canonical transition. Item/collision ANM decoding, alias-complete
+effect and Sub0-shooting noninterference, x87 refinement, and code
+correspondence remain open; Lean is deliberately not on this critical path.
+
 ## Local corpus result
 
 The downloaded corpus is excluded from Git. Provenance and input hashes are in
@@ -635,8 +684,8 @@ wrap for one bounded award.
 1. Close or explicitly constrain the selected projection. Inactive Effect
    residue and dynamic ScreenEffect jobs are known open noninterference cases;
    see [`state-projection-audit.md`](state-projection-audit.md).
-2. Compose death-spawned Item state through its first score/power feedback at
-   frame 249, then add the next Enemy/ECL and enemy-bullet writers.
+2. Compose the second Enemy wave together with its RNG/ECL and Enemy-bullet
+   state. The preceding death-Item feedback is now closed through frame 249.
 3. Add a field-level canonical snapshot at a selected tick so a subsystem
    mismatch can be reduced to its first field.
 4. Export the same schema from the original executable or an exact-reference

@@ -68,6 +68,11 @@ zkvm/first-wave-openvm/target/
 zkvm/first-wave-openvm/openvm/
 zkvm/first-wave-openvm/*.proof
 zkvm/first-wave-openvm/openvm_init.rs
+zkvm/first-item/target/
+zkvm/first-item-openvm/target/
+zkvm/first-item-openvm/openvm/
+zkvm/first-item-openvm/*.proof
+zkvm/first-item-openvm/openvm_init.rs
 
 # Application proving keys are large, deterministic, and not needed to verify.
 evidence/**/app.pk

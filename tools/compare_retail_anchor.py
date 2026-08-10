@@ -317,6 +317,11 @@ def main() -> int:
         action="store_true",
         help="also compare raw Enemy/ECL state and every CalcDamageToEnemy call boundary",
     )
+    parser.add_argument(
+        "--items",
+        action="store_true",
+        help="also compare the gameplay-relevant active Item slot projection",
+    )
     args = parser.parse_args()
 
     retail_rows = read_jsonl(args.retail)
@@ -330,7 +335,8 @@ def main() -> int:
         raise ValueError("retail trace target mismatch")
 
     retail_frames = [row for row in retail_rows[1:] if row.get("type") == FRAME_KIND]
-    player_bullet_frames = args.player_bullet_frames or args.enemy_collisions
+    enemy_collisions = args.enemy_collisions or args.items
+    player_bullet_frames = args.player_bullet_frames or enemy_collisions
     player_bullets = args.player_bullets or player_bullet_frames
     player_shooting = args.player_shooting or player_bullets
     enclosing_player = args.enclosing_player or player_shooting
@@ -344,12 +350,14 @@ def main() -> int:
             "player_last_enemy_hit_bits",
             "player_bullets_frame",
         )
-    if args.enemy_collisions:
+    if enemy_collisions:
         compared_fields += (
             "enemies(raw-bit projection)",
             "player_damage_calls",
             "player_damage_trace_overflow",
         )
+    if args.items:
+        compared_fields += ("items_frame",)
     ignored_draw_z_differences = [0]
     report: dict[str, Any] = {
         "type": "zkth06.retail-reference-comparison",
@@ -371,8 +379,10 @@ def main() -> int:
         "gdb_version": header.get("gdb_version"),
         "config_sha256": header.get("config_sha256"),
         "comparison_profile": (
-            "enemy-collisions"
-            if args.enemy_collisions
+            "items"
+            if args.items
+            else "enemy-collisions"
+            if enemy_collisions
             else "player-bullet-frames"
             if player_bullet_frames
             else "player-bullets"
@@ -471,7 +481,7 @@ def main() -> int:
                 )
                 if nested_difference is not None:
                     differing[nested_field] = nested_difference
-        if args.enemy_collisions:
+        if enemy_collisions:
             retail_enemies = [
                 {key: value for key, value in enemy.items() if key not in ("x", "y")}
                 for enemy in retail.get("enemies", [])
@@ -498,6 +508,12 @@ def main() -> int:
                 )
                 if nested_difference is not None:
                     differing[nested_field] = nested_difference
+        if args.items:
+            nested_difference = first_nested_difference(
+                retail.get("items_frame"), reference.get("items_frame"), "items_frame"
+            )
+            if nested_difference is not None:
+                differing["items_frame"] = nested_difference
         if differing:
             if player_bullet_frames:
                 report["semantic_projection_exclusions"][0]["observed_differences"] = (
@@ -532,7 +548,7 @@ def main() -> int:
         report["semantic_projection_exclusions"][0]["observed_differences"] = (
             ignored_draw_z_differences[0]
         )
-    if args.enemy_collisions:
+    if enemy_collisions:
         all_damage_calls = [
             call for frame in retail_frames for call in frame.get("player_damage_calls", [])
         ]
@@ -550,6 +566,30 @@ def main() -> int:
             ),
             "trace_overflow_frames": sum(
                 bool(frame.get("player_damage_trace_overflow")) for frame in retail_frames
+            ),
+        }
+    if args.items:
+        active_item_counts = [
+            len(frame.get("items_frame", {}).get("active_slots", []))
+            for frame in retail_frames
+        ]
+        report["observed_item_metrics"] = {
+            "maximum_active_items": max(active_item_counts, default=0),
+            "first_active_game_frame": next(
+                (
+                    int(frame["game_frame"])
+                    for frame, count in zip(retail_frames, active_item_counts, strict=True)
+                    if count
+                ),
+                None,
+            ),
+            "first_collection_game_frame": next(
+                (
+                    int(retail_frames[index]["game_frame"])
+                    for index in range(1, len(active_item_counts))
+                    if active_item_counts[index] < active_item_counts[index - 1]
+                ),
+                None,
             ),
         }
     if args.report is not None:

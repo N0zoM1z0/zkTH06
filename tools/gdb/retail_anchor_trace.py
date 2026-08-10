@@ -57,6 +57,7 @@ G_LAST_FRAME_INPUT = 0x0069D908
 G_INPUT_HOLD_FRAMES = 0x0069D910
 G_PLAYER = 0x006CA628
 G_ENEMY_MANAGER = 0x004B79C8
+G_ITEM_MANAGER = 0x0069E268
 G_MAIN_MENU = 0x006D46C0
 
 SUPERVISOR_CALC_COUNT = G_SUPERVISOR + 0x184
@@ -154,6 +155,21 @@ ENEMY_LIFE = 0xCE4
 ENEMY_MAX_LIFE = 0xCE8
 ENEMY_SCORE = 0xCEC
 ENEMY_FLAGS = 0xE50
+ENEMY_MANAGER_RANDOM_ITEM_SPAWN_INDEX = G_ENEMY_MANAGER + 0xEE5B8
+ENEMY_MANAGER_RANDOM_ITEM_TABLE_INDEX = G_ENEMY_MANAGER + 0xEE5BA
+
+ITEM_COUNT = 512
+ITEM_SIZE = 0x144
+ITEM_CURRENT_POSITION = 0x110
+ITEM_START_POSITION = 0x11C
+ITEM_TARGET_POSITION = 0x128
+ITEM_TIMER = 0x134
+ITEM_TYPE = 0x140
+ITEM_IS_IN_USE = 0x141
+ITEM_UNK_142 = 0x142
+ITEM_STATE = 0x143
+ITEM_MANAGER_NEXT_INDEX = G_ITEM_MANAGER + 0x28944
+ITEM_MANAGER_ITEM_COUNT = G_ITEM_MANAGER + 0x28948
 
 MENU_GAME_STATE = G_MAIN_MENU + 0x81F0
 MENU_STATE_TIMER = G_MAIN_MENU + 0x81F4
@@ -350,6 +366,36 @@ def capture_enemies() -> list[dict[str, object]]:
             }
         )
     return enemies
+
+
+def capture_items() -> dict[str, object]:
+    active: list[dict[str, object]] = []
+    for slot in range(ITEM_COUNT):
+        item = G_ITEM_MANAGER + slot * ITEM_SIZE
+        if memory.i8(item + ITEM_IS_IN_USE) == 0:
+            continue
+        active.append(
+            {
+                "slot": slot,
+                "current_position_bits": raw_vec(item + ITEM_CURRENT_POSITION, 3),
+                "start_position_bits": raw_vec(item + ITEM_START_POSITION, 3),
+                "target_position_bits": raw_vec(item + ITEM_TARGET_POSITION, 3),
+                "timer_previous": memory.i32(item + ITEM_TIMER),
+                "timer_subframe_bits": f"0x{memory.u32(item + ITEM_TIMER + 4):08x}",
+                "timer_current": memory.i32(item + ITEM_TIMER + 8),
+                "item_type": memory.i8(item + ITEM_TYPE),
+                "is_in_use": memory.i8(item + ITEM_IS_IN_USE),
+                "unk_142": memory.i8(item + ITEM_UNK_142),
+                "state": memory.i8(item + ITEM_STATE),
+            }
+        )
+    return {
+        "next_index": memory.i32(ITEM_MANAGER_NEXT_INDEX),
+        "item_count": memory.u32(ITEM_MANAGER_ITEM_COUNT),
+        "random_spawn_index": memory.u16(ENEMY_MANAGER_RANDOM_ITEM_SPAWN_INDEX),
+        "random_table_index": memory.u16(ENEMY_MANAGER_RANDOM_ITEM_TABLE_INDEX),
+        "active_slots": active,
+    }
 
 
 def capture_active_player_bullets() -> tuple[
@@ -584,6 +630,7 @@ def capture_frame(index: int) -> None:
             "player_bullets_frame": capture_spawn_side(),
             "player_damage_calls": frame_damage_calls,
             "player_damage_trace_overflow": False,
+            "items_frame": capture_items(),
             "enemies": capture_enemies(),
         }
     )

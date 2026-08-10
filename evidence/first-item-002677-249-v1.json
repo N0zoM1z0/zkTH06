@@ -1,0 +1,46 @@
+{
+  "anchor_game_frame": 1,
+  "bindings": {
+    "comparison_sha256": "4068d24a6fd7987d33eb4958943f4b7b27016851cf7a19fed16d72bdf02c0ce2",
+    "generator_sha256": "887b5e79a42d3973ee66788379c8aaa5aeca89ae0fdf6800f82353263d8c0043",
+    "parent_first_wave_vector_sha256": "b645bc3e25dd9fcc8ec1cce29cd4971d522b70e48e69243842c3a2b5500cbbf3",
+    "reference_trace_sha256": "f8b8e8b2c2e31c1eef916e582cbc464760d86676283a5865b4b25cf4e7a65ef8",
+    "replay_sha256": "01bc11b9226932bddeeeff675f1741b89b129f4c8820b3b1cf185a1cb19ad10f",
+    "retail_trace_sha256": "5742614792bf500b48e4dd480cb592c6f5ff2da4ab21c13cde5884cc25b0b0cc",
+    "static_audit_sha256": "21b28dfd9a3e163980ca323d6160c6e80368006afad1a42e3c67c0feb9f02682",
+    "target_executable_sha256": "9f76483c46256804792399296619c1274363c31cd8f1775fafb55106fb852245"
+  },
+  "claim_boundary": "finite complete retained-state vector through the first death-Item spawn, motion, collection, and score/power/subrank feedback at frame 249",
+  "final_game_frame": 249,
+  "incremental_anchor_game_frame": 208,
+  "metrics": {
+    "collision_anm_reclamation_frames": [
+      238,
+      243,
+      249
+    ],
+    "final_active_bullets": 3,
+    "final_collided_bullets": 2,
+    "final_power": 1,
+    "final_random_spawn_index": 6,
+    "final_random_table_index": 1,
+    "final_score": 1960,
+    "final_subrank": 1,
+    "item_collection_game_frame": 249,
+    "item_spawn_game_frame": 219
+  },
+  "record_sizes": {
+    "bullet": 104,
+    "enemy": 40,
+    "frame": 40,
+    "header": 236,
+    "item": 52
+  },
+  "schema_version": 1,
+  "selected_frames": 249,
+  "source_frames": 300,
+  "tested_transitions": 248,
+  "type": "zkth06.first-item-vector",
+  "vector_bytes": 140484,
+  "vector_sha256": "2454c98c1ee1b0595db14758de40a9604918a45351c8026edda6c9e1ab300ebb"
+}

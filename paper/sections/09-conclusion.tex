@@ -71,15 +71,25 @@ boundary: death-spawned Item state first writes retained score/power at frame
 249, so further extension must compose that subsystem rather than assume it
 away.
 
+An eighth guest now composes that subsystem.  It derives the random-drop
+cadence across all five deaths, allocates the frame-219 small-power Item,
+advances its raw binary32 motion, reclaims three collision-ANM slots, and
+collects the Item at frame 249.  The endpoint has score 1960, power 1, subrank
+1, two collided bullets, three active bullets, and no active Item.  Its
+520-byte replay-only input drives 248 transitions and publicly commits every
+retained cursor and gameplay field.  The 29,288,817-instruction,
+1,146,265,201-cell workload proves in 290.44 seconds at 52,115,224 KiB peak RSS
+and verifies in 0.29 seconds.  Exact Wine/reference Item traces agree for 300
+frames, so the first known omitted-state feedback counterexample is closed.
+
 An experimental shared binary protocol now emits real per-frame subsystem and
 root digests with raw floating-point bits, stable identities, and fail-closed
 decoding.  Complete repeated Linux runs are byte-identical, and the first broad
 ANM experiment already exposed the distinction between allocated memory and
 future-live semantic state.  The retail probe already turns a mismatch in its
 narrow root projection into a reproducible first-frame/first-field diagnosis.
-The next concrete gameplay milestone is to compose the first-wave Item
-spawn/motion/collection path through frame 249, then extend Enemy/ECL and
-enemy-bullet state beyond this early fixed profile while adding or ruling out
+The next concrete gameplay milestone is to compose the second Enemy wave with
+its RNG/ECL context and Enemy-bullet state while adding or ruling out
 Player death/respawn and bomb paths.  Deriving the fixed
 post-calc anchor from registration/pre-stage scheduling, time-stop writers, and
 non-full-speed paths remains necessary while resolving the

@@ -9,8 +9,9 @@ that state machine agree frame-for-frame with the shipped 32-bit Windows game.
 
 > **Evidence boundary:** an address-bound Wine probe now matches the shipped
 > executable and Linux reference for a 50-field semantic gameplay projection over
-> the first 2,000 frames of one tracked replay. The latest extension adds the
-> complete nested Player-bullet update and post-frame projections. The sole
+> the first 2,000 frames of one tracked replay. A narrower retained-state
+> projection additionally matches Item spawn/motion/collection and all prior
+> Player-bullet/Enemy fields over the first 300 frames. The sole
 > excluded raw field is a collided-bullet draw-only sprite z that is overwritten
 > before its next semantic read; the evidence artifact records all 3,898 such
 > values and the noninterference argument. This is finite differential evidence,
@@ -85,9 +86,21 @@ Player-bullet and Enemy raw-bit projection at every frame. The final state has
 score 1950, five collided bullets, six active bullets, and no live first-wave
 Enemy. The proof costs 28,276,048 instructions and 1,104,665,874 metered cells.
 Retail Wine and the independent reference match the enlarged projection over
-260 frames. The kernel stops at frame 229 because death-spawned item state is
+260 frames. The seventh kernel stops at frame 229 because death-spawned Item state is
 not yet retained and first feeds score/power at frame 249; this is the next
 enforced subsystem boundary rather than an assumed noninterference claim.
+
+The eighth enclosing kernel now closes that feedback boundary. It derives the
+random-drop cadence across all five deaths, the frame-219 small-power Item
+spawn, 30 frames of raw-bit movement, Player collection, collision-script slot
+reclamation, and the frame-249 score/power/subrank writes. Retail Wine and the
+independent reference match the enlarged Item projection for 300 frames. The
+520-byte OpenVM payload still contains only a fixed header and 248 replay
+masks; the endpoint has score 1960, power 1, subrank 1, two collided bullets,
+three active bullets, and no active Item. The proof costs 29,288,817
+instructions and 1,146,265,201 metered cells. It fails closed before the second
+Enemy wave, whose RNG/ECL context and Enemy bullets are the next subsystem
+boundary.
 
 A first owner-local Lean model now machine-checks why active-only Effect slots
 violate one-step noninterference and how a narrow dormant reuse shadow repairs
@@ -241,9 +254,13 @@ committing every active bullet and Enemy projection. It meters 1,104,665,874
 cells; proving took 299.07 seconds with 51,442,624 KiB peak RSS and verification
 took 0.28 seconds. The exact bundle is in
 [`evidence/openvm-first-wave-228-v1.json`](evidence/openvm-first-wave-228-v1.json).
-The next enclosing step must add death-spawned Item state before frame 249,
-then expand Enemy/ECL and enemy-bullet state; Player death/respawn and bomb
-paths remain subsequent subsystem boundaries.
+The next successor closes the death-Item feedback at frame 249: one derived
+small-power Item increases score to 1960, power to 1, and subrank to 1. Its 248
+replay-only transitions meter 1,146,265,201 cells, and the exact proof bundle is
+in [`evidence/openvm-first-item-248-v1.json`](evidence/openvm-first-item-248-v1.json).
+The next enclosing step must expand the second Enemy wave, RNG/ECL, and
+Enemy-bullet state; Player death/respawn and bomb paths remain subsequent
+subsystem boundaries.
 Deriving the post-calc anchor, external time-stop writers, and
 non-full-speed timer paths remain soundness gates rather than hidden premises.
 

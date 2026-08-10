@@ -19,6 +19,7 @@ PLAYER_BULLETS_EVIDENCE = (
 ENEMY_COLLISION_EVIDENCE = (
     ROOT / "evidence" / "retail-reference-002677-225-enemy-collisions-v1.json"
 )
+ITEM_EVIDENCE = ROOT / "evidence" / "retail-reference-002677-300-items-v1.json"
 TARGET_SHA256 = "9f76483c46256804792399296619c1274363c31cd8f1775fafb55106fb852245"
 
 
@@ -122,6 +123,7 @@ def run_comparator(
     player_bullets: bool = False,
     player_bullet_frames: bool = False,
     enemy_collisions: bool = False,
+    items: bool = False,
 ) -> subprocess.CompletedProcess[str]:
     command = ["python3", str(COMPARATOR), str(retail), str(reference), "--report", str(report)]
     if enclosing_player:
@@ -134,6 +136,8 @@ def run_comparator(
         command.append("--player-bullet-frames")
     if enemy_collisions:
         command.append("--enemy-collisions")
+    if items:
+        command.append("--items")
     return subprocess.run(
         command,
         check=False,
@@ -189,6 +193,17 @@ def main() -> int:
         "first_damaging_game_frame": 208,
         "maximum_active_enemies": 5,
         "trace_overflow_frames": 0,
+    }
+    item_evidence_text = ITEM_EVIDENCE.read_text(encoding="utf-8")
+    assert "/home/" not in item_evidence_text
+    item_evidence = json.loads(item_evidence_text)
+    assert item_evidence["status"] == "match"
+    assert item_evidence["comparison_profile"] == "items"
+    assert item_evidence["compared_frames"] == 300
+    assert item_evidence["observed_item_metrics"] == {
+        "first_active_game_frame": 219,
+        "first_collection_game_frame": 249,
+        "maximum_active_items": 1,
     }
 
     header = {
@@ -383,6 +398,52 @@ def main() -> int:
         assert enemy_report["comparison_profile"] == "enemy-collisions"
         assert len(enemy_report["compared_fields"]) == 53
         assert enemy_report["observed_enemy_collision_metrics"]["damage_calls"] == 1
+
+        item_projection = {
+            "next_index": 1,
+            "item_count": 1,
+            "random_spawn_index": 4,
+            "random_table_index": 1,
+            "active_slots": [
+                {
+                    "slot": 0,
+                    "current_position_bits": ["0x42700000", "0xc1f00000", "0x00000000"],
+                    "start_position_bits": ["0x00000000", "0xc00ccccd", "0x00000000"],
+                    "target_position_bits": ["0x00000000", "0x00000000", "0x00000000"],
+                    "timer_previous": 0,
+                    "timer_subframe_bits": "0x00000000",
+                    "timer_current": 1,
+                    "item_type": 0,
+                    "is_in_use": 1,
+                    "unk_142": 1,
+                    "state": 0,
+                }
+            ],
+        }
+        shooting_retail["items_frame"] = item_projection
+        shooting_reference["items_frame"] = json.loads(json.dumps(item_projection))
+        write_jsonl(retail, [header, shooting_retail])
+        write_jsonl(reference, [shooting_reference])
+        items = run_comparator(retail, reference, report, items=True)
+        assert items.returncode == 0, items.stderr
+        item_report = json.loads(report.read_text(encoding="utf-8"))
+        assert item_report["comparison_profile"] == "items"
+        assert len(item_report["compared_fields"]) == 54
+        assert item_report["observed_item_metrics"] == {
+            "first_active_game_frame": 1,
+            "first_collection_game_frame": None,
+            "maximum_active_items": 1,
+        }
+
+        shooting_reference["items_frame"]["active_slots"][0]["state"] = 1
+        write_jsonl(reference, [shooting_reference])
+        item_mismatch = run_comparator(retail, reference, report, items=True)
+        assert item_mismatch.returncode == 1
+        item_nested = json.loads(report.read_text(encoding="utf-8"))["first_mismatch"][
+            "differing_fields"
+        ]["items_frame"]
+        assert item_nested["path"] == "items_frame.active_slots[0].state"
+        shooting_reference["items_frame"] = json.loads(json.dumps(item_projection))
 
         shooting_reference["player_damage_calls"] = [{**damage_call, "damage": 48}]
         write_jsonl(reference, [shooting_reference])

@@ -40,8 +40,13 @@ frame 207, and [`early-gameplay/`](early-gameplay/) composes the first real
 Enemy collision at frame 208. [`first-wave/`](first-wave/) then carries every
 fired and collided slot through all five first-wave deaths at frame 229.
 [`first-wave-openvm/`](first-wave-openvm/) proves the full 228-transition chain
-from the fixed frame-1 anchor using only replay masks. It stops before omitted
-death-item state first feeds score/power at frame 249.
+from the fixed frame-1 anchor using only replay masks. The successor
+[`first-item/`](first-item/) derives the death-drop cursor, small-power Item
+spawn and raw-bit movement, collection geometry, collision-ANM reclamation,
+and retained score/power/subrank writes through frame 249.
+[`first-item-openvm/`](first-item-openvm/) proves all 248 transitions from the
+same anchor with a 520-byte replay-only input. It fails closed before the next
+Enemy/ECL, RNG, and Enemy-bullet state is composed.
 
 The intended boundary is:
 

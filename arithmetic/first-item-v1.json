@@ -1,0 +1,205 @@
+{
+  "schema_version": 1,
+  "kind": "zkth06.first-item-audit",
+  "inputs": {
+    "executable_sha256": "9f76483c46256804792399296619c1274363c31cd8f1775fafb55106fb852245",
+    "first_wave_artifact_sha256": "dc8c91a7cc64e49c63308f0f8ca4775ae698724ae6eb40679b96d9d2c5e87521",
+    "item_score_artifact_sha256": "b6ef6a5dc04317f6c97fb39722db48e696ca7669120087c382f1370d6bd34ba8",
+    "stage1_ecl_sha256": "9d9a40e9f7e3ab9346d3874438134659cacf9d34f4aff57b96b4be4ea85b99d7"
+  },
+  "generator": {
+    "path": "tools/first_item_audit.py",
+    "sha256": "0fa0f163e2563e2029cd15351d8501d00388f757881ca3b20aaab827b8b5b520"
+  },
+  "upstream": {
+    "url": "https://github.com/GensokyoClub/th06",
+    "revision": "cc475a0bc3fef38683b0f02224c87ddba0a021d9",
+    "source_files": {
+      "src/EnemyManager.cpp": "39a38a22282fdee6ce1a458087541e792e50d0a1dcd1994becda6705d96d6bba",
+      "src/ItemManager.cpp": "60464c391e70c17744aedad587140b82265db35b9b6e86f323b5af641cf772e5",
+      "src/Player.cpp": "5e3e81cff72796c98b9b87dc65d447333444917b63d9e4d493572f23145c26b5"
+    },
+    "anchors": [
+      {
+        "file": "src/EnemyManager.cpp",
+        "line": 675,
+        "anchor": "ITEM_RANDOM_ITEM",
+        "role": "random-drop branch"
+      },
+      {
+        "file": "src/EnemyManager.cpp",
+        "line": 677,
+        "anchor": "randomItemSpawnIndex % 3",
+        "role": "random-drop cadence"
+      },
+      {
+        "file": "src/EnemyManager.cpp",
+        "line": 681,
+        "anchor": "SpawnItem",
+        "role": "random-table Item spawn"
+      },
+      {
+        "file": "src/EnemyManager.cpp",
+        "line": 683,
+        "anchor": "randomItemTableIndex++",
+        "role": "random-table cursor write"
+      },
+      {
+        "file": "src/EnemyManager.cpp",
+        "line": 689,
+        "anchor": "randomItemSpawnIndex++",
+        "role": "random-drop cursor write"
+      },
+      {
+        "file": "src/ItemManager.cpp",
+        "line": 29,
+        "anchor": "nextIndex++",
+        "role": "Item allocator cursor write"
+      },
+      {
+        "file": "src/ItemManager.cpp",
+        "line": 47,
+        "anchor": "isInUse = 1",
+        "role": "Item slot activation"
+      },
+      {
+        "file": "src/ItemManager.cpp",
+        "line": 48,
+        "anchor": "currentPosition",
+        "role": "death-position copy"
+      },
+      {
+        "file": "src/ItemManager.cpp",
+        "line": 50,
+        "anchor": "-2.2f",
+        "role": "initial vertical velocity"
+      },
+      {
+        "file": "src/ItemManager.cpp",
+        "line": 54,
+        "anchor": "InitializeForPopup",
+        "role": "Item timer initialization"
+      },
+      {
+        "file": "src/ItemManager.cpp",
+        "line": 102,
+        "anchor": "itemCount = 0",
+        "role": "per-frame active counter reset"
+      },
+      {
+        "file": "src/ItemManager.cpp",
+        "line": 141,
+        "anchor": "currentPosition +=",
+        "role": "Item motion update"
+      },
+      {
+        "file": "src/ItemManager.cpp",
+        "line": 150,
+        "anchor": "0.03f",
+        "role": "Item vertical acceleration"
+      },
+      {
+        "file": "src/ItemManager.cpp",
+        "line": 157,
+        "anchor": "CalcItemBoxCollision",
+        "role": "Player collection gate"
+      },
+      {
+        "file": "src/ItemManager.cpp",
+        "line": 182,
+        "anchor": "currentPower++",
+        "role": "small-power retained write"
+      },
+      {
+        "file": "src/ItemManager.cpp",
+        "line": 189,
+        "anchor": "AddScore(10)",
+        "role": "small-power score write"
+      },
+      {
+        "file": "src/ItemManager.cpp",
+        "line": 205,
+        "anchor": "IncreaseSubrank(1)",
+        "role": "small-power subrank write"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 583,
+        "anchor": "ExecuteScript",
+        "role": "Player-bullet collision ANM exit"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 585,
+        "anchor": "PLAYER_BULLET_STATE_UNUSED",
+        "role": "collision slot reclamation"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 1355,
+        "anchor": "PLAYER_STATE_ALIVE",
+        "role": "collection life-state gate"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 1364,
+        "anchor": "grabItemTopLeft.x",
+        "role": "ordered Item AABB comparisons"
+      }
+    ],
+    "correspondence_status": "inherits the pinned first-wave and Item-score audits; the added source anchors remain a manual source-level correspondence layer"
+  },
+  "derived_profile_contract": {
+    "route": "Reimu A, difficulty 1 (Normal), Stage 1 replay prefix",
+    "anchor_game_frame": 208,
+    "last_game_frame": 249,
+    "random_item_spawn_index_at_anchor": 2,
+    "enemy_death_game_frames_after_anchor": [
+      213,
+      219,
+      224,
+      229
+    ],
+    "spawn": {
+      "game_frame": 219,
+      "slot": 0,
+      "item_type": "ITEM_POWER_SMALL",
+      "random_item_table_index_before": 0,
+      "initial_velocity_y_bits": "0xc00ccccd",
+      "acceleration_y_bits": "0x3cf5c28f"
+    },
+    "collection": {
+      "game_frame": 249,
+      "score_before": 1950,
+      "score_after": 1960,
+      "power_before": 0,
+      "power_after": 1,
+      "subrank_before": 0,
+      "subrank_after": 1
+    },
+    "collision_anm_reclamation_frames": [
+      238,
+      243,
+      249
+    ],
+    "finite_prefix_noninterference": {
+      "effects_and_sound": "death particles, popups, and sound do not feed the retained Player, bullet, Item, Enemy, score, power, subrank, or allocator projection through frame 249",
+      "enemy_bullets": "Sub0 shooting remains outside the retained projection and has no Player hit, graze, or Item writer on this finite prefix",
+      "item_anm": "the Item sprite script has no retained gameplay writer before collection; Item timer and gameplay geometry are modeled directly"
+    }
+  },
+  "evidence_status": "paired with 300-frame retail/reference raw-bit Item differential evidence and a frame-by-frame state vector through the first collection",
+  "open_obligations": [
+    "Translation-validate the added Item and collision-ANM source correspondence against the executable.",
+    "Decode and bind the relevant Item and collision ANM scripts directly from pinned data.",
+    "Replace finite-prefix enemy-bullet/effect noninterference with an alias-aware proof.",
+    "Compose the second Enemy wave, RNG state, ECL contexts, and Enemy bullets before stepping past frame 249."
+  ],
+  "counts": {
+    "source_anchors": 21,
+    "incremental_transitions": 41,
+    "spawned_items": 1,
+    "collected_items": 1
+  },
+  "artifact_sha256": "1dcc3f77e38f695def1535760bc15e813e98dda899f039c938a1f92c8a19416b"
+}
