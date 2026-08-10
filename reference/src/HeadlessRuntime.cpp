@@ -6,6 +6,7 @@
 #include "Controller.hpp"
 #include "EnemyManager.hpp"
 #include "GameManager.hpp"
+#include "Gui.hpp"
 #include "Player.hpp"
 #include "ReplayFile.hpp"
 #include "Rng.hpp"
@@ -738,7 +739,8 @@ void HeadlessRuntime::WriteState(const char *terminalReason)
                  "\"scope\":{\"difficulty\":%d,\"character\":%d,\"shot_type\":%d,\"stage\":%d},"
                  "\"initial_seed\":%u,\"supervisor_state\":%d,\"stage\":%d,\"game_frame\":%u,"
                  "\"rng_seed\":%u,\"rng_generation\":%u,\"input\":%u,"
-                 "\"is_time_stopped\":%d,\"effective_rate_bits\":%u,"
+                 "\"is_time_stopped\":%d,\"gui_has_current_message\":%d,"
+                 "\"effective_rate_bits\":%u,"
                  "\"framerate_multiplier_bits\":%u,"
                  "\"movement_min_x_bits\":%u,\"movement_min_y_bits\":%u,"
                  "\"movement_size_x_bits\":%u,\"movement_size_y_bits\":%u,"
@@ -748,6 +750,10 @@ void HeadlessRuntime::WriteState(const char *terminalReason)
                  "\"invulnerability_timer_previous\":%d,"
                  "\"invulnerability_timer_subframe_bits\":%u,"
                  "\"invulnerability_timer_current\":%d,"
+                 "\"is_focus\":%d,\"previous_frame_input\":%d,"
+                 "\"fire_bullet_timer_previous\":%d,"
+                 "\"fire_bullet_timer_subframe_bits\":%u,"
+                 "\"fire_bullet_timer_current\":%d,"
                  "\"horizontal_multiplier_bits\":%u,\"vertical_multiplier_bits\":%u,"
                  "\"orthogonal_speed_bits\":%u,\"orthogonal_focus_speed_bits\":%u,"
                  "\"diagonal_speed_bits\":%u,\"diagonal_focus_speed_bits\":%u},"
@@ -759,7 +765,7 @@ void HeadlessRuntime::WriteState(const char *terminalReason)
                  this->replayPath == NULL ? this->practiceStage : g_GameManager.currentStage, this->actualSeed,
                  g_Supervisor.curState, g_GameManager.currentStage,
                  g_GameManager.gameFrames, g_Rng.seed, g_Rng.generationCount, g_CurFrameInput,
-                 g_GameManager.isTimeStopped,
+                 g_GameManager.isTimeStopped, g_Gui.HasCurrentMsgIdx(),
                  bit_cast_from_size(g_Supervisor.effectiveFramerateMultiplier),
                  bit_cast_from_size(g_Supervisor.framerateMultiplier),
                  bit_cast_from_size(g_GameManager.playerMovementAreaTopLeftPos.x),
@@ -773,6 +779,10 @@ void HeadlessRuntime::WriteState(const char *terminalReason)
                  g_Player.invulnerabilityTimer.previous,
                  bit_cast_from_size(g_Player.invulnerabilityTimer.subFrame),
                  g_Player.invulnerabilityTimer.current,
+                 g_Player.isFocus, g_Player.previousFrameInput,
+                 g_Player.fireBulletTimer.previous,
+                 bit_cast_from_size(g_Player.fireBulletTimer.subFrame),
+                 g_Player.fireBulletTimer.current,
                  bit_cast_from_size(g_Player.horizontalMovementSpeedMultiplierDuringBomb),
                  bit_cast_from_size(g_Player.verticalMovementSpeedMultiplierDuringBomb),
                  bit_cast_from_size(g_Player.characterData.orthogonalMovementSpeed),

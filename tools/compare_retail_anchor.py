@@ -61,6 +61,15 @@ ENCLOSING_PLAYER_FIELDS = (
     "player_invulnerability_timer_current",
 )
 
+PLAYER_SHOOTING_FIELDS = (
+    "gui_has_current_message",
+    "player_is_focus",
+    "player_previous_frame_input",
+    "player_fire_bullet_timer_previous",
+    "player_fire_bullet_timer_subframe_bits",
+    "player_fire_bullet_timer_current",
+)
+
 
 def sha256_file(path: Path) -> str:
     digest = hashlib.sha256()
@@ -101,6 +110,7 @@ def normalize_retail(row: dict[str, Any], fields: tuple[str, ...]) -> dict[str, 
         "diagonal_focus_speed_bits",
         "framerate_multiplier_bits",
         "player_invulnerability_timer_subframe_bits",
+        "player_fire_bullet_timer_subframe_bits",
     )
     normalized = {
         key: int(row[key]) for key in fields if key not in hex_fields
@@ -109,7 +119,9 @@ def normalize_retail(row: dict[str, Any], fields: tuple[str, ...]) -> dict[str, 
     return normalized
 
 
-def normalize_reference(row: dict[str, Any], enclosing_player: bool) -> dict[str, int]:
+def normalize_reference(
+    row: dict[str, Any], enclosing_player: bool, player_shooting: bool
+) -> dict[str, int]:
     player = row["player"]
     scope = row["scope"]
     normalized = {
@@ -165,6 +177,23 @@ def normalize_reference(row: dict[str, Any], enclosing_player: bool) -> dict[str
                 ),
             }
         )
+    if player_shooting:
+        normalized.update(
+            {
+                "gui_has_current_message": int(row["gui_has_current_message"]),
+                "player_is_focus": int(player["is_focus"]),
+                "player_previous_frame_input": int(player["previous_frame_input"]),
+                "player_fire_bullet_timer_previous": int(
+                    player["fire_bullet_timer_previous"]
+                ),
+                "player_fire_bullet_timer_subframe_bits": int(
+                    player["fire_bullet_timer_subframe_bits"]
+                ),
+                "player_fire_bullet_timer_current": int(
+                    player["fire_bullet_timer_current"]
+                ),
+            }
+        )
     return normalized
 
 
@@ -183,6 +212,11 @@ def main() -> int:
         action="store_true",
         help="also compare timer, bomb-state, and configured-rate fields",
     )
+    parser.add_argument(
+        "--player-shooting",
+        action="store_true",
+        help="also compare the enclosing profile and Player shooting cadence fields",
+    )
     args = parser.parse_args()
 
     retail_rows = read_jsonl(args.retail)
@@ -196,7 +230,10 @@ def main() -> int:
         raise ValueError("retail trace target mismatch")
 
     retail_frames = [row for row in retail_rows[1:] if row.get("type") == FRAME_KIND]
-    fields = COMMON_FIELDS + (ENCLOSING_PLAYER_FIELDS if args.enclosing_player else ())
+    enclosing_player = args.enclosing_player or args.player_shooting
+    fields = COMMON_FIELDS + (ENCLOSING_PLAYER_FIELDS if enclosing_player else ())
+    if args.player_shooting:
+        fields += PLAYER_SHOOTING_FIELDS
     report: dict[str, Any] = {
         "type": "zkth06.retail-reference-comparison",
         "schema_version": 1,
@@ -216,7 +253,13 @@ def main() -> int:
         "wine_version": header.get("wine_version"),
         "gdb_version": header.get("gdb_version"),
         "config_sha256": header.get("config_sha256"),
-        "comparison_profile": "enclosing-player" if args.enclosing_player else "base",
+        "comparison_profile": (
+            "player-shooting"
+            if args.player_shooting
+            else "enclosing-player"
+            if enclosing_player
+            else "base"
+        ),
         "compared_fields": list(fields),
         "retail_x87_control_words": sorted(
             {str(row["x87_control_word"]) for row in retail_frames}
@@ -260,7 +303,7 @@ def main() -> int:
         if int(retail.get("index", -1)) != index:
             raise ValueError(f"non-contiguous retail index at row {index}")
         lhs = normalize_retail(retail, fields)
-        rhs = normalize_reference(reference, args.enclosing_player)
+        rhs = normalize_reference(reference, enclosing_player, args.player_shooting)
         differing = {
             key: {"retail": lhs[key], "reference": rhs[key]}
             for key in lhs

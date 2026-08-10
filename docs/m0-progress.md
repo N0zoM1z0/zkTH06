@@ -73,6 +73,11 @@ Last updated: 2026-08-09
   transition, a 40-field retail/reference comparison, a 1,999-transition state
   vector, and a second tracked OpenVM application proof whose private
   per-frame record is only the replay input mask.
+- A shooting-cadence refinement that derives focus, previous input, fire-timer
+  start/tick/reset state, and `SpawnBullets` call requests. A 54-instruction,
+  33-source-anchor audit, 46-field retail/reference comparison, 1,999-step
+  vector with 1,590 callback requests, and third tracked OpenVM proof bind this
+  layer through focused/unfocused callback dispatch.
 
 Compatibility playback intentionally restores every per-stage replay snapshot,
 matching shipped playback. It is an oracle-development mode, not the future
@@ -85,7 +90,7 @@ no-miss/no-bomb replay (`01bc11b...ad10f`). The retail side runs Japanese TH06
 v1.02h (`9f76483c...52245`) under Wine 11.0 and stops at `0x00420858`, the
 instruction immediately after `Chain::RunCalcChain`. The Linux trace is written
 at the corresponding return boundary. Across frames 1--2,000, the original 34
-fields and six enclosing-state fields match exactly:
+fields, six enclosing-state fields, and six shooting fields match exactly:
 
 - route, stage, frame, replay input, and Supervisor state;
 - RNG seed and generation count;
@@ -95,7 +100,9 @@ fields and six enclosing-state fields match exactly:
   movement multipliers;
 - all four character movement-speed records; and
 - the configured framerate multiplier, respawn timer, active-bomb flag, and
-  invulnerability timer previous/subframe/current words.
+  invulnerability timer previous/subframe/current words; and
+- GUI current-message state, Player focus and previous input, and fire-timer
+  previous/subframe/current words.
 
 This interval exercises 27 distinct input masks, advances RNG generation from
 2 to 3,555, and reaches score 767,990. At all 2,000 retail anchors the x87
@@ -104,6 +111,8 @@ and raw trace hashes are in
 [`evidence/retail-reference-002677-2000-v1.json`](../evidence/retail-reference-002677-2000-v1.json).
 The enhanced result is sealed in
 [`evidence/retail-reference-002677-2000-enclosing-v1.json`](../evidence/retail-reference-002677-2000-enclosing-v1.json).
+The 46-field shooting result is sealed in
+[`evidence/retail-reference-002677-2000-shooting-v1.json`](../evidence/retail-reference-002677-2000-shooting-v1.json).
 
 Two interventions are explicit parts of the diagnostic environment. First,
 Wine's `timeGetTime` reflects long host uptime while the game's last-frame
@@ -242,6 +251,48 @@ collision death, spawning/respawn, ECL time-stop writers, and non-full-speed
 timer arithmetic are not implemented. The 55-instruction artifact is exact
 static signature evidence, not a verified decoder, compiler-correctness proof,
 whole-program writer theorem, or Rust refinement theorem.
+
+## Player shooting-cadence proof gate
+
+The next refinement follows `Player::OnUpdate` through
+`HandlePlayerInputs`, `StartFireBulletTimer`, and
+`UpdateFireBulletsTimer`. It derives `isFocus`, `previousFrameInput`, and the
+fire timer from the preceding Player state and current replay mask. The
+same-frame ordering is explicit: a shoot press starts timer 0, the active
+timer emits at most one `SpawnBullets(player, timer)` request, then the
+full-speed tick advances it; post-tick value 30 resets to `(-999, -1)`.
+
+The selected 2,000-frame interval has no dialogue, bomb, hit, or time-stop
+writer. The reference and retail executable match on all 46 observed fields.
+The `ZKSHV1` vector checks every one of the 1,999 consecutive transitions and
+derives 1,590 callback requests. A separate sealed audit binds 54 retail
+instruction roles across eight mapped functions and 33 pinned source anchors,
+including the focus selector and both fixed character callback dispatches.
+
+The `ZKSHI1` OpenVM input remains 4,018 bytes: only configuration plus one
+`u16` replay mask per transition. The public digest additionally commits final
+focus, previous input, fire timer, and cumulative callback count.
+
+| Transitions | Guest instructions | Metered cells |
+| ---: | ---: | ---: |
+| 1 | 4,250 | 173,404 |
+| 10 | 21,948 | 848,771 |
+| 100 | 215,342 | 8,273,675 |
+| 1,000 | 2,792,207 | 108,171,997 |
+| 1,999 | 5,468,598 | 211,737,944 |
+
+The added state/callback schedule costs 1,872,914 cells (0.8924%) over the
+enclosing-state proof without enlarging the private payload. Application
+proving took 75.57 seconds and 49,103,488 KiB peak RSS; exact commitment
+verification and public-digest inspection pass, while one-bit-wrong variants
+are rejected. The tracked bundle is
+[`evidence/openvm-player-shooting-1999-v1.json`](../evidence/openvm-player-shooting-1999-v1.json).
+
+This layer stops at the `SpawnBullets` call boundary. Bullet-slot reuse,
+character/shot callback geometry, power-dependent patterns, and existing
+bullet update/collision effects remain outside the transition. The static
+audit also leaves source/compiler correspondence, complete writer
+noninterference, and Rust refinement as explicit obligations.
 
 ## Local corpus result
 

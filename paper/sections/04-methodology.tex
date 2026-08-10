@@ -139,6 +139,17 @@ writers have been refined.  A pinned static bridge checks 55 original
 instruction roles and 30 source anchors, while a 40-field retail/reference
 trace and a full-state vector provide finite translation-validation evidence.
 
+The shooting refinement keeps the same private payload and extends the state
+through the next observable callback boundary.  With the dialogue predicate
+fixed false for the selected interval, \code{HandlePlayerInputs} derives focus
+and previous input, conditionally initializes the fire timer, and
+\code{UpdateFireBulletsTimer} emits at most one
+\code{SpawnBullets(player,timer)} request before ticking and resetting at 30.
+The guest accumulates the number of requests, while the retail-derived vector
+checks every individual timer argument.  The slice stops before bullet-slot
+allocation and character-specific callback geometry; those become a separate
+refinement rather than an implicit assumption about ``shooting.''
+
 Berkeley SoftFloat Release 3e is used as an independent executable oracle for
 the first arithmetic-boundary experiments~\cite{hauser-softfloat3e}.  Its
 \code{extF80\_roundingPrecision = 64} setting denotes precision equivalent to

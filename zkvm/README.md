@@ -18,6 +18,14 @@ translation-validation target for one projection. It does not freeze or claim
 a complete zkVM guest, whole-Player semantics, whole-state equivalence, or a
 formal source/binary refinement proof.
 
+[`player-shooting/`](player-shooting/) is the next enclosing layer. It reuses
+the frozen motion/life transition and derives focus, previous input, fire-timer
+start/tick/reset state, and `SpawnBullets` requests. A retail-bound `ZKSHV1`
+vector checks 1,999 consecutive transitions and 1,590 callback requests.
+[`player-shooting-openvm/`](player-shooting-openvm/) proves the same transition
+with only replay masks as per-frame private input. This layer ends at callback
+dispatch; bullet allocation and character/shot geometry are the next slice.
+
 The intended boundary is:
 
 - public: target/version commitments, kernel revision, route and initial-state

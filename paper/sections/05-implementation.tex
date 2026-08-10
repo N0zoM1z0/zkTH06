@@ -96,6 +96,10 @@ As of 9 August 2026, the following components are implemented:
   payload contains only fixed configuration and replay masks, together with a
   second tracked proof bundle, a 1,999-transition full-state oracle, exact
   public-digest inspection, and one-bit-negative commitment/digest checks;
+  \item a separate shooting-cadence crate and OpenVM adapter that derive focus,
+  previous input, fire-timer state, and the \code{SpawnBullets} request count,
+  together with a 46-field retail oracle, 54-instruction static audit,
+  1,999-transition/1,590-request vector, and third tracked proof bundle;
   \item Linux CI that builds the reference runner and cross-checks both replay
   validators on three valid and three deliberately malformed cases, while also
   requiring canonical-record corruption to fail closed.
@@ -108,7 +112,8 @@ frozen and proven, and the selected enclosing profile no longer accepts its
 movement environment as per-frame witness data.  No complete gameplay guest is
 claimed: the post-calc anchor is fixed, and collision/death/respawn, bombs,
 external time-stop writers, and non-full-speed timers fail closed or remain
-absent.  The retail exporter currently covers a 40-field root projection,
+absent.  Shooting currently stops at callback dispatch, before bullet-slot
+allocation and shot geometry.  The retail exporter currently covers a 46-field root projection,
 while canonical projection revision 0.2 contains eleven broader
 subsystems.  Bringing that complete schema to the retail boundary remains
 open, and the state audit has already identified inactive Effect residue and

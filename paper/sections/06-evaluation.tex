@@ -52,7 +52,8 @@ bits, time-stop state, raw effective-rate bits, movement-area bounds, bomb
 movement multipliers, and all four character movement speeds.
 The enclosing-state extension adds configured framerate multiplier, respawn
 timer, active-bomb state, and all three invulnerability-timer words, for 40
-fields total.
+fields total.  The shooting extension adds the GUI current-message predicate,
+focus and previous-input state, and all three fire-timer words, for 46 fields.
 
 All 2,000 compared frames match.  This interval contains 27 distinct input
 masks, advances RNG generation from 2 to 3,555, and reaches score 767,990.
@@ -69,7 +70,7 @@ spurious multi-year catch-up loop.  XTest does not reach Wine DirectInput on
 this host, so the physical input routine returns zero; ReplayManager then
 overwrites the complete replay mask at its authentic calc priority.  The
 per-frame input equality is checked rather than assumed.  These interventions
-and the finite 40-field projection prevent promoting the result to whole-state
+and the finite 46-field projection prevent promoting the result to whole-state
 or whole-program equivalence, but they establish a real retail oracle for the
 first core slice.
 
@@ -204,6 +205,56 @@ post-calc anchor from registration and pre-stage scheduling, prove complete
 writer exclusion, model collision death/spawning/respawn, execute bomb
 callbacks, or implement non-full-speed timer arithmetic.  It also does not
 evaluate privacy or establish whole-Player or whole-game refinement.
+
+\subsection{Player shooting-cadence application proof}
+
+The third guest extends the enclosing state through
+\code{SpawnBullets(player,timer)} scheduling without changing the private input
+shape.  Its 4,018-byte \code{ZKSHI1} payload still contains only fixed route
+configuration and 1,999 replay masks.  Focus, previous input, timer
+initialization, full-speed ticks, reset at 30, and a cumulative callback count
+are derived inside the guest.  Independent input construction and proof
+deserialization agree on public digest
+\begin{center}
+\small\ttfamily
+a6008bb749de4fccd4d120d11f710d3c41f4c9ee17a53d419ebc1a2470c82060.
+\end{center}
+
+The 46-field retail/reference oracle matches all 2,000 anchors.  The compact
+vector checks all 1,999 transitions and every one of 1,590 callback timer
+arguments.  A separate static artifact checks 54 retail instruction roles,
+eight mapped functions, and 33 pinned source anchors through focused and
+unfocused character-callback dispatch.
+
+\begin{table}[h]
+  \centering
+  \small
+  \begin{tabular}{@{}rrr@{}}
+    \toprule
+    Transitions & Guest instructions & Metered cells \\
+    \midrule
+    1     & 4,250     & 173,404 \\
+    10    & 21,948    & 848,771 \\
+    100   & 215,342   & 8,273,675 \\
+    1,000 & 2,792,207 & 108,171,997 \\
+    1,999 & 5,468,598 & 211,737,944 \\
+    \bottomrule
+  \end{tabular}
+  \caption{OpenVM v2.0.1 Player shooting-cadence meter results.}
+  \label{tab:openvm-shooting-meter}
+\end{table}
+
+Relative to the enclosing-state guest, this transition adds 55,954
+instructions and 1,872,914 cells (0.8924\%) at 1,999 steps, with no payload
+increase.  Application proving takes 75.57 seconds, 2,329.78 user CPU seconds,
+and 49,103,488 KiB peak RSS; exact verification takes 0.11 seconds.  The
+expected executable commitment and public digest pass, while one-bit-wrong
+variants fail.
+
+The result proves the committed callback schedule, not bullet creation.  Slot
+allocation, power-dependent character/shot callback geometry, existing-bullet
+updates and collisions, compiler correspondence, and complete omitted-writer
+noninterference remain outside the statement.
 
 \subsection{Canonical projection experiment}
 

@@ -47,6 +47,10 @@ zkvm/player-state-openvm/target/
 zkvm/player-state-openvm/openvm/
 zkvm/player-state-openvm/*.proof
 zkvm/player-state-openvm/openvm_init.rs
+zkvm/player-shooting-openvm/target/
+zkvm/player-shooting-openvm/openvm/
+zkvm/player-shooting-openvm/*.proof
+zkvm/player-shooting-openvm/openvm_init.rs
 
 # Verified local import of the proprietary retail data.
 data/imported/

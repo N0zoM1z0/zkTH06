@@ -1,0 +1,582 @@
+{
+  "schema_version": 1,
+  "kind": "zkth06.player-shooting-cadence-audit",
+  "inputs": {
+    "executable_sha256": "9f76483c46256804792399296619c1274363c31cd8f1775fafb55106fb852245",
+    "mapping_sha256": "0f20300d5b107b36c933a7f7dc448407ee5f01c5cd7faad132d406c023163191",
+    "enclosing_player_state_artifact_sha256": "8e2e2504a94380ed37b0d5752aef62d1d14cb3de1d3f2d0f062e0c821077cc35"
+  },
+  "generator": {
+    "path": "tools/player_shooting_audit.py",
+    "sha256": "d274e137fa28f6fbc61883dd4018bdad83529849c4fa319c8d4a972a04b44a9f",
+    "x87_audit_sha256": "93c6aee778f489c92788dc7dfc6c51749fa5f20d075305a4190616d9b5d46290",
+    "disassembler": "GNU objdump (GNU Binutils for Ubuntu) 2.38"
+  },
+  "upstream": {
+    "url": "https://github.com/GensokyoClub/th06",
+    "revision": "cc475a0bc3fef38683b0f02224c87ddba0a021d9",
+    "source_files": {
+      "src/Gui.cpp": "fff72fc7b8af84d909f9977fa20db750983da3becd85d8d22d30b1aef56f2fd1",
+      "src/Player.cpp": "5e3e81cff72796c98b9b87dc65d447333444917b63d9e4d493572f23145c26b5",
+      "src/ZunTimer.hpp": "635adfab6753f1e1e42d72894c5b49a35fc8179f3ecbf76cd1a4da73e50dbf84"
+    },
+    "anchors": [
+      {
+        "file": "src/Player.cpp",
+        "line": 117,
+        "anchor": "fireBulletCallback =",
+        "role": "fixed unfocused callback"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 118,
+        "anchor": "fireBulletFocusCallback =",
+        "role": "fixed focused callback"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 128,
+        "anchor": "fireBulletTimer.SetCurrent(-1)",
+        "role": "inactive timer anchor"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 158,
+        "anchor": "if (g_GameManager.isTimeStopped)",
+        "role": "time-stop return"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 325,
+        "anchor": "HandlePlayerInputs()",
+        "role": "input handler order"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 328,
+        "anchor": "UpdatePlayerBullets(p)",
+        "role": "existing-bullet update order"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 338,
+        "anchor": "UpdateFireBulletsTimer(p)",
+        "role": "fire timer update order"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 680,
+        "anchor": "IS_PRESSED(TH_BUTTON_FOCUS)",
+        "role": "focus input"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 682,
+        "anchor": "isFocus = true",
+        "role": "focused state"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 686,
+        "anchor": "isFocus = false",
+        "role": "unfocused state"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 928,
+        "anchor": "IS_PRESSED(TH_BUTTON_SHOOT)",
+        "role": "shoot/dialogue gate"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 930,
+        "anchor": "StartFireBulletTimer",
+        "role": "timer start call"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 932,
+        "anchor": "previousFrameInput =",
+        "role": "previous input writer"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 981,
+        "anchor": "fireBulletTimer.AsFrames() < 0",
+        "role": "inactive start guard"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 983,
+        "anchor": "InitializeForPopup",
+        "role": "timer start state"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 989,
+        "anchor": "fireBulletTimer.AsFrames() < 0",
+        "role": "inactive update guard"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 994,
+        "anchor": "fireBulletTimer.HasTicked()",
+        "role": "one-call cadence guard"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 997,
+        "anchor": "SpawnBullets",
+        "role": "callback boundary"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 1000,
+        "anchor": "fireBulletTimer.Tick()",
+        "role": "tick after callback"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 1002,
+        "anchor": "fireBulletTimer.AsFrames() >= 30",
+        "role": "burst reset guard"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 1005,
+        "anchor": "fireBulletTimer.SetCurrent(-1)",
+        "role": "burst reset"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 1060,
+        "anchor": "if (!p->isFocus)",
+        "role": "callback selector"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 1062,
+        "anchor": "fireBulletCallback",
+        "role": "unfocused callback call"
+      },
+      {
+        "file": "src/Player.cpp",
+        "line": 1066,
+        "anchor": "fireBulletFocusCallback",
+        "role": "focused callback call"
+      },
+      {
+        "file": "src/Gui.cpp",
+        "line": 794,
+        "anchor": "Gui::HasCurrentMsgIdx",
+        "role": "dialogue gate implementation"
+      },
+      {
+        "file": "src/Gui.cpp",
+        "line": 796,
+        "anchor": "currentMsgIdx",
+        "role": "dialogue-active predicate"
+      },
+      {
+        "file": "src/ZunTimer.hpp",
+        "line": 55,
+        "anchor": "InitializeForPopup",
+        "role": "timer initialization helper"
+      },
+      {
+        "file": "src/ZunTimer.hpp",
+        "line": 57,
+        "anchor": "current = 0",
+        "role": "start current"
+      },
+      {
+        "file": "src/ZunTimer.hpp",
+        "line": 58,
+        "anchor": "subFrame = 0",
+        "role": "start subframe"
+      },
+      {
+        "file": "src/ZunTimer.hpp",
+        "line": 59,
+        "anchor": "previous = -999",
+        "role": "start previous"
+      },
+      {
+        "file": "src/ZunTimer.hpp",
+        "line": 71,
+        "anchor": "previous = this->current",
+        "role": "tick ordering"
+      },
+      {
+        "file": "src/ZunTimer.hpp",
+        "line": 72,
+        "anchor": "TickTimer",
+        "role": "tick delegate"
+      },
+      {
+        "file": "src/ZunTimer.hpp",
+        "line": 87,
+        "anchor": "current != this->previous",
+        "role": "HasTicked predicate"
+      }
+    ],
+    "correspondence_status": "manual-disassembly-source-alignment-unproved"
+  },
+  "mapped_functions": [
+    {
+      "name": "th06::Gui::HasCurrentMsgIdx",
+      "start": "0x004195a2",
+      "size": 29
+    },
+    {
+      "name": "th06::Supervisor::TickTimer",
+      "start": "0x00424285",
+      "size": 110
+    },
+    {
+      "name": "th06::Player::HandlePlayerInputs",
+      "start": "0x00427860",
+      "size": 3482
+    },
+    {
+      "name": "th06::Player::StartFireBulletTimer",
+      "start": "0x00428630",
+      "size": 69
+    },
+    {
+      "name": "th06::Player::OnUpdate",
+      "start": "0x004288c0",
+      "size": 2282
+    },
+    {
+      "name": "th06::Player::UpdateFireBulletsTimer",
+      "start": "0x00429710",
+      "size": 268
+    },
+    {
+      "name": "th06::Player::SpawnBullets",
+      "start": "0x00429820",
+      "size": 270
+    },
+    {
+      "name": "th06::Player::AddedCallback",
+      "start": "0x00429c50",
+      "size": 1118
+    }
+  ],
+  "checked_instruction_roles": [
+    {
+      "address": "0x00429fc9",
+      "mnemonic": "mov",
+      "role": "anchor timer current -1"
+    },
+    {
+      "address": "0x00429fd3",
+      "mnemonic": "mov",
+      "role": "anchor timer subframe zero"
+    },
+    {
+      "address": "0x00429fdd",
+      "mnemonic": "mov",
+      "role": "anchor timer previous -999"
+    },
+    {
+      "address": "0x0042a000",
+      "mnemonic": "mov",
+      "role": "store fixed unfocused callback"
+    },
+    {
+      "address": "0x0042a022",
+      "mnemonic": "mov",
+      "role": "store fixed focused callback"
+    },
+    {
+      "address": "0x0042910f",
+      "mnemonic": "call",
+      "role": "call HandlePlayerInputs"
+    },
+    {
+      "address": "0x00429127",
+      "mnemonic": "call",
+      "role": "update existing player bullets"
+    },
+    {
+      "address": "0x00429199",
+      "mnemonic": "call",
+      "role": "update fire timer last"
+    },
+    {
+      "address": "0x004279ab",
+      "mnemonic": "mov",
+      "role": "load input for focus"
+    },
+    {
+      "address": "0x004279b2",
+      "mnemonic": "and",
+      "role": "mask focus bit"
+    },
+    {
+      "address": "0x004279bf",
+      "mnemonic": "mov",
+      "role": "store focused"
+    },
+    {
+      "address": "0x004279ce",
+      "mnemonic": "mov",
+      "role": "store unfocused"
+    },
+    {
+      "address": "0x004285b7",
+      "mnemonic": "mov",
+      "role": "load input for shoot"
+    },
+    {
+      "address": "0x004285bd",
+      "mnemonic": "and",
+      "role": "mask shoot bit"
+    },
+    {
+      "address": "0x004285c9",
+      "mnemonic": "call",
+      "role": "query dialogue gate"
+    },
+    {
+      "address": "0x004285d0",
+      "mnemonic": "jne",
+      "role": "suppress start during dialogue"
+    },
+    {
+      "address": "0x004285d9",
+      "mnemonic": "call",
+      "role": "start fire timer"
+    },
+    {
+      "address": "0x004285e7",
+      "mnemonic": "mov",
+      "role": "reload current input"
+    },
+    {
+      "address": "0x004285ed",
+      "mnemonic": "mov",
+      "role": "store previous frame input"
+    },
+    {
+      "address": "0x004195ac",
+      "mnemonic": "mov",
+      "role": "load Gui implementation"
+    },
+    {
+      "address": "0x004195b1",
+      "mnemonic": "cmp",
+      "role": "test current message index"
+    },
+    {
+      "address": "0x004195b8",
+      "mnemonic": "setge",
+      "role": "return active-message predicate"
+    },
+    {
+      "address": "0x00428639",
+      "mnemonic": "mov",
+      "role": "load fire timer current"
+    },
+    {
+      "address": "0x00428642",
+      "mnemonic": "cmp",
+      "role": "test inactive timer"
+    },
+    {
+      "address": "0x00428646",
+      "mnemonic": "jge",
+      "role": "leave active timer unchanged"
+    },
+    {
+      "address": "0x00428657",
+      "mnemonic": "mov",
+      "role": "start current at zero"
+    },
+    {
+      "address": "0x00428661",
+      "mnemonic": "mov",
+      "role": "start subframe at zero"
+    },
+    {
+      "address": "0x0042866b",
+      "mnemonic": "mov",
+      "role": "start previous at -999"
+    },
+    {
+      "address": "0x00429719",
+      "mnemonic": "mov",
+      "role": "load current for inactive guard"
+    },
+    {
+      "address": "0x00429722",
+      "mnemonic": "cmp",
+      "role": "test inactive update"
+    },
+    {
+      "address": "0x00429726",
+      "mnemonic": "jge",
+      "role": "continue active update"
+    },
+    {
+      "address": "0x00429741",
+      "mnemonic": "mov",
+      "role": "load current for HasTicked"
+    },
+    {
+      "address": "0x00429746",
+      "mnemonic": "cmp",
+      "role": "compare current and previous"
+    },
+    {
+      "address": "0x00429748",
+      "mnemonic": "setne",
+      "role": "derive HasTicked"
+    },
+    {
+      "address": "0x0042974d",
+      "mnemonic": "je",
+      "role": "skip callback when not ticked"
+    },
+    {
+      "address": "0x0042974f",
+      "mnemonic": "cmp",
+      "role": "active bomb callback gate"
+    },
+    {
+      "address": "0x00429760",
+      "mnemonic": "cmp",
+      "role": "Marisa bomb gate"
+    },
+    {
+      "address": "0x0042976d",
+      "mnemonic": "cmp",
+      "role": "shot-B bomb gate"
+    },
+    {
+      "address": "0x0042977e",
+      "mnemonic": "mov",
+      "role": "load callback timer argument"
+    },
+    {
+      "address": "0x00429786",
+      "mnemonic": "call",
+      "role": "call SpawnBullets boundary"
+    },
+    {
+      "address": "0x004297a0",
+      "mnemonic": "mov",
+      "role": "load timer current before tick"
+    },
+    {
+      "address": "0x004297a3",
+      "mnemonic": "mov",
+      "role": "copy current to previous"
+    },
+    {
+      "address": "0x004297b8",
+      "mnemonic": "call",
+      "role": "tick through Supervisor"
+    },
+    {
+      "address": "0x004297c9",
+      "mnemonic": "cmp",
+      "role": "test timer limit 30"
+    },
+    {
+      "address": "0x004297cd",
+      "mnemonic": "jge",
+      "role": "take timer reset path"
+    },
+    {
+      "address": "0x004297d9",
+      "mnemonic": "cmp",
+      "role": "dead-state reset gate"
+    },
+    {
+      "address": "0x004297e8",
+      "mnemonic": "cmp",
+      "role": "spawning-state reset gate"
+    },
+    {
+      "address": "0x004297fc",
+      "mnemonic": "mov",
+      "role": "reset timer current -1"
+    },
+    {
+      "address": "0x00429806",
+      "mnemonic": "mov",
+      "role": "reset timer subframe zero"
+    },
+    {
+      "address": "0x00429810",
+      "mnemonic": "mov",
+      "role": "reset timer previous -999"
+    },
+    {
+      "address": "0x00429873",
+      "mnemonic": "movsx",
+      "role": "load focus for callback choice"
+    },
+    {
+      "address": "0x0042987c",
+      "mnemonic": "jne",
+      "role": "select focused callback"
+    },
+    {
+      "address": "0x00429891",
+      "mnemonic": "call",
+      "role": "call fixed unfocused callback"
+    },
+    {
+      "address": "0x004298b2",
+      "mnemonic": "call",
+      "role": "call fixed focused callback"
+    }
+  ],
+  "derived_profile_contract": {
+    "profile": "full-speed-no-dialogue-no-bomb-no-hit-no-time-stop-write",
+    "anchor": {
+      "is_focus": 0,
+      "previous_frame_input": 0,
+      "fire_timer_previous": -999,
+      "fire_timer_subframe_bits": "0x00000000",
+      "fire_timer_current": -1
+    },
+    "shoot_input_mask": "0x0001",
+    "focus_input_mask": "0x0004",
+    "inactive_timer": {
+      "previous": -999,
+      "current": -1
+    },
+    "timer_start": {
+      "previous": -999,
+      "subframe_bits": "0x00000000",
+      "current": 0
+    },
+    "spawn_condition": "timer current is nonnegative, current differs from previous, and Marisa-B bomb suppression is false",
+    "spawn_effect": "one call to Player::SpawnBullets(player, current timer), followed by timer tick",
+    "full_speed_tick": "previous becomes current; current increments by one; subframe remains +0",
+    "reset_condition": "post-tick current >= 30, dead state, or spawning state",
+    "callback_choice": "isFocus selects the fixed character/shot callback inside SpawnBullets",
+    "dialogue_gate": "currentMsgIdx >= 0 suppresses timer start; selected dynamic profile fixes this predicate false",
+    "enclosing_player_state_artifact_sha256": "8e2e2504a94380ed37b0d5752aef62d1d14cb3de1d3f2d0f062e0c821077cc35",
+    "refinement_boundary": "ends at character callback dispatch; bullet allocation and callback geometry are not modeled"
+  },
+  "evidence_status": "exact static signatures and pinned source candidates for the no-dialogue shooting cadence through character callback dispatch, bound to the enclosing player-state audit; not verified decoding, compiler correspondence, reachability, complete writer analysis, callback geometry, or guest refinement",
+  "open_obligations": [
+    "Prove or translation-validate each checked instruction and source alignment.",
+    "Prove the no-dialogue predicate and complete writer noninterference for the selected replay interval.",
+    "Prove UpdatePlayerBullets and intervening animation calls do not write the projected shooting state.",
+    "Refine character callback dispatch into bullet-slot allocation and shot-specific geometry.",
+    "Prove the Rust shooting transition refines this address-bound profile contract."
+  ],
+  "counts": {
+    "mapped_functions": 8,
+    "source_anchors": 33,
+    "checked_instruction_roles": 54
+  },
+  "artifact_sha256": "77bc7c34e69964494abad1ca5968af0756f43b9e619b4118df041d08ee946b83"
+}

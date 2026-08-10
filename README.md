@@ -8,10 +8,10 @@ an accepted result. Before freezing a zkVM guest, the project must first make
 that state machine agree frame-for-frame with the shipped 32-bit Windows game.
 
 > **Evidence boundary:** an address-bound Wine probe now matches the shipped
-> executable and Linux reference for a 40-field raw gameplay projection over
-> the first 2,000 frames of one tracked replay. The enclosing extension adds
-> configured rate, respawn/bomb state, and all three invulnerability-timer
-> words. This is finite differential
+> executable and Linux reference for a 46-field raw gameplay projection over
+> the first 2,000 frames of one tracked replay. The latest extension adds the
+> dialogue gate, focus and previous-input state, and all three fire-timer words
+> to the earlier enclosing Player fields. This is finite differential
 > evidence, not whole-state equivalence. The current runner remains an
 > instrumented reference harness, not final proof semantics.
 
@@ -28,6 +28,15 @@ input masks and computed endpoint. Its tracked application proof verifies
 against the exact guest commitment. This freezes a narrow, fail-closed
 full-speed/no-bomb/no-hit profile, not a complete Player guest or a formal
 refinement theorem.
+
+The next Player refinement is also executable and proven through the shooting
+cadence boundary. A separate integer-only crate derives focus,
+`previousFrameInput`, fire-timer start/tick/reset behavior, and 1,590
+`SpawnBullets(player, timer)` requests from the same anchor and replay masks.
+All 1,999 transitions agree with the 46-field retail/reference oracle. Its
+OpenVM proof keeps the private payload at 4,018 bytes and meters 211,737,944
+cells. Bullet-slot allocation and the four character/shot callback geometries
+are deliberately not yet part of this claim.
 
 A first owner-local Lean model now machine-checks why active-only Effect slots
 violate one-step noninterference and how a narrow dormant reuse shadow repairs
@@ -125,9 +134,11 @@ inputs were produced by a human or without external tools.
 - Pass Normal no-miss/no-bomb, death/bomb, dialogue, all shot types, Lunatic,
   spell-heavy and Extra cases.
 
-The first 2,000-frame Normal anchor is complete for its enhanced 40-field
+The first 2,000-frame Normal anchor is complete for its enhanced 46-field
 projection. Its enclosing player-state subprojection drives 1,999 transitions
-from a fixed post-calc anchor and checks the life-state change at frame 240.
+from a fixed post-calc anchor, checks the life-state change at frame 240, and
+now checks focus/previous-input/fire-timer recurrence through the
+`SpawnBullets` callback boundary.
 The full canonical subsystem projection and broader replay matrix remain open.
 
 ### M1 — canonical gameplay kernel
@@ -145,17 +156,18 @@ The full canonical subsystem projection and broader replay matrix remain open.
 - Chunk or recursively aggregate a full six-stage run only after the smaller
   statements pass differential tests.
 
-The first enclosing 1,999-transition profile is now proven with OpenVM v2.0.1.
-Its private payload is 4,018 bytes rather than the earlier 95,976-byte
-environment transcript, and the hash-bound statement costs 209,865,030 metered
-cells. Local application proving took 73.18 seconds with 49,431,532 KiB peak
-RSS, and verification took 0.11 seconds. The tracked proof, verifying key, vm
-executable, source bindings, negative checks, and explicit claim boundary are
-in
-[`evidence/openvm-player-state-1999-v1.json`](evidence/openvm-player-state-1999-v1.json).
-The next soundness gates are deriving the post-calc anchor from registration
-and adding the currently fail-closed collision/death/respawn, bomb-callback,
-time-stop-writer, and non-full-speed paths.
+The stronger shooting-cadence 1,999-transition profile is now proven with
+OpenVM v2.0.1. Its private payload is still 4,018 bytes rather than the earlier
+95,976-byte environment transcript, and the hash-bound statement costs
+211,737,944 metered cells. Local application proving took 75.57 seconds with
+49,103,488 KiB peak RSS, and verification took 0.11 seconds. The tracked proof,
+verifying key, vm executable, source bindings, negative checks, and explicit
+claim boundary are in
+[`evidence/openvm-player-shooting-1999-v1.json`](evidence/openvm-player-shooting-1999-v1.json).
+The next Player slice is bullet-slot allocation and character/shot callback
+geometry, followed by collision/death/respawn, bomb, power, and item
+interaction. Deriving the post-calc anchor, external time-stop writers, and
+non-full-speed timer paths remain soundness gates rather than hidden premises.
 
 The source audit and compatibility risks are in
 [`docs/initial-analysis.md`](docs/initial-analysis.md). Current corpus results
@@ -232,7 +244,7 @@ python3 tools/run_retail_anchor.py \
   --max-ticks 2000 --trace /path/to/zkTH06/local/reference-anchor.jsonl)
 
 python3 tools/compare_retail_anchor.py \
-  local/retail-anchor.jsonl local/reference-anchor.jsonl --enclosing-player
+  local/retail-anchor.jsonl local/reference-anchor.jsonl --player-shooting
 ```
 
 The probe requires Wine, Xvfb, GDB, passwordless local `sudo` for ptrace, and a

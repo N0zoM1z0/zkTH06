@@ -12,6 +12,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 COMPARATOR = ROOT / "tools" / "compare_retail_anchor.py"
 EVIDENCE = ROOT / "evidence" / "retail-reference-002677-2000-v1.json"
+SHOOTING_EVIDENCE = ROOT / "evidence" / "retail-reference-002677-2000-shooting-v1.json"
 TARGET_SHA256 = "9f76483c46256804792399296619c1274363c31cd8f1775fafb55106fb852245"
 
 
@@ -106,11 +107,18 @@ def reference_frame() -> dict[str, object]:
 
 
 def run_comparator(
-    retail: Path, reference: Path, report: Path, *, enclosing_player: bool = False
+    retail: Path,
+    reference: Path,
+    report: Path,
+    *,
+    enclosing_player: bool = False,
+    player_shooting: bool = False,
 ) -> subprocess.CompletedProcess[str]:
     command = ["python3", str(COMPARATOR), str(retail), str(reference), "--report", str(report)]
     if enclosing_player:
         command.append("--enclosing-player")
+    if player_shooting:
+        command.append("--player-shooting")
     return subprocess.run(
         command,
         check=False,
@@ -140,6 +148,13 @@ def main() -> int:
         "rng_generation_max": 3555,
         "rng_generation_min": 2,
     }
+    shooting_evidence_text = SHOOTING_EVIDENCE.read_text(encoding="utf-8")
+    assert "/home/" not in shooting_evidence_text
+    shooting_evidence = json.loads(shooting_evidence_text)
+    assert shooting_evidence["status"] == "match"
+    assert shooting_evidence["comparison_profile"] == "player-shooting"
+    assert shooting_evidence["compared_frames"] == 2_000
+    assert len(shooting_evidence["compared_fields"]) == 46
 
     header = {
         "type": "zkth06.retail-anchor-header",
@@ -200,6 +215,37 @@ def main() -> int:
         enclosing_evidence = json.loads(report.read_text(encoding="utf-8"))
         assert enclosing_evidence["comparison_profile"] == "enclosing-player"
         assert len(enclosing_evidence["compared_fields"]) == 40
+
+        shooting_retail = dict(enclosing_retail)
+        shooting_retail.update(
+            {
+                "gui_has_current_message": 0,
+                "player_is_focus": 0,
+                "player_previous_frame_input": 0,
+                "player_fire_bullet_timer_previous": -999,
+                "player_fire_bullet_timer_subframe_bits": "0x00000000",
+                "player_fire_bullet_timer_current": -1,
+            }
+        )
+        shooting_reference = dict(enclosing_reference)
+        shooting_reference["player"] = dict(enclosing_reference["player"])
+        shooting_reference["gui_has_current_message"] = 0
+        shooting_reference["player"].update(
+            {
+                "is_focus": 0,
+                "previous_frame_input": 0,
+                "fire_bullet_timer_previous": -999,
+                "fire_bullet_timer_subframe_bits": 0,
+                "fire_bullet_timer_current": -1,
+            }
+        )
+        write_jsonl(retail, [header, shooting_retail])
+        write_jsonl(reference, [shooting_reference])
+        shooting = run_comparator(retail, reference, report, player_shooting=True)
+        assert shooting.returncode == 0, shooting.stderr
+        shooting_report = json.loads(report.read_text(encoding="utf-8"))
+        assert shooting_report["comparison_profile"] == "player-shooting"
+        assert len(shooting_report["compared_fields"]) == 46
 
         mismatching = retail_frame()
         mismatching["player_x_bits"] = "0x43400001"

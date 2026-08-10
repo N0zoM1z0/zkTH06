@@ -38,6 +38,7 @@ ZERO_CONTROLLER_BYTES = bytes.fromhex("b8 00 00 00 00 c3")
 G_SUPERVISOR = 0x006C6D18
 G_GAME_MANAGER = 0x0069BCA0
 G_RNG = 0x0069D8F8
+G_GUI = 0x0069BC30
 G_CUR_FRAME_INPUT = 0x0069D904
 G_LAST_FRAME_INPUT = 0x0069D908
 G_INPUT_HOLD_FRAMES = 0x0069D910
@@ -81,10 +82,15 @@ PLAYER_HORIZONTAL_MULTIPLIER = G_PLAYER + 0x9D0
 PLAYER_VERTICAL_MULTIPLIER = G_PLAYER + 0x9D4
 PLAYER_RESPAWN_TIMER = G_PLAYER + 0x9D8
 PLAYER_STATE = G_PLAYER + 0x9E0
+PLAYER_IS_FOCUS = G_PLAYER + 0x9E3
 PLAYER_ORTHOGONAL_SPEED = G_PLAYER + 0x9F4
 PLAYER_ORTHOGONAL_FOCUS_SPEED = G_PLAYER + 0x9F8
 PLAYER_DIAGONAL_SPEED = G_PLAYER + 0x9FC
 PLAYER_DIAGONAL_FOCUS_SPEED = G_PLAYER + 0xA00
+PLAYER_PREVIOUS_FRAME_INPUT = G_PLAYER + 0xA18
+PLAYER_FIRE_BULLET_TIMER_PREVIOUS = G_PLAYER + 0x75A8
+PLAYER_FIRE_BULLET_TIMER_SUBFRAME = G_PLAYER + 0x75AC
+PLAYER_FIRE_BULLET_TIMER_CURRENT = G_PLAYER + 0x75B0
 PLAYER_INVULNERABILITY_TIMER_PREVIOUS = G_PLAYER + 0x75B4
 PLAYER_INVULNERABILITY_TIMER_SUBFRAME = G_PLAYER + 0x75B8
 PLAYER_INVULNERABILITY_TIMER_CURRENT = G_PLAYER + 0x75BC
@@ -245,6 +251,9 @@ def capture_frame(index: int) -> None:
             "deaths": memory.i32(GM_DEATHS),
             "bombs_used": memory.i32(GM_BOMBS_USED),
             "is_time_stopped": memory.i8(GM_IS_TIME_STOPPED),
+            "gui_has_current_message": int(
+                memory.i32(memory.u32(G_GUI + 0x4) + 0x253C) >= 0
+            ),
             "num_retries": memory.u8(GM_NUM_RETRIES),
             "current_power": memory.u16(GM_CURRENT_POWER),
             "lives": memory.i8(GM_LIVES),
@@ -260,6 +269,11 @@ def capture_frame(index: int) -> None:
             "player_invulnerability_timer_previous": memory.i32(PLAYER_INVULNERABILITY_TIMER_PREVIOUS),
             "player_invulnerability_timer_subframe_bits": f"0x{memory.u32(PLAYER_INVULNERABILITY_TIMER_SUBFRAME):08x}",
             "player_invulnerability_timer_current": memory.i32(PLAYER_INVULNERABILITY_TIMER_CURRENT),
+            "player_is_focus": memory.u8(PLAYER_IS_FOCUS),
+            "player_previous_frame_input": memory.u16(PLAYER_PREVIOUS_FRAME_INPUT),
+            "player_fire_bullet_timer_previous": memory.i32(PLAYER_FIRE_BULLET_TIMER_PREVIOUS),
+            "player_fire_bullet_timer_subframe_bits": f"0x{memory.u32(PLAYER_FIRE_BULLET_TIMER_SUBFRAME):08x}",
+            "player_fire_bullet_timer_current": memory.i32(PLAYER_FIRE_BULLET_TIMER_CURRENT),
             "movement_min_x_bits": f"0x{memory.u32(GM_MOVEMENT_MIN_X):08x}",
             "movement_min_y_bits": f"0x{memory.u32(GM_MOVEMENT_MIN_Y):08x}",
             "movement_size_x_bits": f"0x{memory.u32(GM_MOVEMENT_SIZE_X):08x}",

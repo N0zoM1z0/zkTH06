@@ -277,5 +277,22 @@ stronger final state.  This closes the immediate witness boundary without
 overstating the result: deriving the anchor from registration and proving
 complete writer exclusion/refinement are now the next explicit obligations.
 
+\paragraph{Phase X: refine shooting at a callback boundary, not as one opaque
+subsystem.}
+``Add shooting'' initially appears to require bullets, callbacks, collision,
+power, and bombs at once.  Source and disassembly order instead expose a
+smaller closed step: input derives focus and previous input, the dialogue gate
+may start an inactive timer at zero, and the timer emits one
+\code{SpawnBullets(player,timer)} request before its full-speed tick and reset.
+We froze this call boundary first.  A 46-field retail/reference trace matches
+for 2,000 anchors, while a derived vector checks 1,999 transitions and 1,590
+callback arguments.  The new OpenVM guest retains the 4,018-byte replay-only
+payload and costs 211,737,944 cells, only 0.8924\% above the enclosing-state
+guest.  This converts ``shooting support'' from an underspecified claim into a
+reviewable refinement ladder: cadence is now proven for the selected profile;
+bullet-slot allocation and each fixed character/shot callback are the next
+separate obligations.  The no-dialogue corpus fact remains finite evidence,
+not a universal noninterference theorem.
+
 Future changes to the central claim or state boundary should be appended here
 with the evidence that motivated them.

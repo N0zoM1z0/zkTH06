@@ -61,6 +61,29 @@ witnesses only for the named full-speed/no-bomb/no-hit/no-time-stop-write
 profile.  The fixed post-calc anchor, collision/death/respawn, bombs, external
 time-stop writers, and non-full-speed timers remain outside the claim.
 
+`retail-reference-002677-2000-shooting-v1.json` raises the same retail oracle to
+46 fields.  The additional six fields are the GUI current-message predicate,
+Player focus flag and previous input mask, and the previous/subframe/current
+words of the fire timer.  All 2,000 frames match, and the dialogue predicate is
+false throughout the selected interval.
+
+`player-shooting-002677-2000-v1.bin` (`ZKSHV1`) binds those observations to the
+static shooting audit and reconstructs the effect at each transition.  Its
+1,999 transitions contain 1,590 derived `SpawnBullets(player, timer)` requests,
+including the same-frame timer-0 request and the reset/restart cadence.  It
+stops at that call boundary and contains no bullet-slot or shot-geometry claim.
+
+`openvm-player-shooting-1999-v1.json` records the third OpenVM proof.  The guest
+derives focus, `previousFrameInput`, fire-timer state, and cumulative callback
+count without enlarging the 4,018-byte replay-input payload.  It executes
+5,468,598 instructions and meters 211,737,944 cells.  The tracked proof's
+authenticated public digest is
+`a6008bb749de4fccd4d120d11f710d3c41f4c9ee17a53d419ebc1a2470c82060`;
+the exact executable commitment verifies and one-bit-wrong commitment/digest
+checks fail.  Static instruction/source alignment, finite differential
+agreement, and the zk proof remain separate evidence layers: compiler
+correspondence, complete writer noninterference, and callback geometry are open.
+
 `source/openvm-player-motion-v1/player-motion-lib.rs` preserves the exact
 library source compiled into the earlier immutable proof.  The live crate later
 gained the enclosing-state module, so retaining the old source by hash keeps
